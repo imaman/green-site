@@ -1,12 +1,21 @@
-var express = require('express');
-var app = express();
+(function() {
+  var express = require('express');
 
-app.use(express.logger());
-app.set('port', process.env.PORT || 3000);
+  exports.run = function(port) {
+    var app = express();
 
-app.get('/', function(req, res){
-    res.send('Hello World');
-});
+    app.use(express.logger());
+    app.set('port', port || process.env.PORT || 3000);
 
-app.listen(app.get('port'));
-console.log('Express server started at http://localhost:' + app.get('port'));
+    app.get('/', function(req, res){
+        res.send('Hello World');
+    });
+
+    app.listen(app.get('port'));
+    console.log('Express server started at http://localhost:' + app.get('port'));
+  };
+
+})()
+
+
+
