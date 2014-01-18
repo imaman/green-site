@@ -1,7 +1,8 @@
+var site =  require('../site');
 
-describe("some functionality", function(done) {
-  it("should do something", function(done) {
-    expect(5).toEqual(5);
+describe("site", function(done) {
+  it("should offer a .run method", function(done) {
+    expect(site.run).not.toBe(null);
     done();
   });
 });
