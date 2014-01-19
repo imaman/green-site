@@ -3,16 +3,16 @@ var Browser = require('zombie');
 
 describe('site', function() {
   var browser;
-  var s;
+  var driver;
 
   beforeEach(function(done) {
     browser = new Browser();
-    s = site.create(3000);
-    s.start(done);
+    driver = site.createDriver(3000);
+    driver.start(done);
   });
 
   afterEach(function(done) {
-    s.stop(done);
+    driver.stop(done);
   });
 
   it('should serve a "hello world" page', function(done) {

@@ -1,7 +1,7 @@
 (function() {
   var express = require('express');
 
-  exports.create = function(port) {
+  exports.createDriver = function(port) {
     var app = express();
 
     app.use(express.logger());
