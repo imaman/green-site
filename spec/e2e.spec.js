@@ -81,5 +81,14 @@ describe('site', function() {
         done();
       });
     });
+    it('does not show content from other posts', function(done) {
+      browser.visit('http://localhost:3000/posts/2', function() {
+        expect(browser.success).toBe(true);
+        var text = browser.text();
+        expect(text).toContain('T2');
+        expect(text).not.toContain('T1');
+        done();
+      });
+    });
   });
 });
