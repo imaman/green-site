@@ -17,11 +17,18 @@
     });
 
     app.get('/posts/:id', function(req, res) {
-      model.posts.forEach(function(post) {
-        if (post.id == req.params.id) {
-          res.render('post', { post: post, headline: model.headline });
+      var post = null;
+      model.posts.forEach(function(current) {
+        if (current.id == req.params.id) {
+          post = current;
         }
       });
+
+      if (post) {
+        res.render('post', { post: post, headline: model.headline });
+      } else {
+        res.send(404);
+      }
     });
 
     return {

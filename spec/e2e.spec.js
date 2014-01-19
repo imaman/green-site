@@ -90,5 +90,11 @@ describe('site', function() {
         done();
       });
     });
+    it('fails if post ID is not recognized', function(done) {
+      browser.visit('http://localhost:3000/posts/some_non_existing_post_id', function() {
+        expect(browser.success).toBe(false);
+        done();
+      });
+    });
   });
 });
