@@ -15,11 +15,6 @@
         title: 'T2',
         body: 'B2',
         publishedAt: '2014-02-22T22:22:22-05:00',
-      },
-      {
-        id: 3,
-        title: '',
-        publishedAt: ''
       }
     ],
 
