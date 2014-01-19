@@ -19,6 +19,11 @@ describe('site', function() {
         title: 'Title2',
         body: 'B2',
         publishedAt: '2014-02-22T22:22:22-05:00',
+      },
+      {
+        id: 3,
+        title: 'Title3',
+        publishedAt: ''
       }
     ]
   };
@@ -94,6 +99,22 @@ describe('site', function() {
     it('fails if post ID is not recognized', function(done) {
       visit('posts/some_non_existing_post_id', done, function() {
         expect(browser.success).toBe(false);
+      });
+    });
+  });
+
+  describe('posts body', function() {
+    it('can be loaded from an external lookup function', function(done) {
+      model.lookup = function(id, done) {
+        if (id == '3') {
+          done(null, 'body_of_3');
+        } else {
+          done('no document found for ' + id);
+        }
+      };
+      visit('posts/3', done, function() {
+        expect(browser.success).toBe(true);
+        expect(browser.text()).toContain('body_of_3');
       });
     });
   });

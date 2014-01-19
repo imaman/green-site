@@ -25,7 +25,14 @@
       });
 
       if (post) {
-        res.render('post', { post: post, headline: model.headline });
+        if (post.body) {
+          res.render('post', { post: post, headline: model.headline });
+        } else {
+          model.lookup(req.params.id, function(err, body) {
+            post.body = body;
+            res.render('post', { post: post, headline: model.headline });
+          });
+        }
       } else {
         res.send(404);
       }
