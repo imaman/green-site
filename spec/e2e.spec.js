@@ -35,6 +35,9 @@ describe('site', function() {
   it('serves static files from the public/ dir.', function(done) {
     browser.visit('http://localhost:3000/main.css', function() {
       expect(browser.success).toBe(true);
+      var text = browser.text();
+      expect(text).toContain('.title');
+      expect(text).toContain('font-family');
       done();
     });
   });

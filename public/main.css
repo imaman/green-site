@@ -1,1 +1,24 @@
-something...
+body {
+  background-color: rgb(249, 246, 241);
+}
+
+.main-column {
+}
+
+.post {
+}
+
+.title {
+  font-family: 'Tungsten A', 'Tungsten B', Helvetica, Arial, sans-serif;
+  font-size: 38px;
+  font-weight: 500;
+  line-height: 37px;
+  height: auto;
+  color: rgb(78, 68, 60);
+}
+
+.publication-time {
+  color: rgb(204, 204, 204);
+  font-weight: bold;
+}
+
