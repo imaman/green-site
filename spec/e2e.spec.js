@@ -32,6 +32,13 @@ describe('site', function() {
     driver.stop(done);
   });
 
+  it('serves static files from the public/ dir.', function(done) {
+    browser.visit('http://localhost:3000/main.css', function() {
+      expect(browser.success).toBe(true);
+      done();
+    });
+  });
+
   describe('/posts page', function() {
     it('should list all posts', function(done) {
       browser.visit('http://localhost:3000/posts', function() {
