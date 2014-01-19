@@ -1,6 +1,8 @@
 html
   body
     each val in posts
-      p= val.title
+      div.post
+        h2= val.title
+        div.publication-time= val.publishedAt
 
-    
+   

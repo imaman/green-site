@@ -11,13 +11,13 @@ describe('site', function() {
         id: 1,
         title: 'T1',
         body: 'B1',
-        published: '2014-01-11T11:11:11-05:00',
+        publishedAt: '2014-01-11T11:11:11-05:00',
       },
       {
         id: 2,
         title: 'T2',
         body: 'B2',
-        published: '2014-02-22T22:22:22-05:00',
+        publishedAt: '2014-02-22T22:22:22-05:00',
       }
     ]
   };
@@ -38,7 +38,9 @@ describe('site', function() {
         expect(browser.success).toBe(true);
         var text = browser.text();
         expect(text).toContain('T1');
+        expect(text).toContain('2014-01-11');
         expect(text).toContain('T2');
+        expect(text).toContain('2014-02-22');
         done();
       });
     });
