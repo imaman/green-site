@@ -33,67 +33,67 @@ describe('site', function() {
     driver.stop(done);
   });
 
+  function visit(path, done, callback) {
+    browser.visit('http://localhost:3000/' + path, function() {
+      callback();
+      done();
+    });
+  }
+
   it('serves static files from the public/ dir.', function(done) {
-    browser.visit('http://localhost:3000/main.css', function() {
+    visit('main.css', done, function() {
       expect(browser.success).toBe(true);
       var text = browser.text();
       expect(text).toContain('.title');
       expect(text).toContain('font-family');
-      done();
     });
   });
 
   describe('/posts page', function() {
     it('shows the headline', function(done) {
-      browser.visit('http://localhost:3000/posts', function() {
+      visit('posts', done, function() {
         expect(browser.text()).toContain('SOME HEADLINE');
-        done();
       });
     });
 
     it('should list all posts', function(done) {
-      browser.visit('http://localhost:3000/posts', function() {
+      visit('posts', done, function() {
         expect(browser.success).toBe(true);
         var text = browser.text();
         expect(text).toContain('T1');
         expect(text).toContain('2014-01-11');
         expect(text).toContain('T2');
         expect(text).toContain('2014-02-22');
-        done();
       });
     });
     it('extends the main layout', function(done) {
-      browser.visit('http://localhost:3000/posts', function() {
+      visit('posts', done, function() {
         var text = browser.text();
         expect(text).toContain('THIS IS THE FOOTER');
-        done();
       });
     });
   });
 
   describe('/posts/:id page', function() {
     it('shows the title and body of a post', function(done) {
-      browser.visit('http://localhost:3000/posts/1', function() {
+      visit('posts/1', done, function() {
         expect(browser.success).toBe(true);
         var text = browser.text();
         expect(text).toContain('T1');
         expect(text).toContain('B1');
-        done();
       });
     });
     it('does not show content from other posts', function(done) {
-      browser.visit('http://localhost:3000/posts/2', function() {
+      visit('posts/2', done, function() {
         expect(browser.success).toBe(true);
         var text = browser.text();
         expect(text).toContain('T2');
         expect(text).not.toContain('T1');
-        done();
       });
     });
     it('fails if post ID is not recognized', function(done) {
-      browser.visit('http://localhost:3000/posts/some_non_existing_post_id', function() {
+      visit('posts/some_non_existing_post_id', done, function() {
         expect(browser.success).toBe(false);
-        done();
       });
     });
   });
