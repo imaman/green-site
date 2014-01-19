@@ -10,13 +10,13 @@ describe('site', function() {
     posts: [ 
       {
         id: 1,
-        title: 'T1',
+        title: 'Title1',
         body: 'B1',
         publishedAt: '2014-01-11T11:11:11-05:00',
       },
       {
         id: 2,
-        title: 'T2',
+        title: 'Title2',
         body: 'B2',
         publishedAt: '2014-02-22T22:22:22-05:00',
       }
@@ -60,9 +60,9 @@ describe('site', function() {
       visit('posts', done, function() {
         expect(browser.success).toBe(true);
         var text = browser.text();
-        expect(text).toContain('T1');
+        expect(text).toContain('Title1');
         expect(text).toContain('2014-01-11');
-        expect(text).toContain('T2');
+        expect(text).toContain('Title2');
         expect(text).toContain('2014-02-22');
       });
     });
@@ -79,7 +79,7 @@ describe('site', function() {
       visit('posts/1', done, function() {
         expect(browser.success).toBe(true);
         var text = browser.text();
-        expect(text).toContain('T1');
+        expect(text).toContain('Title1');
         expect(text).toContain('B1');
       });
     });
@@ -87,8 +87,8 @@ describe('site', function() {
       visit('posts/2', done, function() {
         expect(browser.success).toBe(true);
         var text = browser.text();
-        expect(text).toContain('T2');
-        expect(text).not.toContain('T1');
+        expect(text).toContain('Title2');
+        expect(text).not.toContain('Title1');
       });
     });
     it('fails if post ID is not recognized', function(done) {
