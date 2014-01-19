@@ -1,8 +1,9 @@
-html
-  body
-    each val in posts
-      div.post
-        h2= val.title
-        div.publication-time= val.publishedAt
+extend layout
+
+block content
+  each val in posts
+    div.post
+      h2= val.title
+      div.publication-time= val.publishedAt
 
    

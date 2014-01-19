@@ -44,5 +44,12 @@ describe('site', function() {
         done();
       });
     });
+    it('extends the main layout', function(done) {
+      browser.visit('http://localhost:3000/posts', function() {
+        var text = browser.text();
+        expect(text).toContain('THIS IS THE FOOTER');
+        done();
+      });
+    });
   });
 });
