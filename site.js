@@ -3,7 +3,7 @@
   var path = require('path');
   var jade = require('jade');
 
-  exports.createDriver = function(port) {
+  exports.createDriver = function(port, model) {
     var app = express();
 
     app.use(express.logger());
@@ -11,8 +11,8 @@
     app.set('views', path.join(__dirname, 'views'));
     app.set('view engine', 'jade');
 
-    app.get('/', function(req, res){
-      res.render('page', { title: 'Hello World' });
+    app.get('/posts', function(req, res){
+      res.render('page', { title: JSON.stringify(model) });
     });
 
     return {
