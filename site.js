@@ -17,7 +17,11 @@
     });
 
     app.get('/posts/:id', function(req, res) {
-      res.render('post', { post: { title: 'T1', body: 'B1' }, headline: model.headline });
+      model.posts.forEach(function(post) {
+        if (post.id == req.params.id) {
+          res.render('post', { post: post, headline: model.headline });
+        }
+      });
     });
 
     return {
