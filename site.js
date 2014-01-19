@@ -13,7 +13,7 @@
     app.use(express.static(__dirname + '/public'));
 
     app.get('/posts', function(req, res){
-      res.render('posts', { posts: model.posts });
+      res.render('posts', { posts: model.posts, headline: model.headline });
     });
 
     return {

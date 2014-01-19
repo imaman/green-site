@@ -6,6 +6,7 @@ describe('site', function() {
   var driver;
 
   var model = {
+    headline: 'SOME HEADLINE',
     posts: [ 
       {
         id: 1,
@@ -43,6 +44,13 @@ describe('site', function() {
   });
 
   describe('/posts page', function() {
+    it('shows the headline', function(done) {
+      browser.visit('http://localhost:3000/posts', function() {
+        expect(browser.text()).toContain('SOME HEADLINE');
+        done();
+      });
+    });
+
     it('should list all posts', function(done) {
       browser.visit('http://localhost:3000/posts', function() {
         expect(browser.success).toBe(true);
