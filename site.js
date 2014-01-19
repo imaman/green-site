@@ -12,7 +12,7 @@
     app.set('view engine', 'jade');
 
     app.get('/posts', function(req, res){
-      res.render('page', { title: JSON.stringify(model) });
+      res.render('posts', { posts: model.posts });
     });
 
     return {
