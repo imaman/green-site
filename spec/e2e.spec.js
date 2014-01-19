@@ -70,4 +70,16 @@ describe('site', function() {
       });
     });
   });
+
+  describe('/posts/:id page', function() {
+    it('shows the title and body of a post', function(done) {
+      browser.visit('http://localhost:3000/posts/1', function() {
+        expect(browser.success).toBe(true);
+        var text = browser.text();
+        expect(text).toContain('T1');
+        expect(text).toContain('B1');
+        done();
+      });
+    });
+  });
 });

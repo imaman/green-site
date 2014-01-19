@@ -12,8 +12,12 @@
     app.set('view engine', 'jade');
     app.use(express.static(__dirname + '/public'));
 
-    app.get('/posts', function(req, res){
+    app.get('/posts', function(req, res) {
       res.render('posts', { posts: model.posts, headline: model.headline });
+    });
+
+    app.get('/posts/:id', function(req, res) {
+      res.render('post', { post: { title: 'T1', body: 'B1' }, headline: model.headline });
     });
 
     return {
