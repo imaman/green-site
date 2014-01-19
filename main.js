@@ -1,5 +1,6 @@
 (function() {
   var model = {
+    headline: 'Transition Objects',
     posts: [ 
       {
         id: 1,

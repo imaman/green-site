@@ -3,7 +3,8 @@ extend layout
 block content
   each val in posts
     div.post
-      div.title= val.title
+      div.title
+        a(href='posts/' + val.id)= val.title
       div.publication-time= val.publishedAt
 
    
