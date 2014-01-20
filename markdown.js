@@ -1,5 +1,6 @@
-(function() {
+var escape = require('escape-html');
 
+(function() {
   function Translator(input) {
     this.input = input;
     this.offset = 0;
@@ -60,7 +61,7 @@
         this.code();
       }
       
-      this.emit(this.head());
+      this.emit(escape(this.head()));
       this.step(1);
     }
   }

@@ -6,6 +6,7 @@
     "start": "node site.js"
   },
   "dependencies": {
+    "escape-html": "*",
     "express": "3.3.4",
     "jade": "*",
     "jasmine-node": "*",
