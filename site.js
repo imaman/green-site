@@ -12,9 +12,12 @@
     app.set('view engine', 'jade');
     app.use(express.static(__dirname + '/public'));
 
-    app.get('/posts', function(req, res) {
+    function listOfPosts(req, res) {
       res.render('posts', { posts: model.posts, headline: model.headline });
-    });
+    }
+
+    app.get('/', listOfPosts);
+    app.get('/posts', listOfPosts);
 
     app.get('/posts/:id', function(req, res) {
       var post = null;

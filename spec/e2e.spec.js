@@ -54,6 +54,14 @@ describe('site', function() {
     });
   });
 
+  it('uses the list of post as its welcome page', function(done) {
+    visit('', done, function() {
+      var text = browser.text();
+      expect(text).toContain('Title1');
+      expect(text).toContain('Title2');
+    });
+  });
+
   describe('/posts page', function() {
     it('shows the headline', function(done) {
       visit('posts', done, function() {
