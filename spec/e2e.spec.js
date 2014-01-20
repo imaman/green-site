@@ -131,9 +131,9 @@ describe('site', function() {
         expect(browser.text()).toContain('body_of_3');
       });
     });
-    xit('is translated from markdown to HTML when rendered', function(done) {
+    it('is translated from markdown to HTML when rendered', function(done) {
       visit('posts/4', done, function() {
-        expect(browser.html()).toContain('some text<pre class="code">some code</pre>the end');
+        expect(browser.html()).toContain('some text <pre class="code">some code</pre> the end');
       });
     });
   });
