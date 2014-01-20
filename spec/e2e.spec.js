@@ -24,6 +24,12 @@ describe('site', function() {
         id: 3,
         title: 'Title3',
         publishedAt: ''
+      },
+      { 
+        id: 4,
+        title: 'Title4',
+        body: 'some text `some code` the end',
+        publishedAt: ''
       }
     ]
   };
@@ -123,6 +129,11 @@ describe('site', function() {
       visit('posts/3', done, function() {
         expect(browser.success).toBe(true);
         expect(browser.text()).toContain('body_of_3');
+      });
+    });
+    xit('is translated from markdown to HTML when rendered', function(done) {
+      visit('posts/4', done, function() {
+        expect(browser.html()).toContain('some text<pre class="code">some code</pre>the end');
       });
     });
   });

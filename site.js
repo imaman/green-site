@@ -1,7 +1,8 @@
 (function() {
   var express = require('express');
-  var path = require('path');
   var jade = require('jade');
+  var markdown = require('./markdown');
+  var path = require('path');
 
   exports.createDriver = function(port, model) {
     var app = express();
@@ -14,6 +15,12 @@
 
     function listOfPosts(req, res) {
       res.render('posts', { posts: model.posts, headline: model.headline });
+    }
+
+    function singlePost(post, body, res) {
+      var temp = Object.create(post);
+      temp.body = markdown.toHtml(temp.body || body);
+      res.render('post', { post: temp, headline: model.headline });
     }
 
     app.get('/', listOfPosts);
@@ -29,12 +36,10 @@
 
       if (post) {
         if (post.body) {
-          res.render('post', { post: post, headline: model.headline });
+          singlePost(post, null, res);
         } else {
           model.lookup(req.params.id, function(err, body) {
-            var temp = Object.create(post);
-            temp.body = body;
-            res.render('post', { post: temp, headline: model.headline });
+            singlePost(post, body, res);
           });
         }
       } else {
