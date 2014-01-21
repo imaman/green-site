@@ -15,10 +15,6 @@ var escape = require('escape-html');
     return this.input[this.offset];
   }
 
-  Translator.prototype.emit = function(s) {
-    this.output.push(s);
-  }
-
   Translator.prototype.step = function(amount) {
     this.offset += amount;
   }
@@ -54,32 +50,60 @@ var escape = require('escape-html');
     return true;
   }
 
-  Translator.prototype.translate = function() {
-    while (this.hasMore()) {
-      this.segment();
+  function Node(tag_, props_, inner_) {
+    if (arguments.length == 1) {
+      this.tag = null;
+      this.inner = tag_;
+    } else {
+      this.tag = tag_;
+      this.props = props_;
+      this.inner = inner_;
     }
+  }
+
+  Node.prototype.toHtml = function(buffer) {
+    if (!this.tag) {
+      this.inner && buffer.push(this.inner);
+      return;
+    }
+
+    var s = '';
+    var ps = this.props;
+    this.props && Object.keys(this.props).forEach(function(k) {
+      var v = ps[k];
+      s += ' ' + k + '="' + v + '"';
+    });
+    buffer.push('<' + this.tag + s + '>');
+    this.inner && this.inner.toHtml(buffer);
+    buffer.push('</' + this.tag + '>');
+
+  }
+
+  Translator.prototype.translate = function() {
+    var arr = [];
+    while (this.hasMore()) {
+      arr.push(this.segment());
+    }
+
+    return arr;
   }
 
   Translator.prototype.segment = function() {
     if (this.consumeIf('`')) {
-      this.code();
-      return;
+      return this.code();
     }
     if (this.consumeIf('*')) {
-      this.emit('<em>');
-      this.emit(this.plainText());
+      var n = this.plainText();
       this.consume('*');
-      this.emit('</em>');
-      return;
+      return new Node('em', {}, n);
     }
 
-    this.emit(this.plainText());
+    return this.plainText();
   }
 
   Translator.prototype.plainText = function() {
     var arr = [];
     while (this.hasMore()) {
-
       if (this.headIs('*') || this.headIs('`')) {
         break;
       }
@@ -87,27 +111,32 @@ var escape = require('escape-html');
       arr.push(this.head());
       this.step(1);
     }
-    return escape(arr.join(""));
+    return new Node(escape(arr.join("")));
   }
 
   Translator.prototype.code = function() {
-    this.emit('<pre class="code">');
+    var arr = [];
     while (this.hasMore()) {
       if (this.consumeIf('`')) {
         break;
       }
       
-      this.emit(this.head());
+      arr.push(this.head());
       this.step(1);
     }
-    this.emit('</pre>');
+    return new Node('pre', {class: 'code'}, new Node(arr.join('')));
   }
 
   exports.toHtml = function(input) {
     var translator = new Translator(input);
-    translator.translate();
+    var arr = translator.translate();
 
-    return translator.output.join('');
+    var buffer = [];
+    arr.forEach(function(current) {
+      current.toHtml(buffer);
+    });
+
+    return buffer.join('');
   }
 })();
 
