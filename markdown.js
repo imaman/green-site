@@ -23,7 +23,15 @@ var escape = require('escape-html');
     this.offset += amount;
   }
 
-  Translator.prototype.consumeIf = function(s) {
+  Translator.prototype.consume = function(s) {
+    if (this.consumeIf(s)) {
+      return;
+    }
+
+    throw new Error('expected "' + s + '"');
+  }
+
+  Translator.prototype.headIs = function(s) {
     if (!this.hasMore()) {
       return false;
     }
@@ -34,12 +42,45 @@ var escape = require('escape-html');
     }
 
     tail = tail.substring(0, s.length);
-    if (tail === s) {
-      this.step(s.length);
-      return true;
+    return (tail === s);
+  }
+
+  Translator.prototype.consumeIf = function(s) {
+    if (!this.headIs(s)) {
+      return false;
     }
 
-    return false;
+    this.step(s.length);
+    return true;
+  }
+
+  Translator.prototype.translate = function() {
+    while (this.hasMore()) {
+      if (this.consumeIf('*')) {
+        this.emit('<em>');
+        this.emphasize();
+        this.consume('*');
+        this.emit('</em>');
+      } else {
+        this.emphasize();
+      }
+    }
+  }
+
+  Translator.prototype.emphasize = function() {
+    while (this.hasMore()) {
+      if (this.consumeIf('`')) {
+        this.code();
+        continue;
+      }
+
+      if (this.headIs('*')) {
+        break;
+      }
+      
+      this.emit(escape(this.head()));
+      this.step(1);
+    }
   }
 
   Translator.prototype.code = function() {
@@ -53,17 +94,6 @@ var escape = require('escape-html');
       this.step(1);
     }
     this.emit('</pre>');
-  }
-
-  Translator.prototype.translate = function() {
-    while (this.hasMore()) {
-      if (this.consumeIf('`')) {
-        this.code();
-      }
-      
-      this.emit(escape(this.head()));
-      this.step(1);
-    }
   }
 
   exports.toHtml = function(input) {
