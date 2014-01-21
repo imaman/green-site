@@ -56,36 +56,38 @@ var escape = require('escape-html');
 
   Translator.prototype.translate = function() {
     while (this.hasMore()) {
-      this.sentence();
+      this.segment();
     }
   }
 
-  Translator.prototype.sentence = function() {
+  Translator.prototype.segment = function() {
     if (this.consumeIf('`')) {
       this.code();
       return;
     }
     if (this.consumeIf('*')) {
       this.emit('<em>');
-      this.emphasize();
+      this.emit(this.plainText());
       this.consume('*');
       this.emit('</em>');
       return;
     }
 
-    this.emphasize();
+    this.emit(this.plainText());
   }
 
-  Translator.prototype.emphasize = function() {
+  Translator.prototype.plainText = function() {
+    var arr = [];
     while (this.hasMore()) {
 
       if (this.headIs('*') || this.headIs('`')) {
         break;
       }
       
-      this.emit(escape(this.head()));
+      arr.push(this.head());
       this.step(1);
     }
+    return escape(arr.join(""));
   }
 
   Translator.prototype.code = function() {
