@@ -61,24 +61,25 @@ var escape = require('escape-html');
   }
 
   Translator.prototype.sentence = function() {
+    if (this.consumeIf('`')) {
+      this.code();
+      return;
+    }
     if (this.consumeIf('*')) {
       this.emit('<em>');
       this.emphasize();
       this.consume('*');
       this.emit('</em>');
-    } else {
-      this.emphasize();
+      return;
     }
+
+    this.emphasize();
   }
 
   Translator.prototype.emphasize = function() {
     while (this.hasMore()) {
-      if (this.consumeIf('`')) {
-        this.code();
-        continue;
-      }
 
-      if (this.headIs('*')) {
+      if (this.headIs('*') || this.headIs('`')) {
         break;
       }
       
