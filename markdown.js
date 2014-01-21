@@ -56,14 +56,18 @@ var escape = require('escape-html');
 
   Translator.prototype.translate = function() {
     while (this.hasMore()) {
-      if (this.consumeIf('*')) {
-        this.emit('<em>');
-        this.emphasize();
-        this.consume('*');
-        this.emit('</em>');
-      } else {
-        this.emphasize();
-      }
+      this.sentence();
+    }
+  }
+
+  Translator.prototype.sentence = function() {
+    if (this.consumeIf('*')) {
+      this.emit('<em>');
+      this.emphasize();
+      this.consume('*');
+      this.emit('</em>');
+    } else {
+      this.emphasize();
     }
   }
 
