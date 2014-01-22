@@ -57,20 +57,27 @@ var escape = require('escape-html');
     return true;
   }
 
-  function Node(tag_, props_, inner_) {
+  function Node(tag_, props_) {
     if (arguments.length == 1) {
       this.tag = null;
-      this.inner = tag_;
+      this.props_ = null;
+      this.kids = [];
+      this.value = tag_;
     } else {
       this.tag = tag_;
       this.props = props_;
-      this.inner = inner_;
+      this.kids = [];
     }
   }
 
+  Node.prototype.withKid = function(n) {
+    this.kids.push(n);
+    return this;
+  }
+
   Node.prototype.toHtml = function(buffer) {
-    if (!this.tag) {
-      this.inner && buffer.push(this.inner);
+    if (this.value) {
+      buffer.push(this.value);
       return;
     }
 
@@ -78,7 +85,9 @@ var escape = require('escape-html');
       return ' ' + k + '="' + this[k] + '"';
     }, this.props).join('');
     buffer.push('<' + this.tag + attributes + '>');
-    this.inner && this.inner.toHtml(buffer);
+    this.kids.forEach(function(current) {
+      current.toHtml(buffer);
+    });
     buffer.push('</' + this.tag + '>');
   }
 
@@ -98,12 +107,12 @@ var escape = require('escape-html');
     if (this.consumeIf('**')) {
       var n = this.segment();
       this.consume('**');
-      return new Node('strong', {}, n);
+      return new Node('strong', {}).withKid(n);
     }
     if (this.consumeIf('*')) {
       var n = this.segment();
       this.consume('*');
-      return new Node('em', {}, n);
+      return new Node('em', {}).withKid(n);
     }
 
     return this.plainText();
@@ -132,7 +141,7 @@ var escape = require('escape-html');
       arr.push(this.head());
       this.step(1);
     }
-    return new Node('pre', {class: 'code'}, new Node(arr.join('')));
+    return new Node('pre', {class: 'code'}).withKid(new Node(arr.join('')));
   }
 
   exports.toHtml = function(input) {
