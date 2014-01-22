@@ -148,15 +148,6 @@ var escape = require('escape-html');
   }
 
   Translator.prototype.translate = function() {
-    var result = new Node();
-    while (this.hasMore()) {
-      result.withKid(this.segment());
-    }
-
-    return result; 
-  }
-
-  Translator.prototype.segment = function() {
     while(this.hasMore()) {
       if (this.consumeIf('`')) {
         this.accumulate(this.code());
