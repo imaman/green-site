@@ -121,19 +121,19 @@ describe('site', function() {
     it('can be loaded from an external lookup function', function(done) {
       model.lookup = function(id, done) {
         if (id == '3') {
-          done(null, 'body_of_3');
+          done(null, 'body of 3');
         } else {
           done('no document found for ' + id);
         }
       };
       visit('posts/3', done, function() {
         expect(browser.success).toBe(true);
-        expect(browser.text()).toContain('body_of_3');
+        expect(browser.text()).toContain('body of 3');
       });
     });
     it('is translated from markdown to HTML when rendered', function(done) {
       visit('posts/4', done, function() {
-        expect(browser.html()).toContain('some text <pre class="code">some code</pre> the end');
+        expect(browser.html()).toContain('some text <code>some code</code> the end');
       });
     });
   });
