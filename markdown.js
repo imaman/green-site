@@ -84,20 +84,20 @@ var escape = require('escape-html');
     var attributes = Object.keys(this.props || {}).map(function(k) {
       return ' ' + k + '="' + this[k] + '"';
     }, this.props).join('');
-    buffer.push('<' + this.tag + attributes + '>');
+    this.tag && buffer.push('<' + this.tag + attributes + '>');
     this.kids.forEach(function(current) {
       current.toHtml(buffer);
     });
-    buffer.push('</' + this.tag + '>');
+    this.tag && buffer.push('</' + this.tag + '>');
   }
 
   Translator.prototype.translate = function() {
-    var arr = [];
+    var result = new Node();
     while (this.hasMore()) {
-      arr.push(this.segment());
+      result.withKid(this.segment());
     }
 
-    return arr;
+    return result; 
   }
 
   Translator.prototype.segment = function() {
@@ -146,12 +146,10 @@ var escape = require('escape-html');
 
   exports.toHtml = function(input) {
     var translator = new Translator(input);
-    var arr = translator.translate();
+    var root = translator.translate();
 
     var buffer = [];
-    arr.forEach(function(current) {
-      current.toHtml(buffer);
-    });
+    root.toHtml(buffer);
 
     return buffer.join('');
   }
