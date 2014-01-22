@@ -7,6 +7,13 @@ var escape = require('escape-html');
     this.output = [];
   }
 
+  function chars(arr) {
+    var s = arr.join("");
+    s = escape(s);
+    s = s.replace(/\n/g, '<br>');
+    return s;
+  }
+
   Translator.prototype.hasMore = function() {
     return this.offset < this.input.length;
   }
@@ -73,7 +80,6 @@ var escape = require('escape-html');
     buffer.push('<' + this.tag + attributes + '>');
     this.inner && this.inner.toHtml(buffer);
     buffer.push('</' + this.tag + '>');
-
   }
 
   Translator.prototype.translate = function() {
@@ -113,7 +119,7 @@ var escape = require('escape-html');
       arr.push(this.head());
       this.step(1);
     }
-    return new Node(escape(arr.join("")));
+    return new Node(chars(arr));
   }
 
   Translator.prototype.code = function() {

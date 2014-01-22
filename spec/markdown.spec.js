@@ -14,6 +14,10 @@ describe('markdown', function() {
       expect(markdown.toHtml('abc `some code`')).toEqual('abc <pre class="code">some code</pre>');
     });
 
+    it('newlines become <br>s', function() {
+      expect(markdown.toHtml('abc\n*de*f\ng\n\nhi')).toEqual('abc<br><em>de</em>f<br>g<br><br>hi');
+    });
+
     it('stars become italics', function() {
       expect(markdown.toHtml('abc *def* ghi')).toEqual('abc <em>def</em> ghi');
     });
