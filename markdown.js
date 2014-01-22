@@ -20,13 +20,6 @@ var escape = require('escape-html');
   }
 
   Translator.prototype.transition = function(tag, props, s) {
-    console.log('----------------------processing: ' + s);
-    console.log("STACK BEFORE: " + this.stack);
-    this.transitionPrime(tag, props, s);
-    console.log(" STACK AFTER: " + this.stack);
-    console.log("");
-  }
-  Translator.prototype.transitionPrime = function(tag, props, s) {
     for (var i = this.stack.length - 1; i >= 0; --i)  {
       var current = this.stack[i];
       if (current.constructor == Node) {
@@ -34,7 +27,6 @@ var escape = require('escape-html');
       }
 
       if (current === s) {
-        console.log('>>> splicing: ' + s);
         var n = new Node(tag, props, s);
         for (var j = i + 1; j < this.stack.length; ++j) {
           n.withKid(this.stack[j]);
@@ -46,8 +38,6 @@ var escape = require('escape-html');
       }
     }
     
-
-    console.log('>>> pushing: ' + s);
     this.stack.push(s);
   }
 
@@ -151,12 +141,6 @@ var escape = require('escape-html');
     this.tag && buffer.push('</' + this.tag + '>');
   }
 
-  // doc -> segment*
-  // segment -> strong | code
-  // strong -> "**" strong "**" | emph
-  // emph -> "*" emph "*" | plain
-  // plain -> [A-Za_z0-9]+
-  
   Translator.prototype.translate = function() {
     var result = new Node();
     while (this.hasMore()) {
@@ -175,7 +159,6 @@ var escape = require('escape-html');
 
   Translator.prototype.strong = function() {
     while(this.hasMore()) {
-      console.log(this.toString());
       if (this.consumeIf('`')) {
         this.stack.push(this.code());
       } else if (this.consumeIf('**')) {
@@ -237,10 +220,6 @@ var escape = require('escape-html');
   exports.toHtml = function(input) {
     var translator = new Translator(input);
     var root = translator.translate();
-
-    var dbg = [];
-    root.dump(dbg, 0);
-    console.log("\n\n In: " + input + "\nOut:\n" + dbg.join(""));
 
     var buffer = [];
     root.toHtml(buffer);
