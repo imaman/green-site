@@ -75,6 +75,25 @@ var escape = require('escape-html');
     return this;
   }
 
+  Node.prototype.dump = function(buff, depth) {
+    for (var i = 0; i < depth; ++i) {
+      buff.push("  ");
+    }
+    buff.push('|');
+
+    if (this.value) {
+      buff.push(this.value);
+      buff.push("\n");
+      return;
+    }
+
+    buff.push(this.tag);
+    buff.push("\n");
+    this.kids.forEach(function(current) {
+      current.dump(buff, depth + 1);
+    });
+  }
+
   Node.prototype.toHtml = function(buffer) {
     if (this.value) {
       buffer.push(this.value);
@@ -91,6 +110,12 @@ var escape = require('escape-html');
     this.tag && buffer.push('</' + this.tag + '>');
   }
 
+  // doc -> segment*
+  // segment -> strong | code
+  // strong -> "**" emph "**" | emph
+  // emph -> "*" plain "*" | plain
+  // plain -> [A-Za_z0-9]+
+  
   Translator.prototype.translate = function() {
     var result = new Node();
     while (this.hasMore()) {
@@ -104,21 +129,30 @@ var escape = require('escape-html');
     if (this.consumeIf('`')) {
       return this.code();
     }
+    return this.strong();
+  }
+
+  Translator.prototype.strong = function() {
     if (this.consumeIf('**')) {
-      var n = this.segment();
+      var n = this.emph();
       this.consume('**');
       return new Node('strong', {}).withKid(n);
     }
+
+    return this.emph();
+  }
+
+  Translator.prototype.emph = function() {
     if (this.consumeIf('*')) {
-      var n = this.segment();
+      var n = this.plain();
       this.consume('*');
       return new Node('em', {}).withKid(n);
     }
 
-    return this.plainText();
+    return this.plain();
   }
 
-  Translator.prototype.plainText = function() {
+  Translator.prototype.plain = function() {
     var arr = [];
     while (this.hasMore()) {
       if (this.headIs('*') || this.headIs('`')) {
@@ -147,6 +181,10 @@ var escape = require('escape-html');
   exports.toHtml = function(input) {
     var translator = new Translator(input);
     var root = translator.translate();
+
+    var dbg = [];
+    root.dump(dbg, 0);
+    console.log("\n\n In: " + input + "\nOut:\n" + dbg.join(""));
 
     var buffer = [];
     root.toHtml(buffer);
