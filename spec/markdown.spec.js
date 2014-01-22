@@ -22,18 +22,18 @@ describe('markdown', function() {
       expect(markdown.toHtml('abc *def* ghi')).toEqual('abc <em>def</em> ghi');
     });
 
-    it('double-stars become bold', function() {
-      expect(markdown.toHtml('abc **def** ghi')).toEqual('abc <strong>def</strong> ghi');
-    });
-
     it('< and > are escaped', function() {
       expect(markdown.toHtml('<><<>>')).toEqual('&lt;&gt;&lt;&lt;&gt;&gt;');
     });
 
-    xit('allows nesting', function() {
-      expect(markdown.toHtml('*aa**bb**cc*dd'))
-          .toEqual('<em>aa<strong>bb</strong>cc</em>dd');
+    it('allows nesting', function() {
+      expect(markdown.toHtml('*ab**cd**ef*gh'))
+          .toEqual('<em>ab<strong>cd</strong>ef</em>gh');
     });
+    it('double-stars become bold', function() {
+      expect(markdown.toHtml('abc **def** ghi')).toEqual('abc <strong>def</strong> ghi');
+    });
+
 
   });
 });

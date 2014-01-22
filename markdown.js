@@ -5,6 +5,11 @@ var escape = require('escape-html');
     this.input = input;
     this.offset = 0;
     this.output = [];
+    this.stack = [];
+  }
+
+  Translator.prototype.toString = function() {
+    return this.input.substring(this.offset);
   }
 
   function chars(arr) {
@@ -12,6 +17,38 @@ var escape = require('escape-html');
     s = escape(s);
     s = s.replace(/\n/g, '<br>');
     return s;
+  }
+
+  Translator.prototype.transition = function(tag, props, s) {
+    console.log('----------------------processing: ' + s);
+    console.log("STACK BEFORE: " + this.stack);
+    this.transitionPrime(tag, props, s);
+    console.log(" STACK AFTER: " + this.stack);
+    console.log("");
+  }
+  Translator.prototype.transitionPrime = function(tag, props, s) {
+    for (var i = this.stack.length - 1; i >= 0; --i)  {
+      var current = this.stack[i];
+      if (current.constructor == Node) {
+        continue;
+      }
+
+      if (current === s) {
+        console.log('>>> splicing: ' + s);
+        var n = new Node(tag, props, s);
+        for (var j = i + 1; j < this.stack.length; ++j) {
+          n.withKid(this.stack[j]);
+        }
+
+        this.stack.splice(i, this.stack.length - i);
+        this.stack.push(n);
+        return;
+      }
+    }
+    
+
+    console.log('>>> pushing: ' + s);
+    this.stack.push(s);
   }
 
   Translator.prototype.hasMore = function() {
@@ -70,6 +107,10 @@ var escape = require('escape-html');
     }
   }
 
+  Node.prototype.toString = function() {
+    return 'Node(' + this.tag + ',' + this.value + ')';
+  }
+
   Node.prototype.withKid = function(n) {
     this.kids.push(n);
     return this;
@@ -112,8 +153,8 @@ var escape = require('escape-html');
 
   // doc -> segment*
   // segment -> strong | code
-  // strong -> "**" emph "**" | emph
-  // emph -> "*" plain "*" | plain
+  // strong -> "**" strong "**" | emph
+  // emph -> "*" emph "*" | plain
   // plain -> [A-Za_z0-9]+
   
   Translator.prototype.translate = function() {
@@ -133,18 +174,33 @@ var escape = require('escape-html');
   }
 
   Translator.prototype.strong = function() {
-    if (this.consumeIf('**')) {
-      var n = this.emph();
-      this.consume('**');
-      return new Node('strong', {}).withKid(n);
+    while(this.hasMore()) {
+      console.log(this.toString());
+      if (this.consumeIf('`')) {
+        this.stack.push(this.code());
+      } else if (this.consumeIf('**')) {
+        this.transition('strong', {}, '**');
+      }
+      else if (this.consumeIf('*')) {
+        this.transition('em', {}, '*');
+      }
+      else {
+        this.stack.push(this.plain());
+      }
     }
 
-    return this.emph();
+
+    var root = new Node();
+    this.stack.forEach(function(v) {
+      root.withKid(v);
+    });
+
+    return root;
   }
 
   Translator.prototype.emph = function() {
     if (this.consumeIf('*')) {
-      var n = this.plain();
+      var n = this.emph();
       this.consume('*');
       return new Node('em', {}).withKid(n);
     }
