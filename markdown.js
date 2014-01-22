@@ -151,13 +151,6 @@ var escape = require('escape-html');
   }
 
   Translator.prototype.segment = function() {
-    if (this.consumeIf('`')) {
-      return this.code();
-    }
-    return this.strong();
-  }
-
-  Translator.prototype.strong = function() {
     while(this.hasMore()) {
       if (this.consumeIf('`')) {
         this.stack.push(this.code());
@@ -172,23 +165,12 @@ var escape = require('escape-html');
       }
     }
 
-
     var root = new Node();
     this.stack.forEach(function(v) {
       root.withKid(v);
     });
 
     return root;
-  }
-
-  Translator.prototype.emph = function() {
-    if (this.consumeIf('*')) {
-      var n = this.emph();
-      this.consume('*');
-      return new Node('em', {}).withKid(n);
-    }
-
-    return this.plain();
   }
 
   Translator.prototype.plain = function() {
