@@ -26,6 +26,11 @@ describe('markdown', function() {
       expect(markdown.toHtml('abc **def** ghi')).toEqual('abc <strong>def</strong> ghi');
     });
 
+    xit('allows nesting', function() {
+      expect(markdown.toHtml('*emph **emph strong** emph* normal'))
+          .toEqual('<em>emph <strong>emph strong</strong> emph</em> normal');
+    });
+
     it('< and > are escaped', function() {
       expect(markdown.toHtml('<><<>>')).toEqual('&lt;&gt;&lt;&lt;&gt;&gt;');
     });

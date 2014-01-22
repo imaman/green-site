@@ -96,12 +96,12 @@ var escape = require('escape-html');
       return this.code();
     }
     if (this.consumeIf('**')) {
-      var n = this.plainText();
+      var n = this.segment();
       this.consume('**');
       return new Node('strong', {}, n);
     }
     if (this.consumeIf('*')) {
-      var n = this.plainText();
+      var n = this.segment();
       this.consume('*');
       return new Node('em', {}, n);
     }
