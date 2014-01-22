@@ -67,13 +67,10 @@ var escape = require('escape-html');
       return;
     }
 
-    var s = '';
-    var ps = this.props;
-    this.props && Object.keys(this.props).forEach(function(k) {
-      var v = ps[k];
-      s += ' ' + k + '="' + v + '"';
-    });
-    buffer.push('<' + this.tag + s + '>');
+    var attributes = Object.keys(this.props || {}).map(function(k) {
+      return ' ' + k + '="' + this[k] + '"';
+    }, this.props).join('');
+    buffer.push('<' + this.tag + attributes + '>');
     this.inner && this.inner.toHtml(buffer);
     buffer.push('</' + this.tag + '>');
 
