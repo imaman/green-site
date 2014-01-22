@@ -34,6 +34,9 @@ var escape = require('escape-html');
       if (current === s) {
         var n = new Node(tag, props, s);
         for (var j = i + 1; j < this.stack.length; ++j) {
+          if (this.stack[j].constructor != Node) {
+            throw new Error('Unresolved ' + this.stack[j]);
+          }
           n.withKid(this.stack[j]);
         }
 

@@ -27,5 +27,11 @@ describe('markdown', function() {
       expect(markdown.toHtml('*ab**cd**ef*gh'))
           .toEqual('<em>ab<strong>cd</strong>ef</em>gh');
     });
+    it('complains if a segment is not properly closed', function() {
+      expect(function() { markdown.toHtml('ab**cd') }).toThrow();
+    });
+    it('complains if a segments are closed in the wrong order', function() {
+      expect(function() { markdown.toHtml('a**b*c**d*e') }).toThrow();
+    });
   });
 });
