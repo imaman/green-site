@@ -19,13 +19,18 @@ var escape = require('escape-html');
     return s;
   }
 
-  Translator.prototype.transition = function(tag, props, s) {
+  Translator.prototype.accumulate = function(n) {
+    this.stack.push(n);
+  }
+
+  Translator.prototype.shiftOrReduce = function(tag, props, s) {
     for (var i = this.stack.length - 1; i >= 0; --i)  {
       var current = this.stack[i];
       if (current.constructor == Node) {
         continue;
       }
 
+      // Reduce
       if (current === s) {
         var n = new Node(tag, props, s);
         for (var j = i + 1; j < this.stack.length; ++j) {
@@ -38,6 +43,7 @@ var escape = require('escape-html');
       }
     }
     
+    // Shift
     this.stack.push(s);
   }
 
@@ -153,15 +159,15 @@ var escape = require('escape-html');
   Translator.prototype.segment = function() {
     while(this.hasMore()) {
       if (this.consumeIf('`')) {
-        this.stack.push(this.code());
+        this.accumulate(this.code());
       } else if (this.consumeIf('**')) {
-        this.transition('strong', {}, '**');
+        this.shiftOrReduce('strong', {}, '**');
       }
       else if (this.consumeIf('*')) {
-        this.transition('em', {}, '*');
+        this.shiftOrReduce('em', {}, '*');
       }
       else {
-        this.stack.push(this.plain());
+        this.accumulate(this.plain());
       }
     }
 
