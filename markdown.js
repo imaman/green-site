@@ -92,6 +92,11 @@ var escape = require('escape-html');
     if (this.consumeIf('`')) {
       return this.code();
     }
+    if (this.consumeIf('**')) {
+      var n = this.plainText();
+      this.consume('**');
+      return new Node('strong', {}, n);
+    }
     if (this.consumeIf('*')) {
       var n = this.plainText();
       this.consume('*');

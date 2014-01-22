@@ -17,6 +17,10 @@ describe('markdown', function() {
     expect(markdown.toHtml('abc *def* ghi')).toEqual('abc <em>def</em> ghi');
   });
 
+  it('translates double-stars to bold', function() {
+    expect(markdown.toHtml('abc **def** ghi')).toEqual('abc <strong>def</strong> ghi');
+  });
+
   it('escapes less than and greater than', function() {
     expect(markdown.toHtml('<><<>>')).toEqual('&lt;&gt;&lt;&lt;&gt;&gt;');
   });
