@@ -2,19 +2,13 @@
   var fs = require('fs');
 
   exports.production = {
-    headline: 'Bits in Motion',
+    headline: 'Colliding Objects',
     posts: [ 
       {
         id: 1,
-        title: 'T1',
-        body: 'B1',
+        title: 'Pilot',
+        body: 'To be comleted',
         publishedAt: '2014-01-11T11:11:11-05:00',
-      },
-      {
-        id: 2,
-        title: 'T2',
-        body: 'B2',
-        publishedAt: '2014-02-22T22:22:22-05:00',
       }
     ],
 
