@@ -26,6 +26,10 @@
     app.get('/', listOfPosts);
     app.get('/posts', listOfPosts);
 
+    app.get('/edit', function(req, res) {
+      res.redirect('/edit.html');
+    });
+
     app.get('/posts/:id', function(req, res) {
       var post = null;
       model.posts.forEach(function(current) {
