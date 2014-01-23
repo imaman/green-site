@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+    <script src="markdown.min.js"></script>
+    <script>
+      $(document).ready(function() {
+        $("#text-input").bind("input", function() {
+          $("#preview").html(markdown.toHTML($(this).val()));
+        });
+
+        $("#text-input").val("Type **Markdown** here");
+        $("#text-input").trigger("input");
+      });
+    </script>
+    <style>
+      .wordwrap { 
+        white-space: pre-wrap;      /* CSS3 */   
+        word-wrap: break-word;
+      }
+      #preview-container, #text-input-container {
+        float:left;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="text-input-container">
+      <p>
+        <textarea id="text-input" rows="6" cols="60"></textarea>
+      </p>
+    </div>
+    <div id="preview-container" style="width: 500px">
+      <span id="preview" class="wordwrap" style="display:einline-block; vertical-align:top"></span>
+    </div>
+
+  </body>
+</html>
