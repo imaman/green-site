@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start": "node site.js",
-    "test": "jasmine-node spec"
+    "test": "node node_modules/jasmine-node/lib/jasmine-node/cli.js spec"
   },
   "dependencies": {
     "escape-html": "*",
