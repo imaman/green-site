@@ -3,13 +3,17 @@
   <head>
     <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
     <script src="markdown.min.js"></script>
+    <script src="jquery.cookie.js"></script>
     <script>
       $(document).ready(function() {
         $("#text-input").bind("input", function() {
-          $("#preview").html(markdown.toHTML($(this).val()));
+          var content = $(this).val();
+          $.cookie('edit_content', content, { expires: 365 });
+          $("#preview").html(markdown.toHTML(content));
         });
 
-        $("#text-input").val("Type **Markdown** here");
+
+        $("#text-input").val($.cookie('edit_content') || "Type **Markdown** here");
         $("#text-input").trigger("input");
       });
     </script>
