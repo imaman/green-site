@@ -3,7 +3,8 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "start": "node site.js"
+    "start": "node site.js",
+    "test": "jasmine-node spec"
   },
   "dependencies": {
     "escape-html": "*",
