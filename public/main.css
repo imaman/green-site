@@ -3,7 +3,6 @@
 html, body {
         padding:1em;
         margin:auto;
-        max-width:42em;
         background:#fefefe;
 	}
 body {
@@ -13,7 +12,6 @@ body {
 	text-align: justify;
 	}
 header, nav, article, footer {
-	width: 700px;
 	margin:0 auto;
 	}
 article {
