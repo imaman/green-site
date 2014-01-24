@@ -55,7 +55,7 @@ describe('site', function() {
     visit('main.css', done, function() {
       expect(browser.success).toBe(true);
       var text = browser.text();
-      expect(text).toContain('.title');
+      expect(text).toContain('body');
       expect(text).toContain('font-family');
     });
   });
