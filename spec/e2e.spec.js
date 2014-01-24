@@ -36,7 +36,7 @@ describe('site', function() {
 
   beforeEach(function(done) {
     browser = new Browser();
-    driver = site.createDriver(3000, model);
+    driver = site.createDriver(3001, model);
     driver.start(done);
   });
 
@@ -45,7 +45,7 @@ describe('site', function() {
   });
 
   function visit(path, done, callback) {
-    browser.visit('http://localhost:3000/' + path, function() {
+    browser.visit('http://localhost:3001/' + path, function() {
       callback();
       done();
     });
