@@ -2,6 +2,12 @@
 <html>
   <head>
     <title>CollidingObject: Markdown Editor</title>
+    <link rel="stylesheet" type="text/css" href="/main.css"></link>
+    <style>
+      #preview-container, #text-input-container {
+        float:left;
+      }
+    </style>
     <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
     <script src="markdown.min.js"></script>
     <script src="jquery.cookie.js"></script>
@@ -18,24 +24,15 @@
         $("#text-input").trigger("input");
       });
     </script>
-    <style>
-      .wordwrap { 
-        white-space: pre-wrap;      /* CSS3 */   
-        word-wrap: break-word;
-      }
-      #preview-container, #text-input-container {
-        float:left;
-      }
-    </style>
   </head>
   <body>
-    <div id="text-input-container">
+    <div id="text-input-container" style="position: absolute; left: 0px; width: 400px;">
       <p>
         <textarea id="text-input" rows="6" cols="60"></textarea>
       </p>
     </div>
-    <div id="preview-container" style="width: 500px">
-      <span id="preview" class="wordwrap" style="display:einline-block; vertical-align:top"></span>
+    <div id="preview-container" style="position: absolute; left: 550px; width: 400px;">
+      <span id="preview" class="wordwrap" style="display:inline-block; vertical-align:top"></span>
     </div>
 
   </body>
