@@ -5,7 +5,7 @@
     headline: 'Colliding Objects',
     posts: [ 
       {
-        id: intro,
+        id: "intro",
         title: 'Does Design Exist',
         publishedAt: '2014-01-23T20:35:00-05:00',
       }
