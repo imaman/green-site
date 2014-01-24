@@ -5,10 +5,9 @@
     headline: 'Colliding Objects',
     posts: [ 
       {
-        id: 1,
-        title: 'Pilot',
-        body: 'To be comleted',
-        publishedAt: '2014-01-11T11:11:11-05:00',
+        id: intro,
+        title: 'Does Design Exist',
+        publishedAt: '2014-01-23T20:35:00-05:00',
       }
     ],
 
