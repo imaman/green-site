@@ -88,7 +88,7 @@ describe('site', function() {
     it('extends the main layout', function(done) {
       visit('posts', done, function() {
         var text = browser.text();
-        expect(text).toContain('THIS IS THE FOOTER');
+        expect(text).toContain('(c) Itay Maman');
       });
     });
   });
