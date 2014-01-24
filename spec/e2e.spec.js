@@ -80,9 +80,7 @@ describe('site', function() {
         expect(browser.success).toBe(true);
         var text = browser.text();
         expect(text).toContain('Title1');
-        expect(text).toContain('2014-01-11');
         expect(text).toContain('Title2');
-        expect(text).toContain('2014-02-22');
       });
     });
     it('extends the main layout', function(done) {

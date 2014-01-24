@@ -15,7 +15,12 @@
     app.use(express.static(__dirname + '/public'));
 
     function listOfPosts(req, res) {
-      res.render('posts', { posts: model.posts, headline: model.headline });
+      var posts = model.posts.map(function(post) {
+        var result = Object.create(post);
+        result.publishedAt = moment(result.publishedAt).fromNow();
+        return result;
+      });
+      res.render('posts', { posts: posts, headline: model.headline });
     }
 
     function singlePost(post, body, res) {
