@@ -3,4 +3,4 @@
 green-site
 ==========
 
-A personal, bliki-like site
+A personal, bliki-like site. Deployed at http://collidingobjects.herokuapp.com
