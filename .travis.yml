@@ -1,8 +1,8 @@
 language: node_js
-deploy:
-  provider: heroku
-  api_key:
-    secure: DsHOq9SRt8aPGf2dHz9OipFugBCi8KuiitWIY5z523CDBHNrPeBxCZV/Erulal7i0tdqy2qTikKEjy7h4KTjsfPpFWkgoOgXNozONXHJqMTGjanNR81VGeux43AFobWa0PgPvO6+f+26Cm3hn9S85gtb282mf0qdk+9cb/UZtpI=
-  app: collidingobjects
-  on:
-    repo: imaman/green-site
+# deploy:
+#  provider: heroku
+#  api_key:
+#    secure: DsHOq9SRt8aPGf2dHz9OipFugBCi8KuiitWIY5z523CDBHNrPeBxCZV/Erulal7i0tdqy2qTikKEjy7h4KTjsfPpFWkgoOgXNozONXHJqMTGjanNR81VGeux43AFobWa0PgPvO6+f+26Cm3hn9S85gtb282mf0qdk+9cb/UZtpI=
+#  app: collidingobjects
+#  on:
+#    repo: imaman/green-site
