@@ -1,9 +1,10 @@
-Ten years ago, An article by Martin Fowler rhetorically asked [Is Design Dead?](http://martinfowler.com/articles/designDead.html). While I fully agree with the article's negative answer to the question, I think the question itself stems from the fact that the software development community has not yet reached a consensus on a couple of more fundamental questions:
+Ten years ago, An article by Martin Fowler rhetorically asked [Is Design Dead?](http://martinfowler.com/articles/designDead.html) 
+While I fully agree with the article's negative answer to the question, I think the question itself stems from the fact that the software development community has not yet reached a consensus on a couple of more fundamental questions:
 
-### Does Design Exist?
+#### Does Design Exist?
 
 
 and (assuming it does):
 
-### What is Design?
+#### What is Design?
 

@@ -1,24 +1,29 @@
 doctype html
 html
   head
-    link(rel='stylesheet', type='text/css' href='/main.css')
+    link(href="/css/bootstrap.css" rel="stylesheet")
+    link(href="/footer.css" rel="stylesheet")
     block head
     meta(name='google-site-verification' content='8Vv0i0ZBgdHFJGEfTbVGesLwgakkPxeopubvN7z7RzY')
   body
-    div
-    h1= headline
-    div.main-column
-      block content
-    div
-      | (c) Itay Maman, 2014; Powered by: 
-      a(href='https://github.com') Github
-      | &nbsp;(
-      a(href='https://github.com/imaman/green-site') Fork me
-      |),  
-      a(href='http://nodejs.org/') Node.JS
-      |, 
-      a(href='https://npmjs.org/') NPM
-      |, 
-      a(href='https://travis-ci.org') Travis
-      |, 
-      a(href='https://dashboard.heroku.com/apps') Heroku
+    div#wrap
+      div.container
+        div.page-header
+          h1= headline
+        block content
+    div#footer
+      div.container
+        p.text-muted 
+          | (c) Itay Maman, 2014; Powered by: 
+          a(href='https://github.com') Github
+          | &nbsp;(
+          a(href='https://github.com/imaman/green-site') Fork me
+          |),  
+          a(href='http://nodejs.org/') Node.JS
+          |, 
+          a(href='https://npmjs.org/') NPM
+          |, 
+          a(href='https://travis-ci.org') Travis
+          |, 
+          a(href='https://dashboard.heroku.com/apps') Heroku
+

@@ -4,7 +4,7 @@ block content
   each val in posts
     div.post
       div.title
-        a(href='posts/' + val.id)= val.title
+        a(href='/posts/' + val.id)= val.title
       div.publication-time= val.publishedAt
 
    

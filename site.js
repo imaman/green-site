@@ -30,6 +30,9 @@
       res.render('post', { post: temp, headline: model.headline });
     }
 
+    app.get('/footer', function(req, res) {
+      res.render('footer');
+    });
     app.get('/', listOfPosts);
     app.get('/posts', listOfPosts);
 
