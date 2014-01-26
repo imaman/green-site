@@ -5,7 +5,9 @@ block head
 block content
   div.container
     div.row
-      h2= post.title
+      h2
+        = post.title
+        | 
         small= post.publishedAt
     div.row
       div.body!= post.body
