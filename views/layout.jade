@@ -17,21 +17,27 @@ html
 
         div(class="navbar-collapse collapse")
 
+  div#wrap
+    div.jumbotron
+      div.container
+        h1= headline
+        p
+          | Coding, design, and broken feedback loops.
     block content
 
-    div#footer
-      div.container
-        p.text-muted 
-          | (c) Itay Maman, 2014; Powered by: 
-          a(href='https://github.com') Github
-          | &nbsp;(
-          a(href='https://github.com/imaman/green-site') Fork me
-          |),  
-          a(href='http://nodejs.org/') Node.JS
-          |, 
-          a(href='https://npmjs.org/') NPM
-          |, 
-          a(href='https://travis-ci.org') Travis
-          |, 
-          a(href='https://dashboard.heroku.com/apps') Heroku
+  div#footer
+    div.container
+      p.text-muted 
+        | (c) Itay Maman, 2014; Powered by: 
+        a(href='https://github.com') Github
+        | &nbsp;(
+        a(href='https://github.com/imaman/green-site') Fork me
+        |),  
+        a(href='http://nodejs.org/') Node.JS
+        |, 
+        a(href='https://npmjs.org/') NPM
+        |, 
+        a(href='https://travis-ci.org') Travis
+        |, 
+        a(href='https://dashboard.heroku.com/apps') Heroku
 
