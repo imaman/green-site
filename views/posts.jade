@@ -1,10 +1,22 @@
 extend layout
 
-block content
-  each val in posts
-    div.post
-      div.title
-        a(href='/posts/' + val.id)= val.title
-      div.publication-time= val.publishedAt
+block head
 
-   
+block content
+  div#wrap
+    div.jumbotron
+      div.container
+        h1= headline
+        p
+          | A bliki about coding, design, and broken feedback loops.
+
+    div.container
+      div.row
+        div.col-md-3
+          each val in posts
+            div.post
+              div.title
+                a(href='/posts/' + val.id)= val.title
+              div.publication-time= val.publishedAt
+
+     

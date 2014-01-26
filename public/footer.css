@@ -28,12 +28,18 @@ body {
 -------------------------------------------------- */
 /* Not required for template or sticky footer method. */
 
-.container {
-  width: auto;
-  max-width: 680px;
-  padding: 0 15px;
+#wrap > .container {
+  padding: 60px 15px 0;
 }
 .container .text-muted {
   margin: 20px 0;
 }
 
+#footer > .container {
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+code {
+  font-size: 80%;
+}

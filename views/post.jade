@@ -1,10 +1,13 @@
 extend layout
 
+block head
+
 block content
-    div.post
-      h3= post.title
-      h5= post.publishedAt
+  div#wrap
+    div.jumbotron
+      div.container
+        h1= post.title
+        p.text-muted= post.publishedAt
+
+    div.container
       div.body!= post.body
-
-   
-
