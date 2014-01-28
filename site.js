@@ -38,8 +38,6 @@
     });
 
     app.get('/posts/:id', function(req, res) {
-      if (!req.query.testing)
-        throw new Error("Intentionally fail");
       var post = null;
       model.posts.forEach(function(current) {
         if (current.id == req.params.id) {
