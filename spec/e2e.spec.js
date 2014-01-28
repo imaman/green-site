@@ -45,7 +45,7 @@ describe('site', function() {
   });
 
   function visit(path, done, callback) {
-    browser.visit('http://localhost:3001/' + path, function() {
+    browser.visit('http://localhost:3001/' + path + '?testing=yes', function() {
       callback();
       done();
     });
