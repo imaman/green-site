@@ -8,6 +8,11 @@
         id: "intro",
         title: 'Does Design Exist?',
         publishedAt: '2014-01-23T20:35:00-05:00',
+      },
+      {
+        id: "2",
+        title: 'Testing with jasmine-node',
+        publishedAt: '2014-01-29T14:39:00+02:00',
       }
     ],
 

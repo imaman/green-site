@@ -1,0 +1,170 @@
+>>> Introduce intentional break
+
+$ jasmine-node spec
+Express server started at http://localhost:3001
+127.0.0.1 - - [Wed, 29 Jan 2014 09:44:02 GMT] "GET /main.css HTTP/1.1" 200 2123 "-" "Mozilla/5.0 Chrome/10.0.613.0 Safari/534.15 Zombie.js/2.0.0-alpha24"
+.Express server started at http://localhost:3001
+127.0.0.1 - - [Wed, 29 Jan 2014 09:44:02 GMT] "GET / HTTP/1.1" 200 1751 "-" "Mozilla/5.0 Chrome/10.0.613.0 Safari/534.15 Zombie.js/2.0.0-alpha24"
+.Express server started at http://localhost:3001
+127.0.0.1 - - [Wed, 29 Jan 2014 09:44:03 GMT] "GET /posts HTTP/1.1" 200 1751 "-" "Mozilla/5.0 Chrome/10.0.613.0 Safari/534.15 Zombie.js/2.0.0-alpha24"
+.Express server started at http://localhost:3001
+127.0.0.1 - - [Wed, 29 Jan 2014 09:44:03 GMT] "GET /posts HTTP/1.1" 200 1751 "-" "Mozilla/5.0 Chrome/10.0.613.0 Safari/534.15 Zombie.js/2.0.0-alpha24"
+.Express server started at http://localhost:3001
+127.0.0.1 - - [Wed, 29 Jan 2014 09:44:03 GMT] "GET /posts HTTP/1.1" 200 1751 "-" "Mozilla/5.0 Chrome/10.0.613.0 Safari/534.15 Zombie.js/2.0.0-alpha24"
+.Express server started at http://localhost:3001
+127.0.0.1 - - [Wed, 29 Jan 2014 09:44:03 GMT] "GET /posts/1 HTTP/1.1" 200 1212 "-" "Mozilla/5.0 Chrome/10.0.613.0 Safari/534.15 Zombie.js/2.0.0-alpha24"
+.Express server started at http://localhost:3001
+127.0.0.1 - - [Wed, 29 Jan 2014 09:44:04 GMT] "GET /posts/2 HTTP/1.1" 200 1211 "-" "Mozilla/5.0 Chrome/10.0.613.0 Safari/534.15 Zombie.js/2.0.0-alpha24"
+.Express server started at http://localhost:3001
+127.0.0.1 - - [Wed, 29 Jan 2014 09:44:04 GMT] "GET /posts/some_non_existing_post_id HTTP/1.1" 404 9 "-" "Mozilla/5.0 Chrome/10.0.613.0 Safari/534.15 Zombie.js/2.0.0-alpha24"
+Server returned status code 404 from http://localhost:3001/posts/some_non_existing_post_id Error: Server returned status code 404 from http://localhost:3001/posts/some_non_existing_post_id
+    at /home/imaman/workspace/green-site/node_modules/zombie/lib/zombie/window.js:423:23
+    at /home/imaman/workspace/green-site/node_modules/zombie/lib/zombie/eventloop.js:238:18
+    at Object._onImmediate (/home/imaman/workspace/green-site/node_modules/zombie/lib/zombie/eventloop.js:143:11)
+    at processImmediate [as _immediateCallback] (timers.js:330:15)
+.Express server started at http://localhost:3001
+127.0.0.1 - - [Wed, 29 Jan 2014 09:44:04 GMT] "GET /posts/3 HTTP/1.1" 200 1225 "-" "Mozilla/5.0 Chrome/10.0.613.0 Safari/534.15 Zombie.js/2.0.0-alpha24"
+.Express server started at http://localhost:3001
+127.0.0.1 - - [Wed, 29 Jan 2014 09:44:04 GMT] "GET /posts/4 HTTP/1.1" 200 1256 "-" "Mozilla/5.0 Chrome/10.0.613.0 Safari/534.15 Zombie.js/2.0.0-alpha24"
+...F
+
+Failures:
+
+  1) production model defines a body for every post
+   Message:
+     Expected undefined to be truthy.
+   Stacktrace:
+     Error: Expected undefined to be truthy.
+    at /home/imaman/workspace/green-site/spec/model.spec.js:34:24
+    at Array.forEach (native)
+    at oneDown (/home/imaman/workspace/green-site/spec/model.spec.js:32:31)
+    at /home/imaman/workspace/green-site/spec/model.spec.js:49:9
+    at /home/imaman/workspace/green-site/model.js:22:9
+    at fs.js:266:14
+    at Object.oncomplete (fs.js:107:15)
+
+Finished in 2.354 seconds
+13 tests, 24 assertions, 1 failure, 0 skipped
+
+
+
+
+>>>> Failing as expected :)
+
+
+commit 4f0cb55
+
+mmn-12:01~/workspace/green-site|master$ npm test
+
+> application-name@0.0.1 test /home/imaman/workspace/green-site
+> jasmine-node spec
+
+Express server started at http://localhost:3001
+127.0.0.1 - - [Wed, 29 Jan 2014 10:01:11 GMT] "GET /main.css HTTP/1.1" 200 2123 "-" "Mozilla/5.0 Chrome/10.0.613.0 Safari/534.15 Zombie.js/2.0.0-alpha24"
+.Express server started at http://localhost:3001
+127.0.0.1 - - [Wed, 29 Jan 2014 10:01:11 GMT] "GET / HTTP/1.1" 200 1751 "-" "Mozilla/5.0 Chrome/10.0.613.0 Safari/534.15 Zombie.js/2.0.0-alpha24"
+.Express server started at http://localhost:3001
+127.0.0.1 - - [Wed, 29 Jan 2014 10:01:12 GMT] "GET /posts HTTP/1.1" 200 1751 "-" "Mozilla/5.0 Chrome/10.0.613.0 Safari/534.15 Zombie.js/2.0.0-alpha24"
+.Express server started at http://localhost:3001
+127.0.0.1 - - [Wed, 29 Jan 2014 10:01:12 GMT] "GET /posts HTTP/1.1" 200 1751 "-" "Mozilla/5.0 Chrome/10.0.613.0 Safari/534.15 Zombie.js/2.0.0-alpha24"
+.Express server started at http://localhost:3001
+127.0.0.1 - - [Wed, 29 Jan 2014 10:01:12 GMT] "GET /posts HTTP/1.1" 200 1751 "-" "Mozilla/5.0 Chrome/10.0.613.0 Safari/534.15 Zombie.js/2.0.0-alpha24"
+.Express server started at http://localhost:3001
+127.0.0.1 - - [Wed, 29 Jan 2014 10:01:13 GMT] "GET /posts/1 HTTP/1.1" 200 1212 "-" "Mozilla/5.0 Chrome/10.0.613.0 Safari/534.15 Zombie.js/2.0.0-alpha24"
+.Express server started at http://localhost:3001
+127.0.0.1 - - [Wed, 29 Jan 2014 10:01:13 GMT] "GET /posts/2 HTTP/1.1" 200 1211 "-" "Mozilla/5.0 Chrome/10.0.613.0 Safari/534.15 Zombie.js/2.0.0-alpha24"
+.Express server started at http://localhost:3001
+127.0.0.1 - - [Wed, 29 Jan 2014 10:01:13 GMT] "GET /posts/some_non_existing_post_id HTTP/1.1" 404 9 "-" "Mozilla/5.0 Chrome/10.0.613.0 Safari/534.15 Zombie.js/2.0.0-alpha24"
+Server returned status code 404 from http://localhost:3001/posts/some_non_existing_post_id Error: Server returned status code 404 from http://localhost:3001/posts/some_non_existing_post_id
+    at /home/imaman/workspace/green-site/node_modules/zombie/lib/zombie/window.js:423:23
+    at /home/imaman/workspace/green-site/node_modules/zombie/lib/zombie/eventloop.js:238:18
+    at Object._onImmediate (/home/imaman/workspace/green-site/node_modules/zombie/lib/zombie/eventloop.js:143:11)
+    at processImmediate [as _immediateCallback] (timers.js:330:15)
+.Express server started at http://localhost:3001
+127.0.0.1 - - [Wed, 29 Jan 2014 10:01:13 GMT] "GET /posts/3 HTTP/1.1" 200 1225 "-" "Mozilla/5.0 Chrome/10.0.613.0 Safari/534.15 Zombie.js/2.0.0-alpha24"
+.Express server started at http://localhost:3001
+127.0.0.1 - - [Wed, 29 Jan 2014 10:01:13 GMT] "GET /posts/4 HTTP/1.1" 200 1256 "-" "Mozilla/5.0 Chrome/10.0.613.0 Safari/534.15 Zombie.js/2.0.0-alpha24"
+
+
+>>>>>> DOES NOT FAIL
+
+
+mmn-14:22~/workspace/green-site|master$ npm test
+
+> application-name@0.0.1 test /home/imaman/workspace/green-site
+> jasmine-node spec
+
+Express server started at http://localhost:3001
+127.0.0.1 - - [Wed, 29 Jan 2014 12:22:57 GMT] "GET /main.css HTTP/1.1" 200 2123 "-" "Mozilla/5.0 Chrome/10.0.613.0 Safari/534.15 Zombie.js/2.0.0-alpha24"
+.Express server started at http://localhost:3001
+127.0.0.1 - - [Wed, 29 Jan 2014 12:22:58 GMT] "GET / HTTP/1.1" 200 1751 "-" "Mozilla/5.0 Chrome/10.0.613.0 Safari/534.15 Zombie.js/2.0.0-alpha24"
+.Express server started at http://localhost:3001
+127.0.0.1 - - [Wed, 29 Jan 2014 12:22:58 GMT] "GET /posts HTTP/1.1" 200 1751 "-" "Mozilla/5.0 Chrome/10.0.613.0 Safari/534.15 Zombie.js/2.0.0-alpha24"
+.Express server started at http://localhost:3001
+127.0.0.1 - - [Wed, 29 Jan 2014 12:22:58 GMT] "GET /posts HTTP/1.1" 200 1751 "-" "Mozilla/5.0 Chrome/10.0.613.0 Safari/534.15 Zombie.js/2.0.0-alpha24"
+.Express server started at http://localhost:3001
+127.0.0.1 - - [Wed, 29 Jan 2014 12:22:58 GMT] "GET /posts HTTP/1.1" 200 1751 "-" "Mozilla/5.0 Chrome/10.0.613.0 Safari/534.15 Zombie.js/2.0.0-alpha24"
+.Express server started at http://localhost:3001
+127.0.0.1 - - [Wed, 29 Jan 2014 12:22:59 GMT] "GET /posts/1 HTTP/1.1" 200 1212 "-" "Mozilla/5.0 Chrome/10.0.613.0 Safari/534.15 Zombie.js/2.0.0-alpha24"
+.Express server started at http://localhost:3001
+127.0.0.1 - - [Wed, 29 Jan 2014 12:22:59 GMT] "GET /posts/2 HTTP/1.1" 200 1211 "-" "Mozilla/5.0 Chrome/10.0.613.0 Safari/534.15 Zombie.js/2.0.0-alpha24"
+.Express server started at http://localhost:3001
+127.0.0.1 - - [Wed, 29 Jan 2014 12:22:59 GMT] "GET /posts/some_non_existing_post_id HTTP/1.1" 404 9 "-" "Mozilla/5.0 Chrome/10.0.613.0 Safari/534.15 Zombie.js/2.0.0-alpha24"
+Server returned status code 404 from http://localhost:3001/posts/some_non_existing_post_id Error: Server returned status code 404 from http://localhost:3001/posts/some_non_existing_post_id
+    at /home/imaman/workspace/green-site/node_modules/zombie/lib/zombie/window.js:423:23
+    at /home/imaman/workspace/green-site/node_modules/zombie/lib/zombie/eventloop.js:238:18
+    at Object._onImmediate (/home/imaman/workspace/green-site/node_modules/zombie/lib/zombie/eventloop.js:143:11)
+    at processImmediate [as _immediateCallback] (timers.js:330:15)
+.Express server started at http://localhost:3001
+127.0.0.1 - - [Wed, 29 Jan 2014 12:22:59 GMT] "GET /posts/3 HTTP/1.1" 200 1225 "-" "Mozilla/5.0 Chrome/10.0.613.0 Safari/534.15 Zombie.js/2.0.0-alpha24"
+.Express server started at http://localhost:3001
+127.0.0.1 - - [Wed, 29 Jan 2014 12:22:59 GMT] "GET /posts/4 HTTP/1.1" 200 1256 "-" "Mozilla/5.0 Chrome/10.0.613.0 Safari/534.15 Zombie.js/2.0.0-alpha24"
+...mmn-14:22~/workspace/green-site|master$ echo $?
+0
+
+>>>>>>> 5285e48
+
+mmn-14:23~/workspace/green-site|master$ npm test
+
+> application-name@0.0.1 test /home/imaman/workspace/green-site
+> jasmine-node --captureExceptions spec
+
+Express server started at http://localhost:3001
+127.0.0.1 - - [Wed, 29 Jan 2014 12:24:01 GMT] "GET /main.css HTTP/1.1" 200 2123 "-" "Mozilla/5.0 Chrome/10.0.613.0 Safari/534.15 Zombie.js/2.0.0-alpha24"
+.Express server started at http://localhost:3001
+127.0.0.1 - - [Wed, 29 Jan 2014 12:24:02 GMT] "GET / HTTP/1.1" 200 1751 "-" "Mozilla/5.0 Chrome/10.0.613.0 Safari/534.15 Zombie.js/2.0.0-alpha24"
+.Express server started at http://localhost:3001
+127.0.0.1 - - [Wed, 29 Jan 2014 12:24:02 GMT] "GET /posts HTTP/1.1" 200 1751 "-" "Mozilla/5.0 Chrome/10.0.613.0 Safari/534.15 Zombie.js/2.0.0-alpha24"
+.Express server started at http://localhost:3001
+127.0.0.1 - - [Wed, 29 Jan 2014 12:24:02 GMT] "GET /posts HTTP/1.1" 200 1751 "-" "Mozilla/5.0 Chrome/10.0.613.0 Safari/534.15 Zombie.js/2.0.0-alpha24"
+.Express server started at http://localhost:3001
+127.0.0.1 - - [Wed, 29 Jan 2014 12:24:03 GMT] "GET /posts HTTP/1.1" 200 1751 "-" "Mozilla/5.0 Chrome/10.0.613.0 Safari/534.15 Zombie.js/2.0.0-alpha24"
+.Express server started at http://localhost:3001
+127.0.0.1 - - [Wed, 29 Jan 2014 12:24:03 GMT] "GET /posts/1 HTTP/1.1" 200 1212 "-" "Mozilla/5.0 Chrome/10.0.613.0 Safari/534.15 Zombie.js/2.0.0-alpha24"
+.Express server started at http://localhost:3001
+127.0.0.1 - - [Wed, 29 Jan 2014 12:24:03 GMT] "GET /posts/2 HTTP/1.1" 200 1211 "-" "Mozilla/5.0 Chrome/10.0.613.0 Safari/534.15 Zombie.js/2.0.0-alpha24"
+.Express server started at http://localhost:3001
+127.0.0.1 - - [Wed, 29 Jan 2014 12:24:03 GMT] "GET /posts/some_non_existing_post_id HTTP/1.1" 404 9 "-" "Mozilla/5.0 Chrome/10.0.613.0 Safari/534.15 Zombie.js/2.0.0-alpha24"
+Server returned status code 404 from http://localhost:3001/posts/some_non_existing_post_id Error: Server returned status code 404 from http://localhost:3001/posts/some_non_existing_post_id
+    at /home/imaman/workspace/green-site/node_modules/zombie/lib/zombie/window.js:423:23
+    at /home/imaman/workspace/green-site/node_modules/zombie/lib/zombie/eventloop.js:238:18
+    at Object._onImmediate (/home/imaman/workspace/green-site/node_modules/zombie/lib/zombie/eventloop.js:143:11)
+    at processImmediate [as _immediateCallback] (timers.js:330:15)
+.Express server started at http://localhost:3001
+127.0.0.1 - - [Wed, 29 Jan 2014 12:24:03 GMT] "GET /posts/3 HTTP/1.1" 200 1225 "-" "Mozilla/5.0 Chrome/10.0.613.0 Safari/534.15 Zombie.js/2.0.0-alpha24"
+.Express server started at http://localhost:3001
+127.0.0.1 - - [Wed, 29 Jan 2014 12:24:03 GMT] "GET /posts/4 HTTP/1.1" 200 1256 "-" "Mozilla/5.0 Chrome/10.0.613.0 Safari/534.15 Zombie.js/2.0.0-alpha24"
+...TypeError: Cannot read property 'length' of undefined
+    at /home/imaman/workspace/green-site/spec/model.spec.js:34:20
+    at Array.forEach (native)
+    at oneDown (/home/imaman/workspace/green-site/spec/model.spec.js:31:29)
+    at /home/imaman/workspace/green-site/spec/model.spec.js:47:9
+    at /home/imaman/workspace/green-site/model.js:22:9
+    at fs.js:266:14
+    at Object.oncomplete (fs.js:107:15)
+npm ERR! weird error 1
+npm ERR! not ok code 0
+mmn-14:24~/workspace/green-site|master$ echo $?
+1
+
+
