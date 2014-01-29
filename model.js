@@ -8,6 +8,12 @@
         id: "intro",
         title: 'Does Design Exist?',
         publishedAt: '2014-01-23T20:35:00-05:00',
+      },
+      {
+        id: "1",
+        title: 'some title',
+        body: '',
+        publishedAt: '2014-01-29T11:41:00+02:00',
       }
     ],
 
