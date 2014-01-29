@@ -28,13 +28,11 @@ describe('production model', function() {
         return;
       }
 
-      try {
-        Object.keys(bodyById).forEach(function(k) {
-          var body = bodyById[k];
-          expect(body).toBeTruthy();
-          expect(body.length).toBeGreaterThan(minLength);
-        });
-      } catch(e) {}
+      Object.keys(bodyById).forEach(function(k) {
+        var body = bodyById[k];
+        expect(body).toBeTruthy();
+        expect(body.length).toBeGreaterThan(minLength);
+      });
       done();
     }
     model.production.posts.forEach(function(current) {
