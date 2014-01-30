@@ -3,6 +3,8 @@
   <head>
     <title>CollidingObject: Markdown Editor</title>
     <link rel="stylesheet" type="text/css" href="/main.css"></link>
+    <link href="/css/bootstrap.css" rel="stylesheet"></link>
+    <link href="/footer.css" rel="stylesheet"></link>
     <style>
       #preview-container, #text-input-container {
         float:left;
@@ -26,13 +28,17 @@
     </script>
   </head>
   <body>
-    <div id="text-input-container" style="position: absolute; left: 0px; width: 400px;">
-      <p>
-        <textarea id="text-input" rows="6" cols="60"></textarea>
-      </p>
-    </div>
-    <div id="preview-container" style="position: absolute; left: 550px; width: 400px;">
-      <span id="preview" class="wordwrap" style="display:inline-block; vertical-align:top"></span>
+    <div class="container">
+      <div class="row">
+        <div id="text-input-container" class="col-md-6">
+          <p>
+            <textarea id="text-input" rows="6" cols="60"></textarea>
+          </p>
+        </div>
+        <div id="preview-container" class="col-md-6">
+          <span id="preview" class="wordwrap" style="display:inline-block; vertical-align:top"></span>
+        </div>
+      </div>
     </div>
 
   </body>
