@@ -1,4 +1,54 @@
-#### Introduce intentional break: b99b974
+In a recent spec I was writing, one of the tests was about sanity-checking the content of several files I am using in production. The test loads the files via a series of async [fs.readFile](http://nodejs.org/api/fs.html#fs_fs_readfile_filename_options_callback) calls. It then inspects the content of each file by iterating over the `bodyById` object, making sure a minimal-length criterion is met. My first implementation for the last part looked as follows (see [model.spec.js](https://github.com/imaman/green-site/blob/b99b9745181ec0479d55d92d56ac43204bd25acb/spec/model.spec.js#L20)):
+
+    Object.keys(bodyById).forEach(function(k) {
+      var body = bodyById[k];
+      expect(body).toBeTruthy();
+      expect(body.length).toBeGreaterThan(minLength);
+    });
+    done();
+
+
+Side note: In node.js almost everything is async. Thus, a test need a way to tell the testing framework that 'everything is done'. This is achieved by the `done()` call which invokes a callback that is passed-in to each test.
+
+
+
+Once all files have been loaded, the following code is 
+Jasmine-node's default behavior is somewhat peculiar. Specifically, in a spec I was writing I had to put the following block (see [model.spec.js](https://github.com/imaman/green-site/blob/b99b9745181ec0479d55d92d56ac43204bd25acb/spec/model.spec.js#L20))
+
+    try {
+      Object.keys(bodyById).forEach(function(k) {
+        var body = bodyById[k];
+        expect(body).toBeTruthy();
+        expect(body.length).toBeGreaterThan(minLength);
+      });
+    } catch(e) {}
+    done();
+
+The `done()` call is obvious: in node.js almost everything is async so a test need a way to tell the testing framework that it finished running. The problem is with the empty catch clause: `catch(e) {}`. Normally, you do not expect a test to silently absorb an exception. 
+
+I added this line when the spec was created, in order to workaroud Jasmine-node's weird behavior. It is now time to refactor it into a permanent solution. This post shows: 
+
+- (a) what this weird behavior is; 
+- (b) how to fix it; 
+
+and, most importantly, 
+
+- (c) how to make sure the refactoring does not cripple the tests.
+
+#### Introduce intentional break
+
+In order to make sure we fix the problem we first induce the failure. In this case we achieve that by changing [model.js](https://github.com/imaman/green-site/commit/b99b9745181ec0479d55d92d56ac43204bd25acb). Specifically, we add the following entry to the `posts` list:
+
+      {
+        id: "1",
+        title: 'some title',
+        body: '',
+        publishedAt: '2014-01-29T11:41:00+02:00',
+      }
+
+As this entry has an empty body field, it will break the `expect(body.length).toBeGreaterThan(minLength);` assertion in the [defines a body for every post spec](https://github.com/imaman/green-site/blob/b99b9745181ec0479d55d92d56ac43204bd25acb/spec/model.spec.js#L20). Indeed when we run the specs we get a failure, and the return value (`$?`) is non-zero:
+
+
     mmn-20:37~/workspace/green-site|rr$ npm test
 
     > application-name@0.0.1 test /home/imaman/workspace/green-site
@@ -56,80 +106,70 @@
     1
 
 
-
+This is exactly how we expect the test to behave. Overall behavior is just fine.
 
 #### Failing as expected :)
 
 
-#### commit 4f0cb55
+#### Wait what's that?
 
-    mmn-12:01~/workspace/green-site|master$ npm test
+Looking at model.spec.js we see the following anomaly:
+
+    try {
+      Object.keys(bodyById).forEach(function(k) {
+        var body = bodyById[k];
+        expect(body).toBeTruthy();
+        expect(body.length).toBeGreaterThan(minLength);
+      });
+    } catch(e) {}
+    done();
+
+That is: we silently absorb an exception. 
+Obviously we want to [change this block](https://github.com/imaman/green-site/commit/4f0cb55e870d55d7018dee4401a629a7073d1103) to the more natural:
+
+    Object.keys(bodyById).forEach(function(k) {
+      var body = bodyById[k];
+      expect(body).toBeTruthy();
+      expect(body.length).toBeGreaterThan(minLength);
+    });
+    done();
+
+Let's see how the test behave now:
+
+    mmn-20:48~/workspace/green-site|rr$ npm test
 
     > application-name@0.0.1 test /home/imaman/workspace/green-site
     > jasmine-node spec
 
     Express server started at http://localhost:3001
-    127.0.0.1 - - [Wed, 29 Jan 2014 10:01:11 GMT] "GET /main.css HTTP/1.1" 200 2123 "-" "Mozilla/5.0 Chrome/10.0.613.0 Safari/534.15 Zombie.js/2.0.0-alpha24"
+    127.0.0.1 - - [Wed, 29 Jan 2014 18:48:41 GMT] "GET /main.css HTTP/1.1" 200 2123 "-" "Mozilla/5.0 Chrome/10.0.613.0 Safari/534.15 Zombie.js/2.0.0-alpha24"
     .Express server started at http://localhost:3001
-    127.0.0.1 - - [Wed, 29 Jan 2014 10:01:11 GMT] "GET / HTTP/1.1" 200 1751 "-" "Mozilla/5.0 Chrome/10.0.613.0 Safari/534.15 Zombie.js/2.0.0-alpha24"
+    127.0.0.1 - - [Wed, 29 Jan 2014 18:48:41 GMT] "GET / HTTP/1.1" 200 1751 "-" "Mozilla/5.0 Chrome/10.0.613.0 Safari/534.15 Zombie.js/2.0.0-alpha24"
     .Express server started at http://localhost:3001
-    127.0.0.1 - - [Wed, 29 Jan 2014 10:01:12 GMT] "GET /posts HTTP/1.1" 200 1751 "-" "Mozilla/5.0 Chrome/10.0.613.0 Safari/534.15 Zombie.js/2.0.0-alpha24"
+    127.0.0.1 - - [Wed, 29 Jan 2014 18:48:42 GMT] "GET /posts HTTP/1.1" 200 1751 "-" "Mozilla/5.0 Chrome/10.0.613.0 Safari/534.15 Zombie.js/2.0.0-alpha24"
     .Express server started at http://localhost:3001
-    127.0.0.1 - - [Wed, 29 Jan 2014 10:01:12 GMT] "GET /posts HTTP/1.1" 200 1751 "-" "Mozilla/5.0 Chrome/10.0.613.0 Safari/534.15 Zombie.js/2.0.0-alpha24"
+    127.0.0.1 - - [Wed, 29 Jan 2014 18:48:42 GMT] "GET /posts HTTP/1.1" 200 1751 "-" "Mozilla/5.0 Chrome/10.0.613.0 Safari/534.15 Zombie.js/2.0.0-alpha24"
     .Express server started at http://localhost:3001
-    127.0.0.1 - - [Wed, 29 Jan 2014 10:01:12 GMT] "GET /posts HTTP/1.1" 200 1751 "-" "Mozilla/5.0 Chrome/10.0.613.0 Safari/534.15 Zombie.js/2.0.0-alpha24"
+    127.0.0.1 - - [Wed, 29 Jan 2014 18:48:42 GMT] "GET /posts HTTP/1.1" 200 1751 "-" "Mozilla/5.0 Chrome/10.0.613.0 Safari/534.15 Zombie.js/2.0.0-alpha24"
     .Express server started at http://localhost:3001
-    127.0.0.1 - - [Wed, 29 Jan 2014 10:01:13 GMT] "GET /posts/1 HTTP/1.1" 200 1212 "-" "Mozilla/5.0 Chrome/10.0.613.0 Safari/534.15 Zombie.js/2.0.0-alpha24"
+    127.0.0.1 - - [Wed, 29 Jan 2014 18:48:42 GMT] "GET /posts/1 HTTP/1.1" 200 1212 "-" "Mozilla/5.0 Chrome/10.0.613.0 Safari/534.15 Zombie.js/2.0.0-alpha24"
     .Express server started at http://localhost:3001
-    127.0.0.1 - - [Wed, 29 Jan 2014 10:01:13 GMT] "GET /posts/2 HTTP/1.1" 200 1211 "-" "Mozilla/5.0 Chrome/10.0.613.0 Safari/534.15 Zombie.js/2.0.0-alpha24"
+    127.0.0.1 - - [Wed, 29 Jan 2014 18:48:43 GMT] "GET /posts/2 HTTP/1.1" 200 1211 "-" "Mozilla/5.0 Chrome/10.0.613.0 Safari/534.15 Zombie.js/2.0.0-alpha24"
     .Express server started at http://localhost:3001
-    127.0.0.1 - - [Wed, 29 Jan 2014 10:01:13 GMT] "GET /posts/some_non_existing_post_id HTTP/1.1" 404 9 "-" "Mozilla/5.0 Chrome/10.0.613.0 Safari/534.15 Zombie.js/2.0.0-alpha24"
+    127.0.0.1 - - [Wed, 29 Jan 2014 18:48:43 GMT] "GET /posts/some_non_existing_post_id HTTP/1.1" 404 9 "-" "Mozilla/5.0 Chrome/10.0.613.0 Safari/534.15 Zombie.js/2.0.0-alpha24"
     Server returned status code 404 from http://localhost:3001/posts/some_non_existing_post_id Error: Server returned status code 404 from http://localhost:3001/posts/some_non_existing_post_id
         at /home/imaman/workspace/green-site/node_modules/zombie/lib/zombie/window.js:423:23
         at /home/imaman/workspace/green-site/node_modules/zombie/lib/zombie/eventloop.js:238:18
         at Object._onImmediate (/home/imaman/workspace/green-site/node_modules/zombie/lib/zombie/eventloop.js:143:11)
         at processImmediate [as _immediateCallback] (timers.js:330:15)
     .Express server started at http://localhost:3001
-    127.0.0.1 - - [Wed, 29 Jan 2014 10:01:13 GMT] "GET /posts/3 HTTP/1.1" 200 1225 "-" "Mozilla/5.0 Chrome/10.0.613.0 Safari/534.15 Zombie.js/2.0.0-alpha24"
+    127.0.0.1 - - [Wed, 29 Jan 2014 18:48:43 GMT] "GET /posts/3 HTTP/1.1" 200 1225 "-" "Mozilla/5.0 Chrome/10.0.613.0 Safari/534.15 Zombie.js/2.0.0-alpha24"
     .Express server started at http://localhost:3001
-    127.0.0.1 - - [Wed, 29 Jan 2014 10:01:13 GMT] "GET /posts/4 HTTP/1.1" 200 1256 "-" "Mozilla/5.0 Chrome/10.0.613.0 Safari/534.15 Zombie.js/2.0.0-alpha24"
-
+    127.0.0.1 - - [Wed, 29 Jan 2014 18:48:43 GMT] "GET /posts/4 HTTP/1.1" 200 1256 "-" "Mozilla/5.0 Chrome/10.0.613.0 Safari/534.15 Zombie.js/2.0.0-alpha24"
+    ...mmn-20:48~/workspace/green-site|rr$ echo $?
+    0
 
 #### DOES NOT FAIL
-
-
-    mmn-14:22~/workspace/green-site|master$ npm test
-
-    > application-name@0.0.1 test /home/imaman/workspace/green-site
-    > jasmine-node spec
-
-    Express server started at http://localhost:3001
-    127.0.0.1 - - [Wed, 29 Jan 2014 12:22:57 GMT] "GET /main.css HTTP/1.1" 200 2123 "-" "Mozilla/5.0 Chrome/10.0.613.0 Safari/534.15 Zombie.js/2.0.0-alpha24"
-    .Express server started at http://localhost:3001
-    127.0.0.1 - - [Wed, 29 Jan 2014 12:22:58 GMT] "GET / HTTP/1.1" 200 1751 "-" "Mozilla/5.0 Chrome/10.0.613.0 Safari/534.15 Zombie.js/2.0.0-alpha24"
-    .Express server started at http://localhost:3001
-    127.0.0.1 - - [Wed, 29 Jan 2014 12:22:58 GMT] "GET /posts HTTP/1.1" 200 1751 "-" "Mozilla/5.0 Chrome/10.0.613.0 Safari/534.15 Zombie.js/2.0.0-alpha24"
-    .Express server started at http://localhost:3001
-    127.0.0.1 - - [Wed, 29 Jan 2014 12:22:58 GMT] "GET /posts HTTP/1.1" 200 1751 "-" "Mozilla/5.0 Chrome/10.0.613.0 Safari/534.15 Zombie.js/2.0.0-alpha24"
-    .Express server started at http://localhost:3001
-    127.0.0.1 - - [Wed, 29 Jan 2014 12:22:58 GMT] "GET /posts HTTP/1.1" 200 1751 "-" "Mozilla/5.0 Chrome/10.0.613.0 Safari/534.15 Zombie.js/2.0.0-alpha24"
-    .Express server started at http://localhost:3001
-    127.0.0.1 - - [Wed, 29 Jan 2014 12:22:59 GMT] "GET /posts/1 HTTP/1.1" 200 1212 "-" "Mozilla/5.0 Chrome/10.0.613.0 Safari/534.15 Zombie.js/2.0.0-alpha24"
-    .Express server started at http://localhost:3001
-    127.0.0.1 - - [Wed, 29 Jan 2014 12:22:59 GMT] "GET /posts/2 HTTP/1.1" 200 1211 "-" "Mozilla/5.0 Chrome/10.0.613.0 Safari/534.15 Zombie.js/2.0.0-alpha24"
-    .Express server started at http://localhost:3001
-    127.0.0.1 - - [Wed, 29 Jan 2014 12:22:59 GMT] "GET /posts/some_non_existing_post_id HTTP/1.1" 404 9 "-" "Mozilla/5.0 Chrome/10.0.613.0 Safari/534.15 Zombie.js/2.0.0-alpha24"
-    Server returned status code 404 from http://localhost:3001/posts/some_non_existing_post_id Error: Server returned status code 404 from http://localhost:3001/posts/some_non_existing_post_id
-        at /home/imaman/workspace/green-site/node_modules/zombie/lib/zombie/window.js:423:23
-        at /home/imaman/workspace/green-site/node_modules/zombie/lib/zombie/eventloop.js:238:18
-        at Object._onImmediate (/home/imaman/workspace/green-site/node_modules/zombie/lib/zombie/eventloop.js:143:11)
-        at processImmediate [as _immediateCallback] (timers.js:330:15)
-    .Express server started at http://localhost:3001
-    127.0.0.1 - - [Wed, 29 Jan 2014 12:22:59 GMT] "GET /posts/3 HTTP/1.1" 200 1225 "-" "Mozilla/5.0 Chrome/10.0.613.0 Safari/534.15 Zombie.js/2.0.0-alpha24"
-    .Express server started at http://localhost:3001
-    127.0.0.1 - - [Wed, 29 Jan 2014 12:22:59 GMT] "GET /posts/4 HTTP/1.1" 200 1256 "-" "Mozilla/5.0 Chrome/10.0.613.0 Safari/534.15 Zombie.js/2.0.0-alpha24"
-    ...mmn-14:22~/workspace/green-site|master$ echo $?
-    0
 
 #### 5285e48
 
@@ -177,3 +217,4 @@
     1
 
 #### Revert intentional breakage f2ad67d
+  
