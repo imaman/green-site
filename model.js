@@ -10,8 +10,8 @@
         publishedAt: '2014-01-23T20:35:00-05:00',
       },
       {
-        id: "2",
-        title: 'Testing with jasmine-node',
+        id: "refactor_on_red",
+        title: 'Refactor on Red',
         publishedAt: '2014-01-29T14:39:00+02:00',
       }
     ],
