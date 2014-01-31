@@ -17,23 +17,26 @@
       $(document).ready(function() {
         $("#text-input").bind("input", function() {
           var content = $(this).val();
-          $.cookie('edit_content', content, { expires: 365 });
-          $("#preview").html(markdown.toHTML(content));
+          console.log('saving...' + content);
+          localStorage.setItem('edit_content', content);
+          var saved = localStorage.getItem('edit_content');
+          if (saved != content) {
+            throw new Error('saved is ' + saved);
+          }
+          $("#preview").html(markdown.toHTML(saved));
         });
 
 
-        $("#text-input").val($.cookie('edit_content') || "Type **Markdown** here");
+        $("#text-input").val(localStorage.getItem('edit_content') || "Type **Markdown** here");
         $("#text-input").trigger("input");
       });
     </script>
   </head>
-  <body>
-    <div class="container">
-      <div class="row">
-        <div id="text-input-container" class="col-md-6">
-          <p>
-            <textarea id="text-input" rows="6" cols="60"></textarea>
-          </p>
+  <body style="height: 100%">
+    <div class="container" style="height: 100%">
+      <div class="row" style="height: 100%">
+        <div id="text-input-container" class="col-md-6" style="height: 100%">
+            <textarea id="text-input" style="width: 100%; min-width: 100%; min-height: 100%; height: 100%; font-family: Menlo, Monaco, Consolas, 'Courier New', monospace"></textarea>
         </div>
         <div id="preview-container" class="col-md-6">
           <span id="preview" class="wordwrap" style="display:inline-block; vertical-align:top"></span>
