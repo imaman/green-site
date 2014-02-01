@@ -25,7 +25,7 @@
 
     function singlePost(post, body, res) {
       var temp = Object.create(post);
-      temp.body = markdown.toHTML(temp.body || body);
+      temp.body = markdown.toHTML(temp.body);
       temp.publishedAt = moment(temp.publishedAt).fromNow();
       res.render('post', { post: temp, headline: model.headline });
     }
