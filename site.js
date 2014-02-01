@@ -37,6 +37,17 @@
       res.redirect('/edit.html');
     });
 
+    app.get('/posts/:id.json', function(req, res) {
+      var post = null;
+      model.posts.forEach(function(current) {
+        if (current.id == req.params.id) {
+          post = current;
+        }
+      });
+
+      res.json(post);
+    });
+
     app.get('/posts/:id', function(req, res) {
       var post = null;
       model.posts.forEach(function(current) {

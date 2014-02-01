@@ -122,6 +122,17 @@ describe('site', function() {
         expect(browser.success).toBe(false);
       });
     });
+    it('can serve json', function(done) {
+      visit('posts/4.json', done, function() {
+        expect(browser.success).toBe(true);
+        var text = browser.text();
+        expect(text).toContain('title');
+        expect(text).toContain('id');
+        expect(text).toContain('body');
+        expect(text).toContain('publishedAt');
+        expect(text).toContain('some text `some code` the end');
+      });
+    });
   });
 
   describe('posts body', function() {
