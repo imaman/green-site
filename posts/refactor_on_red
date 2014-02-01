@@ -154,10 +154,9 @@ At this point, the piece of code that I did not like has been changed to my tast
 
 #### Undo the breakage 
 
-This stage is trivial but nonetheless important. As we just finished refactoring the tests, we need to get out of the Red zone by [reverting the breakage](https://github.com/imaman/green-site/commit/d7fec60adb525d3ad3d967d8dfff3c49b482b0a5
-).
+This stage is trivial but nonetheless important. As we just finished refactoring the tests, we need to get out of the Red zone by [reverting the breakage](http://github.com/imaman/green-site/commit/f2ad67d08a9c0d1454cdc505cafd2c4d8a37eb72).
 
-Then, I verified Greenness, by running the tests one last time:
+Finally, I verified Greenness by running the tests one last time:
 
     $ npm test
     > application-name@0.0.1 test ....
