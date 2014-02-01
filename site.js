@@ -3,6 +3,7 @@
   var jade = require('jade');
   var markdown = require('markdown').markdown;
   var moment = require('moment');
+  var extend = require('node.extend');
   var path = require('path');
 
   exports.createDriver = function(port, model) {
@@ -53,7 +54,7 @@
         callback(post);
       }
       model.fetchBody(id, function(err, body) {
-        var temp = Object.create(post);
+        var temp = extend({}, post);
         temp.body = body;
         callback(temp);
       });
