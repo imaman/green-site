@@ -59,7 +59,9 @@
       if (post) {
         if (!post.body) {
           model.lookup(id, function(err, body) {
-            callback(post, body);
+            var temp = Object.create(post);
+            temp.body = body;
+            callback(temp, body);
           });
         } else {
           callback(post, null);
