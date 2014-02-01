@@ -56,19 +56,18 @@
         }
       });
 
-      if (post) {
-        if (!post.body) {
-          model.lookup(id, function(err, body) {
-            var temp = Object.create(post);
-            temp.body = body;
-            callback(temp);
-          });
-        } else {
-          callback(post);
-        }
-      } else {
+      if (!post) {
         callback(null);
       }
+
+      if (post.body) {
+        callback(post);
+      }
+      model.lookup(id, function(err, body) {
+        var temp = Object.create(post);
+        temp.body = body;
+        callback(temp);
+      });
     }
 
     app.get('/posts/:id', function(req, res) {
