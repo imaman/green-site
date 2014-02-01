@@ -46,7 +46,7 @@ The solution to this predicament is simple:
 
 Coming to think about, it makes perfect sense: a test's "money time" is that point where it produces Red on broken production code. The fact that it produces Green on correct production code does not imply the opposite. For one, every test with no assertions will produce Green on correct code but will not produce Red on broken code.
 
-Thus, if we want to refactor a test we must first put it in that spot where it is *Red*, by introducing an intentional bug into our production code. The test's keeps being Red throughout the refactoring steps keeps us confident that these steps did not cripple the test. Only after refactoring is over can we un-introduce the bug and get back to Green. To make things concrete here is the series of steps that I used when I refactored my jasmine-node spec, getting rid of that irritating `catch(e) {}` block.
+Thus, if we want to refactor a test we must first put it in that spot where it is *Red*, by introducing an intentional bug into our production code. The test retaining its Redness throughout the refactoring steps keeps us confident that these steps did not cripple the test. Only after refactoring is over can we un-introduce the bug and get back to Green. To make things concrete here is the series of steps that I used when I refactored my jasmine-node spec, the goal of which was to get rid of that irritating `catch(e) {}` block.
  
 #### Introduce an intentional break
 
