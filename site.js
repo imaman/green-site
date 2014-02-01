@@ -37,12 +37,6 @@
       res.redirect('/edit.html');
     });
 
-    app.get('/posts/:id.json', function(req, res) {
-      lookup(req.params.id, function(post) {
-        res.json(post);
-      });
-    });
-
     function lookup(id, callback) {
       var post = null;
       model.posts.forEach(function(current) {
@@ -64,6 +58,12 @@
         callback(temp);
       });
     }
+
+    app.get('/posts/:id.json', function(req, res) {
+      lookup(req.params.id, function(post) {
+        res.json(post);
+      });
+    });
 
     app.get('/posts/:id', function(req, res) {
       lookup(req.params.id, function(post) {
