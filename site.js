@@ -56,19 +56,23 @@
         }
       });
 
-      callback(post);
+      if (post) {
+        if (!post.body) {
+          model.lookup(id, function(err, body) {
+            callback(post, body);
+          });
+        } else {
+          callback(post, null);
+        }
+      } else {
+        callback(null);
+      }
     }
 
     app.get('/posts/:id', function(req, res) {
-      lookup(req.params.id, function(post) {
+      lookup(req.params.id, function(post, body) {
         if (post) {
-          if (post.body) {
-            singlePost(post, null, res);
-          } else {
-            model.lookup(req.params.id, function(err, body) {
-              singlePost(post, body, res);
-            });
-          }
+          singlePost(post, body, res);
         } else {
           res.send(404);
         }
