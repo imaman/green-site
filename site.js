@@ -48,13 +48,19 @@
       res.json(post);
     });
 
-    app.get('/posts/:id', function(req, res) {
+    function lookup(id) {
       var post = null;
       model.posts.forEach(function(current) {
-        if (current.id == req.params.id) {
+        if (current.id == id) {
           post = current;
         }
       });
+
+      return post;
+    }
+
+    app.get('/posts/:id', function(req, res) {
+      var post = lookup(req.params.id);
 
       if (post) {
         if (post.body) {
