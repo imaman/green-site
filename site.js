@@ -23,7 +23,7 @@
       res.render('posts', { posts: posts, headline: model.headline });
     }
 
-    function singlePost(post, body, res) {
+    function singlePost(post, res) {
       var temp = Object.create(post);
       temp.body = markdown.toHTML(temp.body);
       temp.publishedAt = moment(temp.publishedAt).fromNow();
@@ -68,7 +68,7 @@
     app.get('/posts/:id', function(req, res) {
       lookup(req.params.id, function(post) {
         if (post) {
-          singlePost(post, post.body, res);
+          singlePost(post, res);
         } else {
           res.send(404);
         }
