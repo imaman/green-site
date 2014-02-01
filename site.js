@@ -61,10 +61,10 @@
           model.lookup(id, function(err, body) {
             var temp = Object.create(post);
             temp.body = body;
-            callback(temp, body);
+            callback(temp);
           });
         } else {
-          callback(post, null);
+          callback(post);
         }
       } else {
         callback(null);
@@ -72,9 +72,9 @@
     }
 
     app.get('/posts/:id', function(req, res) {
-      lookup(req.params.id, function(post, body) {
+      lookup(req.params.id, function(post) {
         if (post) {
-          singlePost(post, body, res);
+          singlePost(post, post.body, res);
         } else {
           res.send(404);
         }
