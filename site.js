@@ -58,6 +58,10 @@
       }
     });
 
+    app.get('/posts/:id/edit', function(req, res) {
+      res.sendfile(__dirname + '/public/edit.html');
+    });
+
     return {
       start: function(done) {
         this.server = app.listen(app.get('port'), function() {

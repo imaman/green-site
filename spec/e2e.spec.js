@@ -91,6 +91,15 @@ describe('site', function() {
     });
   });
 
+  describe('posts/:id/edit page', function() {
+    it('shows an edit page', function(done) {
+      visit('posts/1/edit', done, function() {
+        expect(browser.success).toBe(true);
+        expect(browser.html('#text-input-container')).toContain('<textarea id="text-input"'); 
+      });
+    });
+  });
+
   describe('/posts/:id page', function() {
     it('shows the title and body of a post', function(done) {
       visit('posts/1', done, function() {
