@@ -11,23 +11,45 @@
       }
     </style>
     <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
-    <script src="markdown.min.js"></script>
-    <script src="jquery.cookie.js"></script>
+    <script src="/markdown.min.js"></script>
+    <script src="/jquery.cookie.js"></script>
     <script>
       $(document).ready(function() {
+        var postId = null;
+        var tokens = location.pathname.split('/');
+        if (tokens.length == 4 && tokens[1] === 'posts' && tokens[3] == 'edit') {
+          postId = tokens[2];
+        }
+        var key = 'edit_content'; 
+        if (postId) {
+          key += '_' + postId;
+        }
+
         $("#text-input").bind("input", function() {
           var content = $(this).val();
-          localStorage.setItem('edit_content', content);
-          var saved = localStorage.getItem('edit_content');
+          localStorage.setItem(key, content);
+          var saved = localStorage.getItem(key);
           if (saved != content) {
             throw new Error('saved is ' + saved);
           }
           $("#preview").html(markdown.toHTML(saved));
         });
 
-
-        $("#text-input").val(localStorage.getItem('edit_content') || "Type **Markdown** here");
-        $("#text-input").trigger("input");
+        var text = localStorage.getItem(key);
+        if (text) {
+          $("#text-input").val(text);
+          $("#text-input").trigger("input");
+        } else {
+          if (postId) {
+            $.ajax({url: '/posts/' + postId + '.json'}).done(function(data) {
+              $("#text-input").val(data.body);
+              $("#text-input").trigger("input");
+            });
+          } else {
+            $("#text-input").val("Type **Markdown** here");
+            $("#text-input").trigger("input");
+          }
+        }
       });
     </script>
   </head>
