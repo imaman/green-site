@@ -38,14 +38,9 @@
     });
 
     app.get('/posts/:id.json', function(req, res) {
-      var post = null;
-      model.posts.forEach(function(current) {
-        if (current.id == req.params.id) {
-          post = current;
-        }
+      lookup(req.params.id, function(post) {
+        res.json(post);
       });
-
-      res.json(post);
     });
 
     function lookup(id, callback) {
