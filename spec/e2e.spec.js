@@ -122,17 +122,6 @@ describe('site', function() {
         expect(browser.success).toBe(false);
       });
     });
-    it('can serve json', function(done) {
-      visit('posts/4.json', done, function() {
-        expect(browser.success).toBe(true);
-        var text = browser.text();
-        expect(text).toContain('title');
-        expect(text).toContain('id');
-        expect(text).toContain('body');
-        expect(text).toContain('publishedAt');
-        expect(text).toContain('some text `some code` the end');
-      });
-    });
   });
 
   describe('posts body', function() {
@@ -152,6 +141,20 @@ describe('site', function() {
     it('is translated from markdown to HTML when rendered', function(done) {
       visit('posts/4', done, function() {
         expect(browser.html()).toContain('some text <code>some code</code> the end');
+      });
+    });
+    it('can be retrieved as json', function(done) {
+      model.fetchBody = function(id, done) {
+        done(null, 'some *markdown* text');
+      };
+      visit('posts/3.json', done, function() {
+        expect(browser.success).toBe(true);
+        var text = browser.text();
+        expect(text).toContain('title');
+        expect(text).toContain('id');
+        expect(text).toContain('body');
+        expect(text).toContain('publishedAt');
+        expect(text).toContain('some *markdown* text');
       });
     });
   });
