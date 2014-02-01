@@ -48,7 +48,7 @@
       res.json(post);
     });
 
-    function lookup(id) {
+    function lookup(id, callback) {
       var post = null;
       model.posts.forEach(function(current) {
         if (current.id == id) {
@@ -56,23 +56,23 @@
         }
       });
 
-      return post;
+      callback(post);
     }
 
     app.get('/posts/:id', function(req, res) {
-      var post = lookup(req.params.id);
-
-      if (post) {
-        if (post.body) {
-          singlePost(post, null, res);
+      lookup(req.params.id, function(post) {
+        if (post) {
+          if (post.body) {
+            singlePost(post, null, res);
+          } else {
+            model.lookup(req.params.id, function(err, body) {
+              singlePost(post, body, res);
+            });
+          }
         } else {
-          model.lookup(req.params.id, function(err, body) {
-            singlePost(post, body, res);
-          });
+          res.send(404);
         }
-      } else {
-        res.send(404);
-      }
+      });
     });
 
     app.get('/posts/:id/edit', function(req, res) {
