@@ -54,9 +54,7 @@
         callback(post);
       }
       model.fetchBody(id, function(err, body) {
-        var temp = extend({}, post);
-        temp.body = body;
-        callback(temp);
+        callback(extend({body: body}, post));
       });
     }
 
