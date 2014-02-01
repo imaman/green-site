@@ -1,4 +1,6 @@
-In a recent spec I was writing, one of the tests was about sanity-checking the content of several files I am using in production. The test loads the files via a series of async [fs.readFile](http://nodejs.org/api/fs.html#fs_fs_readfile_filename_options_callback) calls. It then inspects the content of each file by iterating over the `bodyById` object, making sure a minimal-length criterion is met. My first implementation for the last part looked as follows (see [model.spec.js](https://github.com/imaman/green-site/blob/b99b9745181ec0479d55d92d56ac43204bd25acb/spec/model.spec.js#L20)):
+In a recent spec I was writing, one of the tests was about sanity-checking the content of several files I am using in production. The [jasmine-node](http://github.com/mehevery/jasmine-node) test loads these files via a series of async [fs.readFile](http://nodejs.org/api/fs.html#fs_fs_readfile_filename_options_callback) calls. It then inspects the content of each file by iterating over the `bodyById` object, making sure a minimal-length criterion is met. 
+
+My first implementation for the last part looked as follows (see [model.spec.js](https://github.com/imaman/green-site/blob/b99b9745181ec0479d55d92d56ac43204bd25acb/spec/model.spec.js#L20)):
 
     Object.keys(bodyById).forEach(function(k) {
       var body = bodyById[k];
@@ -8,9 +10,9 @@ In a recent spec I was writing, one of the tests was about sanity-checking the c
     done();
 
 
-Unfortunately, this test did not perform as expected. Specifically, in situations where `body` was falsey jasmine-node did not print the proverbial `T tests, A assertions, F failure, S skipped` line and its exit code was 0 which indicates that from jasmine-node's standpoint all tests have passed. 
+Unfortunately, this test did not perform as expected. In situations where `body` was falsey jasmine-node did not print the proverbial `T tests, A assertions, F failure, S skipped` line and its exit code was 0 which indicates that from jasmine-node's standpoint all tests have passed. 
 
-After several iterations of trial-and-error I arrived at [this](https://github.com/imaman/green-site/blob/b99b9745181ec0479d55d92d56ac43204bd25acb/spec/model.spec.js#L20):
+After several iterations of trial-and-error I arrived at [this](https://github.com/imaman/green-site/blob/b99b9745181ec0479d55d92d56ac43204bd25acb/spec/model.spec.js#L20): I wrapped the `Object.keys()` call with a `try` block and used an *empty* catch block `catch(e) {}`:
 
     try {
       Object.keys(bodyById).forEach(function(k) {
@@ -22,33 +24,33 @@ After several iterations of trial-and-error I arrived at [this](https://github.c
     done();
 
 
-To my surprise this version worked! this is counter-intuitive as this version catches thrown exceptions and silently ignored them. I would expect such a change to make the tests even less sensitive, but I could argue with the facts: with this version, min-length violations were caught are properly reported. I committed the code.
+To my surprise this version worked! this is weird as this code silently ignores thrown exceptions, which intuitively seems like a step in the wrong direction (it reduces the test's sensitivity even further, where I wanted to make an under-sensitive test more sensitive). Still, I could not argue with the facts: with this version, min-length violations were caught are properly reported. I committed the code.
 
-A few days later I got back to it. I wasn't satisfied with this "solution". Sure, it worked, but (a) I didn't understand why, and (b) I was sure there is a better solution.
+A few days later I got back to it. I wasn't satisfied with this "solution". Sure, it worked, but I didn't understand why, and I was sure there is a better solution.
 
-When we are not satisfied with production code we refactor it: first, we verify the all tests are Green, we then apply a transformation, run the tests again (to verify overall behavior was preserved) and repeat until the code reaches a desired state.
+When we are not satisfied with production code we refactor it: first, we check our baseline by running the tests and seeing they ate Green, we then apply a transformation, run the tests (again) to verify the overall behavior was preserved, and repeat until the code reaches a desired state.
 
-This procedure is not safe for refactoring tests: when transforming tests one may unintentionally mute the assertions there. Running the tests again will be pointless. Even if you get a Green you cannot trust it.  Here is one quick example for such these deadly transformations. Imagine we have test that verifies that a certain div is present and has a non-empty content:
+This procedure *is not safe for refactoring of tests*: when transforming tests one may unintentionally mute the assertions there. Once such an accident has occurred running the tests again is pointless. Even if you get Green you cannot trust it.  You are essentially locked in a chamber which keeps echoing "Green" no matter what you do. Here is one quick example for such a Transformation of Terror: Imagine a test which verifies that a certain div is present, and has a non-empty content:
 
-    expect(browser.text('.some-class')).toBeTruthy();
+    expect(browser.text('.main-area')).toBeTruthy();
 
-If our refactoring haphazardly drops the class selector:
+If a refactoring haphazardly drops the `.main-area` class selector:
 
     expect(browser.text('')).toBeTruthy();
 
-We end up with an assertion that always succeeds and thus, tests nothing.
+we end up with an assertion that practically always succeeds (as long as the `browser` object has loaded a page with at least one character the assertion passes) and, thus, tests nothing.
 
 The solution to this predicament is simple:
 
 >###Refactor Tests Only On Red
 
-Coming to think about, it makes perfect sense: tests work correctly when they can produce Red. Thus, if we want to refactor tests we first need to make the tests *Red*. If the test continue to be Red after the refactoring then we can be quite sure that the refactoring is safe.
+Coming to think about, it makes perfect sense: a test's "money time" is that point where it produces Red on broken production code. The fact that it produces Green on correct production code does not imply the opposite. For one, every test with no assertions will produce Green on correct code but will not produce Red on broken code.
 
-To make things more concrete here is the series of steps that I used when I refactored my jasmine-node spec, getting rid of that irritating `catch(e) {}` block.
+Thus, if we want to refactor a test we must first put it in that spot where it is *Red*, by introducing an intentional bug into our production code. The test's keeps being Red throughout the refactoring steps keeps us confident that these steps did not cripple the test. Only after refactoring is over can we un-introduce the bug and get back to Green. To make things concrete here is the series of steps that I used when I refactored my jasmine-node spec, getting rid of that irritating `catch(e) {}` block.
  
 #### Introduce an intentional break
 
-I stated by inducing the failure. In this case, this was achieved by changing [model.js](https://github.com/imaman/green-site/commit/b99b9745181ec0479d55d92d56ac43204bd25acb). I added the following entry to the `posts` list:
+I stated by inducing a failure. In this case, this was achieved by changing [model.js](https://github.com/imaman/green-site/commit/b99b9745181ec0479d55d92d56ac43204bd25acb). I added the following entry to the `posts` list:
 
       {
         id: "1",
@@ -78,9 +80,9 @@ As this entry has an empty body field, it will break the `expect(body.length).to
 
 This is exactly how we expect the test to behave. 
 
-#### First refactoring step
+#### First refactoring step ####
 
-I [change the block](https://github.com/imaman/green-site/commit/4f0cb55e870d55d7018dee4401a629a7073d1103) to what I initially expected to work: 
+I [change the block](https://github.com/imaman/green-site/commit/4f0cb55e870d55d7018dee4401a629a7073d1103) to what I initially wanted to write:
 
     Object.keys(bodyById).forEach(function(k) {
       var body = bodyById[k];
@@ -89,7 +91,7 @@ I [change the block](https://github.com/imaman/green-site/commit/4f0cb55e870d55d
     });
     done();
 
-As suspected, going back to this code brought back the original problem: the tests are *not* failing:
+As expected, going back to this code brought back the original problem: now the tests are *not* failing:
 
     $ npm test
 
@@ -101,17 +103,15 @@ As suspected, going back to this code brought back the original problem: the tes
     $ echo $?
     0
 
-So, jasmine-node think is saying "Green". but as we're refactoring tests and we're under an intentionally induced breakage, the Red/Green semantics is reversed: Red means 'Good'. Green means 'something is not working properly'.
-
+So, jasmine-node is saying "Green". but as we're refactoring tests and we're under an intentionally induced breakage, the Red/Green semantics is reversed: Red means 'Good'. Green means 'something is not working properly'. Bottom line: this first step alone is not behavior-preserving. A second step is needed. 
 
 #### Second refactoring step
 
-So, my first naive refactoring step was not successful (as it led me to Green). At this point I consulted the manual and found the 
-`--captureExceptions` flag:
+So, my first naive refactoring step was not successful (as it led me to Green). At this point I consulted jasmine-node manual and found the `--captureExceptions` flag:
 
     --captureExceptions: listen to global exceptions, report them and exit (interferes with Domains in NodeJs, so do not use if using Domains as well.
 
-I therefore added this flag to my jasmine-node configuration by editing the `scripts.test` value in [package.json](https://github.com/imaman/green-site/commit/5285e4841a6710f01577eb165574e8b3928a1dca):
+This sounded about right. I added this flag to my jasmine-node configuration by editing the `scripts.test` value in [package.json](https://github.com/imaman/green-site/commit/5285e4841a6710f01577eb165574e8b3928a1dca):
 
     {
       "name": "application-name",
@@ -148,16 +148,16 @@ and I ran the tests again:
     $ echo $?
     1
 
-Woohoo! This step got us back on *Red*. We preserved the original behavior
+Woohoo! This step got us back on *Red*. This is indication that the combined effect of both refactoring steps is behavior-preserving. 
 
-#### Revert intentional breakage 
+At this point, the piece of code that I did not like has been changed to my taste, and I had the "proof" that I did not cripple anything. Time to wrap up.
+
+#### Undo the breakage 
 
 This stage is trivial but nonetheless important. As we just finished refactoring the tests, we need to get out of the Red zone by [reverting the breakage](https://github.com/imaman/green-site/commit/d7fec60adb525d3ad3d967d8dfff3c49b482b0a5
 ).
 
-#### Verify Greenness.
-
-One last time:
+Then, I verified Greenness, by running the tests one last time:
 
     $ npm test
     > application-name@0.0.1 test ....
@@ -171,5 +171,6 @@ One last time:
     0
   
 
-Side note: In node.js almost everything is async. Thus, a test needs a way to indicate that "all checks are over". This is achieved by the `done()` call which invokes a callback that is passed-in to each test by the testing framework.
+That's it. Everything is back to normal. 
+
 
