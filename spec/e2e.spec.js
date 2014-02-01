@@ -137,7 +137,7 @@ describe('site', function() {
 
   describe('posts body', function() {
     it('can be loaded from an external lookup function', function(done) {
-      model.lookup = function(id, done) {
+      model.fetchBody = function(id, done) {
         if (id == '3') {
           done(null, 'body of 3');
         } else {

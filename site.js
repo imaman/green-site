@@ -63,7 +63,7 @@
       if (post.body) {
         callback(post);
       }
-      model.lookup(id, function(err, body) {
+      model.fetchBody(id, function(err, body) {
         var temp = Object.create(post);
         temp.body = body;
         callback(temp);

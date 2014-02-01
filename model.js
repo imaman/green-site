@@ -16,7 +16,7 @@
       }
     ],
 
-    lookup: function(id, done) {
+    fetchBody: function(id, done) {
       fs.readFile(__dirname + '/posts/' + id, {encoding: 'utf8'}, function (err, data) {
         done(err, data);
       }); 
