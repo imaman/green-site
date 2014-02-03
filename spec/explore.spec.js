@@ -29,11 +29,17 @@ describe('jasmine-node failure semantics', function() {
       throw new Error();
     });
   });
-  it('even worse, if done() is called, a green summary line is printed', function(done) {
+  xit('even worse, if done() is called, a green summary line is printed', function(done) {
     setTimeout(function() {
       throw new Error();
     });
     done();
+  });
+  it('to properly handle side flows, use --captureException and invoke done() from there', function(done) {
+    setTimeout(function() {
+      throw new Error();
+      done();
+    });
   });
 });
 
