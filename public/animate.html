@@ -1,0 +1,218 @@
+<html>
+  <head>
+    <link href="/css/bootstrap.css" rel="stylesheet"></link>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
+    <script src="jquery.color.js"></script>
+    <script>
+
+
+      $(document).ready(function() {
+        var codeLineStyle = {'background-color': 'white', 'border-style': 'none', 'padding': '0px', 'margin': '0px'};
+        function newLineElement(text) {
+            return $('<div></div>').append($('<pre></pre>').css(codeLineStyle).text(text || ' '));
+        }
+
+        var lineElements = [];
+        var diffArea = $("#diff-area");
+        var lineNumbersArea = $("#line-numbers");
+
+        var lineCount = 0;
+        function assignLineNumbers(n) {
+          lineNumbersArea.empty();
+          for(var i = 0; i < n; ++i) {
+            lineNumbersArea.append($('<div></div>').append(
+                $('<pre></pre>').css(codeLineStyle).text("" + i)));
+          }
+          lineCount = n;
+        }
+        
+        
+        //$.ajax({ url: '/diff?user=imaman&repo=green-site&path=site.js&from=3f9419de77979f52f0c2b84ffd73cbe50050aca1&to=54e0c238a24061c32a55294be13622203574147a' }).done(function(data) {
+        $.ajax({ url: '/diff?user=imaman&repo=green-site&path=site.js&from=22f843a28f7df050aa2821d037df14c1b5d8261d&to=d10114d6763da01a18bf4300fe700f0b602e0086' }).done(function(data) {
+
+          console.log('from=' + data.from[15]);
+          data.from.forEach(function(l) {
+            var element = newLineElement(l);
+            lineElements.push(element);
+            $('#source-code').append(element);
+          });
+
+          assignLineNumbers(data.from.length);
+
+          var acc = 0;
+          data.transitions.forEach(function(t) {
+            t.begin = acc
+            t.end = acc + t.len;
+            if (t.kind !== '+') 
+              acc += t.len;
+          });
+
+          var shift = 0;
+          var mutations = [];
+          data.transitions.forEach(function(current) {
+            current.begin += shift;
+            current.end += shift;
+
+            if (current.kind === ':') {
+              return;
+            }
+
+            if (current.kind === '+') {
+              shift += current.len;
+              var x = $.extend({}, current);
+              x.kind = 'p+';
+              mutations.push(x);
+              mutations.push(current);
+              return;
+            }
+
+            if (current.kind === '-') {
+              shift -= current.len;
+              var x = $.extend({}, current);
+              x.kind = 'p-';
+              mutations.push(x);
+              mutations.push(current);
+
+              return;
+            }
+
+            throw new Error('unknown kind ' + JSON.stringify(current));
+          });
+
+          var mutationIndex = -1;
+          $(document).keyup(function(event) {
+            if (event.keyCode === 39) {
+              if (mutationIndex < mutations.length - 1) {
+                ++mutationIndex;
+              }
+
+              applyMutation(mutations[mutationIndex]);
+            } 
+
+            if (event.keyCode === 37) {
+              if (mutationIndex < 0) {
+                return;
+              }
+
+              unApplyMutation(mutations[mutationIndex]);
+
+              if (mutationIndex >= 0) {
+                --mutationIndex;
+              }
+            }
+          });
+
+          function applyMutation(mutation) {
+            var len = mutation.len;
+            if (mutation.kind === 'p+') {
+              $(document).scrollTop($(lineElements[Math.max(mutation.begin - 10, 0)]).position().top);
+              var arr = [];
+              for (var i = 0; i < len; ++i) {
+                var insertedLine = newLineElement('');
+                arr.push(insertedLine);
+              }
+
+              assignLineNumbers(lineCount + mutation.len);
+              lineElements[mutation.begin].before(arr);
+              Array.prototype.splice.apply(lineElements, [mutation.begin, 0].concat(arr));
+              var set = $(arr).map(function() { return this.toArray(); });
+              $('pre', set).animate({ backgroundColor: '#90ee90'}, 200);
+            }
+            if (mutation.kind === '+') {
+              $(document).scrollTop($(lineElements[Math.max(mutation.begin - 10, 0)]).position().top);
+              var arr = [];
+              for (var i = 0; i < len; ++i) {
+                var element = lineElements[mutation.begin + i];
+                $('pre', element).text(mutation.lines[i] || ' ');
+                arr.push(element);
+              }
+
+            }
+            if (mutation.kind === 'p-') {
+              $(document).scrollTop($(lineElements[Math.max(mutation.begin - 10, 0)]).position().top);
+              var arr = [];
+              for (var i = mutation.begin; i < mutation.end; ++i) {
+                arr.push(lineElements[i]);
+              }
+              var set = $(arr).map(function() { return this.toArray(); });
+              $('pre', set).animate({ backgroundColor: '#ffa090'}, 200);
+            }
+            if (mutation.kind === '-') {
+              $(document).scrollTop($(lineElements[Math.max(mutation.begin - 10, 0)]).position().top);
+              var arr = [];
+              for (var i = mutation.begin; i < mutation.end; ++i) {
+                arr.push(lineElements[i]);
+              }
+
+              var set = $(arr).map(function() { return this.toArray(); });
+              $('pre', set).fadeOut();
+              lineElements.splice(mutation.begin, mutation.len);
+              assignLineNumbers(lineCount - mutation.len);
+            }
+          };
+          function unApplyMutation(mutation) {
+            var len = mutation.len;
+            if (mutation.kind === 'p+') {
+              $(document).scrollTop($(lineElements[Math.max(mutation.begin - 10, 0)]).position().top);
+              var arr = [];
+              for (var i = mutation.begin; i < mutation.end; ++i) {
+                arr.push(lineElements[i]);
+              }
+
+              lineElements.splice(mutation.begin, mutation.len);
+              var set = $(arr).map(function() { return this.toArray(); });
+              $(set).remove();
+              assignLineNumbers(lineCount - mutation.len);
+            }
+            if (mutation.kind === '+') {
+              $(document).scrollTop($(lineElements[Math.max(mutation.begin - 10, 0)]).position().top);
+              for (var i = 0; i < len; ++i) {
+                var element = lineElements[mutation.begin + i];
+                $('pre', element).text(' ');
+              }
+            }
+            if (mutation.kind === 'p-') {
+              var arr = [];
+              for (var i = mutation.begin; i < mutation.end; ++i) {
+                arr.push(lineElements[i]);
+              }
+              $(document).scrollTop($(lineElements[Math.max(mutation.begin - 10, 0)]).position().top);
+              var set = $(arr).map(function() { return this.toArray(); });
+              $('pre', set).animate({ backgroundColor: 'white'}, 200);
+            }
+            if (mutation.kind === '-') {
+              $(document).scrollTop($(lineElements[Math.max(mutation.begin - 10, 0)]).position().top);
+              var arr = [];
+              for (var i = 0; i < len; ++i) {
+                var insertedLine = newLineElement(mutation.lines[i]);
+                arr.push(insertedLine);
+              }
+
+              assignLineNumbers(lineCount + mutation.len);
+              lineElements[mutation.begin].before(arr);
+              Array.prototype.splice.apply(lineElements, [mutation.begin, 0].concat(arr));
+              var set = $(arr).map(function() { return this.toArray(); });
+              $('pre', set).animate({ backgroundColor: '#ffa090'}, 200);
+            }
+          };
+        });
+      });
+    </script>
+    <div class="body">
+      <div class="container">
+        <table>
+          <tr>
+            <td id="line-numbers"></td>
+            <td id="source-code"></td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+
+  </head>
+  <body>
+  </body>
+</html>
+

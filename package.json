@@ -7,8 +7,11 @@
     "test": "jasmine-node --captureExceptions spec"
   },
   "dependencies": {
+    "base64": "*",
+    "diff": "*",
     "escape-html": "1.0.1",
     "express": "3.3.4",
+    "github": "*",
     "jade": "1.1.5",
     "jasmine-node": "1.13.0",
     "markdown": "0.5.0",

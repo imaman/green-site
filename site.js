@@ -1,4 +1,5 @@
 (function() {
+  var differ = require('./differ').differ;
   var express = require('express');
   var jade = require('jade');
   var markdown = require('markdown').markdown;
@@ -36,6 +37,16 @@
 
     app.get('/edit', function(req, res) {
       res.redirect('/edit.html');
+    });
+
+    app.get('/diff', function(req, res) {
+      differ(req.query.user, req.query.repo, req.query.path, req.query.from, req.query.to, function(e, d) {
+        if (e) {
+          res.send(500, e);
+        } else {
+          res.json(d);
+        }
+      });
     });
 
     function lookup(id, callback) {
