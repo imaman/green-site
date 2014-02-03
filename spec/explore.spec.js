@@ -20,8 +20,14 @@ describe('jasmine-node failure semantics', function() {
     done();
   });
 
-  it('treats exceptions at the main flow as failures', function(done) {
+  xit('treats exceptions at the main flow as failures', function(done) {
     throw new Error();
+  });
+
+  it('exceptions thrown from side flows do not induce a failure', function(done) {
+    setTimeout(function() {
+      throw new Error();
+    });
   });
 });
 
