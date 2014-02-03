@@ -35,7 +35,11 @@ describe('jasmine-node failure semantics', function() {
     });
     done();
   });
-  xit('to properly handle side flows, use --captureException and invoke done() from there', function(done) {
+  it('some assertion failure', function(done) {
+    expect(2).toEqual(100);
+    done();
+  });
+  it('to properly handle side flows, use --captureException and invoke done() from there', function(done) {
     setTimeout(function() {
       throw new Error();
       done();
