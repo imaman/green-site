@@ -13,5 +13,11 @@ describe('jasmine-node failure semantics', function() {
     expect(captured).toBe(null);
     done();
   });
+
+  it('two assertions can fail at the same test', function(done) {
+    expect('first assetion').toEqual('is failing');
+    expect('second assertion').toEqual('is also failing');
+    done();
+  });
 });
 
