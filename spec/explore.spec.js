@@ -24,10 +24,16 @@ describe('jasmine-node failure semantics', function() {
     throw new Error();
   });
 
-  it('exceptions thrown from side flows do not induce a failure', function(done) {
+  xit('exceptions thrown from side flows do not induce a failure', function(done) {
     setTimeout(function() {
       throw new Error();
     });
+  });
+  it('even worse, if done() is called, a green summary line is printed', function(done) {
+    setTimeout(function() {
+      throw new Error();
+    });
+    done();
   });
 });
 
