@@ -109,6 +109,12 @@ describe('site', function() {
         expect(text).toContain('B1');
       });
     });
+    it('uses the post\'s title as the page title', function(done) {
+      visit('posts/1', done, function() {
+        expect(browser.success).toBe(true);
+        expect(browser.text('title')).toContain('Title1');
+      });
+    });
     it('does not show content from other posts', function(done) {
       visit('posts/2', done, function() {
         expect(browser.success).toBe(true);
