@@ -10,6 +10,7 @@ If the test body does not issue a `done()` call ...
     // explore.spec.js
     describe('jasmine-node failure semantics', function() {
       it('times out if done() is not called', function(done) {
+        // No done() call - DON'T DO THIS
       });
     });
 
@@ -29,14 +30,6 @@ If the test body does not issue a `done()` call ...
 
     Finished in 5.226 seconds
     1 test, 1 assertion, 1 failure, 0 skipped
-
-aa
-
-    describe('jasmine-node failure semantics', function() {
-      it('times out if done() is not called', function(done) {
-        done();
-      });
-    });
 
 
 #### A failed assertions does not throw an exception
@@ -149,7 +142,19 @@ and then call done:
 
     done()
 
-For the remainder of this section let us assume you made a silly mistake: instead of `toContain` you typed `includes`. Proper behavior for the test is to fail with an `Object [object Object] has no method 'includes'` message, or some such:
+For the remainder of this section let us assume you made a silly mistake: instead of `toContain` you typed `includes`. 
+
+      // DON'T DO THIS
+      it('fetches a page', function(done) {
+        var browser = new Browser();
+    
+        browser.visit('https://collidingobjects.herokuapp.com', function() {
+          expect(browser.text()).includes('Home');  // <-- Exception thrown from here (wrong method name).
+          done();
+        });
+      });
+
+Proper behavior for the test is to fail with an `Object [object Object] has no method 'includes'` message. Indeed, this is what happens when we run with `--captureExceptions`:
 
     $ jasmine-node spec/explore.spec.js  --captureExceptions
     TypeError: Object [object Object] has no method 'includes'
@@ -161,17 +166,17 @@ For the remainder of this section let us assume you made a silly mistake: instea
         at flush (/home/imaman/workspace/green-site/node_modules/zombie/node_modules/q/q.js:108:17)
         at process._tickCallback (node.js:415:13)
 
-Now, let us see how many ways can you shoot your own foot.
+Now, let us see two ways for shooting yourself in the foot.
 
 **Don't try this at home #1: Stop using `--captureExceptions`**
 
-Omitting the `--captureExceptions` flag from the jasmine-node command line:
+Omitting the `--captureExceptions` flag from the jasmine-node command line
  
     $ jasmine-node spec/explore.spec.js  # DON'T DO THIS 
     $ echo $?
     0
 
-Yields an empty output. It is as if the test was never invoked. The exit code (as reported by `echo $?`) is `0` which indicates "all tests are passing". The problem in your code is no longer detected by your tests. Very bad.
+yields an empty output despite the fact that your code still suffers from the `includes()`-instead-of-`toContain()` bug. It is as if the test was never invoked. The exit code (as reported by `echo $?`) is `0` which indicates "all tests are passing". The problem in your code is no longer detected by your tests. Very bad.
 
 **Don't try this at home #2: Calling `done()` from the main flow (when a side-flow exists)**
 
@@ -182,9 +187,9 @@ What happens if you move the `done()` call out of the side-flow and into the mai
       var browser = new Browser();
 
       browser.visit('https://collidingobjects.herokuapp.com', function() {
-        expect(browser.text()).includes('Home');
+        expect(browser.text()).includes('Home');  // <-- Exception thrown from here (wrong method name).
       });
-      done();
+      done();  // <-- O-O. done() is not called from the side flow.
     });
 
 And then invoke jasmine-node (again) without `--captureExceptions`?
@@ -200,17 +205,10 @@ And then invoke jasmine-node (again) without `--captureExceptions`?
     0
 
 
-This is the worst possible outcome: we get a Green line telling us everything went well and the exit code is zero. The only indication that something went wrong is the `0 assertions` printouts which is too easy to miss (and is never checked by automatic tools such as [travis](http://travis-ci.org).
+This is the worst possible outcome: we get a Green line telling us everything went well and the exit code is zero. The only indication that something went wrong is the `0 assertions` printout which is too easy to miss (and is never checked by automatic tools such as [travis](http://travis-ci.org)).
 
-Omitting the `--captureExceptions` flag from the jasmine-node command line:
- 
-    $ jasmine-node spec/explore.spec.js 
-    $ echo $?
-    0
 
-Yields an empty output: as if the test was never invoked. The exit code (as reported by `echo $?`) is `0` which indicates "all tests are passing". The problem in your code is no longer detected by your tests. Very bad.
-
-Bottom line: 
+####Bottom line
 
 - Always run with `--captureExceptions`.
 - If you start a side-flow make sure it calls `done()` (and that the main flow does not).
