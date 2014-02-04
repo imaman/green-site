@@ -30,8 +30,8 @@ describe('production model', function() {
 
       Object.keys(bodyById).forEach(function(k) {
         var body = bodyById[k];
-        expect(body).toBeTruthy();
-        expect(body.length).toBeGreaterThan(minLength);
+        expect(body).toBeTruthy() && expect(body.length).toBeGreaterThan(minLength);
+        expect(body || 'body of ' + k).toBe(body || 'non empty');
       });
       done();
     }
