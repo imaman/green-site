@@ -17,6 +17,14 @@
     app.use(express.static(__dirname + '/public'));
 
     function listOfPosts(req, res) {
+      if (display.secure) {
+        if (!req.secure && req.host != 'localhost') {
+          var target = 'https://' + req.host;
+          console.log('redirecting to ' + target);
+          res.redirect(target);
+          return;
+        }
+      }
       var posts = model.posts.map(function(post) {
         var result = Object.create(post);
         result.publishedAt = moment(result.publishedAt).fromNow();
