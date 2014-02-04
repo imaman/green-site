@@ -1,0 +1,224 @@
+Jasmine-node is a great testing framework. However, the asynchronous execution model of its underlying platform, [node.js](http://nodejs.org), inflicts some changes on its failure semantics, compared to traditional xUnit framework. Understanding these differences is a must if one wants to avoid all sort of painful pitfall.
+
+#### A test must call done() or it times out
+
+In Jasmine-node every test (that is: every callback function passed to the `it()` function) receives a `done` parameter which is a function to be called when the testing is over. 
+
+If the test body does not issue a `done()` call ... 
+
+
+    // explore.spec.js
+    describe('jasmine-node failure semantics', function() {
+      it('times out if done() is not called', function(done) {
+      });
+    });
+
+
+... the test will timeout:
+
+    $ jasmine-node --captureExceptions spec/explore.spec.js 
+    F
+
+    Failures:
+
+      1) jasmine-node failure semantics times out if done() is not called
+       Message:
+         timeout: timed out after 5000 msec waiting for spec to complete
+       Stacktrace:
+         undefined
+
+    Finished in 5.226 seconds
+    1 test, 1 assertion, 1 failure, 0 skipped
+
+aa
+
+    describe('jasmine-node failure semantics', function() {
+      it('times out if done() is not called', function(done) {
+        done();
+      });
+    });
+
+
+#### A failed assertions does not throw an exception
+
+In xUnit, an assertion failure is translated into an exception (such as: [java.lang.AssertionError](http://docs.oracle.com/javase/7/docs/api/java/lang/AssertionError.html)) that is thrown by the assertion code. When an assertion fails execution will bail out of the test method and will resume at a `catch {}` block at the testing framework code.
+
+In Jasmine-node assertion failures do not end up with a thrown exception. Instead, they simply register the failure with the framework (so that it can be reported later), but other other than that, execution continues normally.
+
+This spec proves that:
+
+    describe('jasmine-node failure semantics', function() {
+      it('assertion failures are not reported via exceptions', function(done) {
+        var captured = null;
+        try {
+          expect(990099).toEqual(3);
+        } catch(e) {
+          captured = e;
+        }
+        expect(captured).toBe(null);
+        done();
+      });
+    });
+
+
+The code above places the `expect` expression inside a `try...catch` block and stores the exception that was thrown in the `captured` variable. We then assert that `captured` is null. As you can see below, the test fails due to 990099 != 3, and not due `captured` being non-null, which indicates that an `expect` failure does not induce a thrown exception:
+
+    $ jasmine-node --captureExceptions spec/explore.spec.js 
+    .F
+
+    Failures:
+
+      1) jasmine-node failure semantics assertion failures are not reported via exceptions
+       Message:
+         Expected 990099 to equal 3.
+       Stacktrace:
+         Error: Expected 990099 to equal 3.
+        at null.<anonymous> (/home/imaman/workspace/green-site/spec/explore.spec.js:9:22)
+        at null.<anonymous> (/home/imaman/lib/node_modules/jasmine-node/lib/jasmine-node/async-callback.js:45:37)
+
+    Finished in 0.028 seconds
+    1 test, 2 assertions, 1 failure, 0 skipped
+
+Moreover, this means that if you have two failing assertion in a test, both of them will be executed (and eventually reported as failures). 
+
+    describe('jasmine-node failure semantics', function() {
+      it('two assertions can fail at the same test', function(done) {
+        expect('first assetion').toEqual('is failing');
+        expect('second assertion').toEqual('is also failing');
+        done();
+      });
+    });
+
+
+In xUnit such a situation leads to the first assertion throwing an exception and the second assertion not being executed at all. In jasmine-node output we get two separate failure reports and the summary line indicates *two* assertions:
+
+    $ jasmine-node --captureExceptions spec/explore.spec.js 
+    FF
+
+    Failures:
+
+      1) jasmine-node failure semantics two assertions can fail at the same test
+       Message:
+         Expected 'first assetion' to equal 'is failing'.
+       Stacktrace:
+         Error: Expected 'first assetion' to equal 'is failing'.
+        at null.<anonymous> (/home/imaman/workspace/green-site/spec/explore.spec.js:18:30)
+        at null.<anonymous> (/home/imaman/lib/node_modules/jasmine-node/lib/jasmine-node/async-callback.js:45:37)
+
+      2) jasmine-node failure semantics two assertions can fail at the same test
+       Message:
+         Expected 'second assertion' to equal 'is also failing'.
+       Stacktrace:
+         Error: Expected 'second assertion' to equal 'is also failing'.
+        at null.<anonymous> (/home/imaman/workspace/green-site/spec/explore.spec.js:19:32)
+        at null.<anonymous> (/home/imaman/lib/node_modules/jasmine-node/lib/jasmine-node/async-callback.js:45:37)
+
+    Finished in 0.032 seconds
+    1 test, 2 assertions, 2 failures, 0 skipped
+
+
+#### Exceptions and side flows
+
+This is a nasty minefield. By 'side flow' I mean block of code that is asynchronously executed outside of the test's main flow. These are very common in Node.js (arguably, this is its value proposition).
+
+We'll start with properly written test, and then examine the effect of diversions. Specifically, here's a test that opens a web-page and checks its  content. 
+
+    var Browser = require('zombie');
+
+    describe('jasmine-node failure semantics', function() {
+      it('fetches a page', function(done) {
+        var browser = new Browser();
+    
+        browser.visit('https://collidingobjects.herokuapp.com', function() {
+          expect(browser.text()).toContain('Home');
+          done();
+        });
+      });
+    });
+
+
+(This is just a toy example to illustrate a point. In a "real" test, you will probably bring up an HTTP server first, then access it via a `localhost:port` address).
+
+As most IO in node is async, the zombie API does not let the test's main flow see the content. Instead, `browser.visit()` takes a callback function that will be invoked once the content is available, which can be well after the test's main flow has exited.
+
+Inside that (async) callback block we first check the page's content via
+
+    expect(browser.text()).toContain('Home');
+
+and then call done:
+
+    done()
+
+For the remainder of this section let us assume you made a silly mistake: instead of `toContain` you typed `includes`. Proper behavior for the test is to fail with an `Object [object Object] has no method 'includes'` message, or some such:
+
+    $ jasmine-node spec/explore.spec.js  --captureExceptions
+    TypeError: Object [object Object] has no method 'includes'
+        at /home/imaman/workspace/green-site/spec/explore.spec.js:8:30
+        at _fulfilled (/home/imaman/workspace/green-site/node_modules/zombie/node_modules/q/q.js:798:54)
+        at self.promiseDispatch.done (/home/imaman/workspace/green-site/node_modules/zombie/node_modules/q/q.js:827:30)
+        at Promise.promise.promiseDispatch (/home/imaman/workspace/green-site/node_modules/zombie/node_modules/q/q.js:760:13)
+        at /home/imaman/workspace/green-site/node_modules/zombie/node_modules/q/q.js:574:44
+        at flush (/home/imaman/workspace/green-site/node_modules/zombie/node_modules/q/q.js:108:17)
+        at process._tickCallback (node.js:415:13)
+
+Now, let us see how many ways can you shoot your own foot.
+
+**Don't try this at home #1: Stop using `--captureExceptions`**
+
+Omitting the `--captureExceptions` flag from the jasmine-node command line:
+ 
+    $ jasmine-node spec/explore.spec.js  # DON'T DO THIS 
+    $ echo $?
+    0
+
+Yields an empty output. It is as if the test was never invoked. The exit code (as reported by `echo $?`) is `0` which indicates "all tests are passing". The problem in your code is no longer detected by your tests. Very bad.
+
+**Don't try this at home #2: Calling `done()` from the main flow (when a side-flow exists)**
+
+What happens if you move the `done()` call out of the side-flow and into the main flow?
+
+    // DON'T DO THIS
+    it('fetches a page', function(done) {
+      var browser = new Browser();
+
+      browser.visit('https://collidingobjects.herokuapp.com', function() {
+        expect(browser.text()).includes('Home');
+      });
+      done();
+    });
+
+And then invoke jasmine-node (again) without `--captureExceptions`?
+
+    $ jasmine-node spec/explore.spec.js # DON'T DO THIS
+    .
+    
+    Finished in 0.065 seconds
+    1 test, 0 assertions, 0 failures, 0 skipped
+    
+    
+    $ echo $?
+    0
+
+
+This is the worst possible outcome: we get a Green line telling us everything went well and the exit code is zero. The only indication that something went wrong is the `0 assertions` printouts which is too easy to miss (and is never checked by automatic tools such as [travis](http://travis-ci.org).
+
+Omitting the `--captureExceptions` flag from the jasmine-node command line:
+ 
+    $ jasmine-node spec/explore.spec.js 
+    $ echo $?
+    0
+
+Yields an empty output: as if the test was never invoked. The exit code (as reported by `echo $?`) is `0` which indicates "all tests are passing". The problem in your code is no longer detected by your tests. Very bad.
+
+Bottom line: 
+
+- Always run with `--captureExceptions`.
+- If you start a side-flow make sure it calls `done()` (and that the main flow does not).
+- If there is no side flow, call `done()` from the bottom of the main flow.
+- Assertion failures are not reported via exceptions.
+
+
+
+
+
+
