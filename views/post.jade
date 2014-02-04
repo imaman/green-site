@@ -11,7 +11,13 @@ block content
         | 
         small= post.publishedAt
     div.body!= post.body
-    a(href="https://twitter.com/share" class="twitter-share-button" data-via="pembleton" data-count="none") Tweet
-    if display.twitterButton
-      script(type='text/javascript').
-        !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');
+
+    div(class="addthis_toolbox addthis_floating_style addthis_32x32_style" style="left:0px;top:350px;")
+      a.addthis_button_facebook
+      a.addthis_button_twitter
+      a.addthis_button_google_plusone_share
+      a.addthis_button_linkedin
+    script(type="text/javascript").
+      var addthis_config = {"data_track_addressbar":true};
+    script(type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-52f153c94bd5243b")
+
