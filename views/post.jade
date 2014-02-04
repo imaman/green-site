@@ -12,22 +12,24 @@ block content
         small= post.publishedAt
     div.body!= post.body
 
-    div(class="addthis_toolbox addthis_floating_style addthis_32x32_style" style="left:0px;top:350px;")
-      a.addthis_button_facebook
-      a.addthis_button_twitter
-      a.addthis_button_google_plusone_share
-      a.addthis_button_linkedin
-    script(type="text/javascript").
-      var addthis_config = {"data_track_addressbar":true};
-    script(type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-52f153c94bd5243b")
+    if display.twitterButton
+      div(class="addthis_toolbox addthis_floating_style addthis_32x32_style" style="left:0px;top:350px;")
+        a.addthis_button_hackernews
+        a.addthis_button_twitter
+        a.addthis_button_linkedin
+        a.addthis_button_google_plusone_share
+        a.addthis_button_facebook
+      script(type="text/javascript").
+        var addthis_config = {"data_track_addressbar":true};
+      script(type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-52f153c94bd5243b")
 
-    script(type="text/javascript").
-      var _gaq = _gaq || [];
-      _gaq.push(['_setAccount', 'UA-47793655-1']);
-      _gaq.push(['_trackPageview']);
+      script(type="text/javascript").
+        var _gaq = _gaq || [];
+        _gaq.push(['_setAccount', 'UA-47793655-1']);
+        _gaq.push(['_trackPageview']);
 
-      (function() {
-        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-      })();
+        (function() {
+          var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+          ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+          var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+        })();
