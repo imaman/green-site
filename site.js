@@ -18,7 +18,7 @@
 
     function listOfPosts(req, res) {
       if (display.secure) {
-        if (req.protocol != 'https' && req.host != 'localhost') {
+        if (!req.secure && req.host != 'localhost') {
           var target = 'https://' + req.host;
           console.log('redirecting to ' + target);
           res.redirect(target);
