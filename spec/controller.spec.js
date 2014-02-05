@@ -2,12 +2,12 @@ var controllerModule = require('../controller.js');
 
 describe('controller', function() {
   describe('posts', function() {
+    var view = null;
+    var data = null;
     it('returns all posts', function() {
       var posts = [ {id: 1, body: 'b_1'}, {id: 2, body: 'b_2___'}];
       var controller = controllerModule.withModel({ posts: posts });
 
-      var view = null;
-      var data = null;
       controller.posts(null, { render: function(v, d) {
         view = v;
         data = d
@@ -26,8 +26,6 @@ describe('controller', function() {
       ];
       var controller = controllerModule.withModel({ posts: posts });
 
-      var view = null;
-      var data = null;
       controller.posts(null, { render: function(v, d) {
         view = v;
         data = d
