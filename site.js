@@ -16,7 +16,8 @@
     app.set('view engine', 'jade');
     app.use(express.static(__dirname + '/public'));
 
-    function listOfPosts(req, res) {
+    var controller = {};
+    controller.listOfPosts = function(req, res) {
       var posts = model.posts.map(function(post) {
         var result = Object.create(post);
         result.publishedAt = moment(result.publishedAt).fromNow();
@@ -32,8 +33,8 @@
       res.render('post', { post: temp, headline: model.headline, options: options });
     }
 
-    app.get('/', listOfPosts);
-    app.get('/posts', listOfPosts);
+    app.get('/', controller.listOfPosts);
+    app.get('/posts', controller.listOfPosts);
 
     app.get('/edit', function(req, res) {
       res.redirect('/edit.html');
