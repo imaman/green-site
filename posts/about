@@ -1,20 +1,22 @@
 
 ###Who?
-Itay Maman. Programmer, researcher, teacher. 
+[Itay Maman](http://stackoverflow.com/users/27198/itay-maman). Programmer, researcher, teacher. 
 
-Timeline: Coding at Google (search backends, dev. infrastructure) for the past three years. Prior to that: IBM research; Ph.D. ([formal patterns in java programs](https://www.cs.technion.ac.il/users/wwwb/cgi-bin/tr-get.cgi/2012/PHD/PHD-2012-05.pdf)) at the Computer Science department of Israel Institute of Technology (aka, Technion); a couple of startups. In between I also interned, at IBM's Watson Research Center.
+Timeline: Coding at Google (search backends, dev. infrastructure) for the past three years. Prior to that: IBM research; Ph.D. ([formal patterns in java programs](https://www.cs.technion.ac.il/users/wwwb/cgi-bin/tr-get.cgi/2012/PHD/PHD-2012-05.pdf)) at the [Computer Science](https://www.cs.technion.ac.il/) department of [Israel Institute of Technology](http://www.technion.ac.il) (aka, Technion); a couple of startups. In between I also interned, at IBM's Watson Research Center.
 
 Since 2009 I am teaching [Software Design](http://webcourse.cs.technion.ac.il/236700) at the Technion: an advanced-undergrad/grad. course dealing with topics such as coding, design, and broken feedback loops (just like this site).
 
+
+
 ###Why?
-While I could theoretically use an existing blogging platform (actually I tried it for a couple of years: [javadots](http://javadots.blogspot.com) I decided to work on my own platofrm. While part of the reason is the passion to try new technolgies, there were additional reasons. My wishlist included:
+While I could theoretically use an existing blogging platform (actually I tried it for a couple of years: [javadots](http://javadots.blogspot.com)) I decided to work on my own platofrm. While part of the reason is the passion to try new technolgies, there were additional reasons. My wishlist included:
 
 - Markdown. WYSIWYG editing always frustrates (all sort of hidden styles lurking underneath). When you go down to the HTML level to fix it you see maze of divs and spans which no one has ever managed to solve.
 - Full control over the layout/look.
-- Some server side logic for doing all sort of quizzes.
+- Some server side logic for supporting "advanced" features which go beyond statically-served files (in particular: programming quizzes and challenges).
 
-So several weeks ago, while on vacation (all best programs are written on vacations, isn't it) I sat down and hacked this web-site. 
+So several weeks ago, while on vacation (seems like all best programs are written on vacations, isn't it?) I sat down and hacked this web-site. 
 
 ###How?
-This page is [node.js](http://nodejs.org) served. Currently, there is no database. All content is fetched from files, which are part of the [git repo](https://github.com/imaman/green-site). For testing I use jasmine-node and zombie. Whenever I push to github [Travis CI](https://travis-ci.org/) kicks in and runs the tests. It pushes to [Heroku](www.heroku.com) on Green. [Pingdom](https://www.pingdom.com/) is hitting the main page once a minute to make sure all users can see something.
+This page is [node.js](http://nodejs.org) served. Currently, there is no database. All content is fetched from files, which are part of the [git repo](https://github.com/imaman/green-site). For testing I use [jasmine-node](https://github.com/mhevery/jasmine-node) and [zombie](http://zombie.labnotes.org/). Whenever I push to Github [Travis CI](https://travis-ci.org/) kicks in and runs the tests. It pushes to [Heroku](www.heroku.com) on Green. [Pingdom](https://www.pingdom.com/) is hitting the main page once a minute to make sure all users can see something.
 

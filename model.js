@@ -24,6 +24,7 @@
         id: "about",
         title: 'About - the Who, the Why, and the How',
         marks: [ 'meta' ],
+        options: { showFooter: false },
         publishedAt: '2014-02-05T16:30:00+02:00'
       }
     ],
