@@ -18,6 +18,12 @@
         id: "jasmine_node_failures_explained",
         title: 'Jasmine-Node Failures Explained',
         publishedAt: '2014-02-04T10:12:00+02:00'
+      },
+      {
+        id: "about",
+        title: 'About',
+        marks: [ 'meta' ],
+        publishedAt: '2014-02-05T16:30:00+02:00'
       }
     ],
 
