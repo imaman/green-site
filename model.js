@@ -7,7 +7,8 @@
       {
         id: "intro",
         title: 'Does Design Exist?',
-        publishedAt: '2014-01-23T20:35:00-05:00'
+        publishedAt: '2014-01-23T20:35:00-05:00',
+        options: { showFooter: false }
       },
       {
         id: "refactor_on_red",

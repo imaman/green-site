@@ -1,10 +1,11 @@
 Ten years ago, An article by Martin Fowler rhetorically asked [Is Design Dead?](http://martinfowler.com/articles/designDead.html) 
-While I fully agree with the article's negative answer to the question, I think the question itself stems from the fact that the software development community has not yet reached a consensus on a couple of more fundamental questions:
+While I fully agree with the article's negative answer to the question, I think the question itself reflects a deeper issue. The question came from the fact that many people considered design to be an activity that is a somewhat mandatory part of software development. When a new methodology, XP, has appeaered, people rightfully asked what is the place (if any) that the design *activity* has within that methodology.
 
-#### Does Design Exist?
+The word 'design' has a second meaning. It is not only a verb desribing an activity but also a *noun*. It is
+> The purposeful or inventive arrangement of parts or details 
+ ([thefreedictionary](http://www.thefreedictionary.com/design)).
 
+I think that the noun meaning should be the dominant one. when getting familiar with a piece of software a purposeful arrangement of parts appears. This arrangement may not be the best one for the current needs, often it seems chatoic, but nonetheless, it is always there. The day-to-day of software developers includes a great deal of dealing with existing designs, of circumventing the limits imposed by designs, and of reshaping existing designs such that they better suite the next few steps. This is happening regardless of what activities led to these designs. 
 
-and (assuming it does):
-
-#### What is Design?
+To me, noun-designs are much more interesting than verb-designs.
 
