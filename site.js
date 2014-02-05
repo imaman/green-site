@@ -24,6 +24,15 @@
       res.redirect('/edit.html');
     });
 
+    app.get('/env.json', function(req, res) {
+      res.json({ 
+        user: process.env.USER, 
+        home: process.env.HOME, 
+        path: process.env.PATH, 
+        port: process.env.PORT, 
+        secret: process.env.SECRET });
+    });
+
     function lookup(id, callback) {
       var post = null;
       model.posts.forEach(function(current) {
