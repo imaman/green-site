@@ -5,13 +5,13 @@
   var moment = require('moment');
   var extend = require('node.extend');
   var path = require('path');
-  var controller = require('./controller');
+  var controllerModule = require('./controller');
 
   exports.createDriver = function(port, model, options_) {
     var options = options_ || {};
     var app = express();
 
-    controller = controller.withModel(model);
+    var controller = controllerModule.withModel(model);
 
     app.use(express.logger());
     app.set('port', port || process.env.PORT || 3000);
