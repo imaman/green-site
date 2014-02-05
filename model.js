@@ -22,7 +22,7 @@
       },
       {
         id: "about",
-        title: 'About',
+        title: 'About - the Who, the Why, and the How',
         marks: [ 'meta' ],
         publishedAt: '2014-02-05T16:30:00+02:00'
       }
