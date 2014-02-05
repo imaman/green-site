@@ -1,11 +1,9 @@
 var moment = require('moment');
 
 var model = {};
-var options = {};
 
-exports.initialize = function(model_, options_) {
+exports.initialize = function(model_) {
   model = model_;
-  options = options_;
 }
 
 exports.posts = function(req, res) {
