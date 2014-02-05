@@ -1,9 +1,6 @@
 var moment = require('moment');
 
-var model = {};
-
-exports.withModel = function(model_) {
-  model = model_;
+exports.withModel = function(model) {
   exports.posts = function(req, res) {
     var posts = model.posts.map(function(post) {
       var result = Object.create(post);
