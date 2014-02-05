@@ -2,7 +2,7 @@
   var express = require('express');
   var jade = require('jade');
   var markdown = require('markdown').markdown;
-  var moment = require('moment');
+  var moment_ = require('moment');
   var extend = require('node.extend');
   var path = require('path');
   var controller = require('./controller');
@@ -11,25 +11,18 @@
     var options = options_ || {};
     var app = express();
 
+    controller.initialize(model, options);
+
     app.use(express.logger());
     app.set('port', port || process.env.PORT || 3000);
     app.set('views', path.join(__dirname, 'views'));
     app.set('view engine', 'jade');
     app.use(express.static(__dirname + '/public'));
 
-    controller.listOfPosts = function(req, res) {
-      var posts = model.posts.map(function(post) {
-        var result = Object.create(post);
-        result.publishedAt = moment(result.publishedAt).fromNow();
-        return result;
-      });
-      res.render('posts', { posts: posts, headline: model.headline });
-    }
-
     function singlePost(post, res) {
       var temp = Object.create(post);
       temp.body = markdown.toHTML(temp.body);
-      temp.publishedAt = moment(temp.publishedAt).fromNow();
+      temp.publishedAt = moment_(temp.publishedAt).fromNow();
       res.render('post', { post: temp, headline: model.headline, options: options });
     }
 
