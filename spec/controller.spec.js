@@ -11,6 +11,10 @@ describe('controller', function() {
       }
     };
 
+    function rendered() { 
+      return data.posts.map(function(x) { return x.body }); 
+    }
+
     it('returns all posts', function() {
       var posts = [{id: 1, body: 'b_1'}, {id: 2, body: 'b_2'}];
       var controller = controllerModule.withModel({ posts: posts });
@@ -18,7 +22,7 @@ describe('controller', function() {
       controller.posts(null, response);
 
       expect(view).toEqual('posts');
-      expect(data.posts.map(function(x) { return x.body })).toEqual(['b_1', 'b_2']);
+      expect(rendered()).toEqual(['b_1', 'b_2']);
     });
 
     it('shows the most recent post first', function() {
@@ -32,8 +36,20 @@ describe('controller', function() {
 
       controller.posts(null, response);
 
-      expect(data.posts.map(function(x) { return x.body })).toEqual(
-        ['Post from Tuesday', 'Post from Monday']);
+      expect(rendered()).toEqual(['Post from Tuesday', 'Post from Monday']);
+    });
+
+    it('shows only posts marked as "main" or that have no mark', function() {
+      var posts = [ 
+        {id: 1, body: 'post', mark: ['main']},
+        {id: 2, body: 'META', mark: ['meta']},
+        {id: 3, body: 'another_post'},
+      ];
+      var controller = controllerModule.withModel({ posts: posts });
+
+      controller.posts(null, response);
+
+      expect(rendered()).not.toContain('META');
     });
   });
 });
