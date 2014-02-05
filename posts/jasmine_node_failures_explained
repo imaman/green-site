@@ -1,11 +1,16 @@
-Jasmine-node is a great testing framework. However, the asynchronous execution model of its underlying platform, [node.js](http://nodejs.org), inflicts some changes on its failure semantics, compared to traditional xUnit framework. Understanding these differences is a must if one wants to avoid all sort of painful pitfall.
+[jasmine-node](https://github.com/mhevery/jasmine-node) is a great testing framework. Still, the asynchronous execution model of its underlying platform, [node.js](http://nodejs.org), has some implications on the way it behaves once a failure has occurred, which may surprise you if you are used to traditional xUnit frameworks. Understanding these differences will help you avoid several  painful pitfall.
 
-#### A test must call done() or it times out
+#### Asynchronous vs. Synchronous tests
 
-In Jasmine-node every test (that is: every callback function passed to the `it()` function) receives a `done` parameter which is a function to be called when the testing is over. 
+In jasmine-node every test (that is: every callback function passed to the `it()` function) can optionally receive a `done` parameter.
 
-If the test body does not issue a `done()` call ... 
+If your test does not issue async. calls, your function should not define this parameter. jasmine-node will detect that your function has zero parameters and will treat it as a synchronous test: it will assume the test has finished once execution returns from the function you supplied.
 
+On the other hand, if your test does spawn async. flows, you *must* make your test function take a single parameter, typically called `done`, which is essentially a callback function supplied by jasmine-node. You need to arrange your test code to call this callback function once all async flows triggered by the test are over.
+
+#### An async. test must call done() or it times out
+
+If your async. test does not issue a `done()` call ... 
 
     // explore.spec.js
     describe('jasmine-node failure semantics', function() {
@@ -34,9 +39,9 @@ If the test body does not issue a `done()` call ...
 
 #### A failed assertions does not throw an exception
 
-In xUnit, an assertion failure is translated into an exception (such as: [java.lang.AssertionError](http://docs.oracle.com/javase/7/docs/api/java/lang/AssertionError.html)) that is thrown by the assertion code. When an assertion fails execution will bail out of the test method and will resume at a `catch {}` block at the testing framework code.
+In xUnit, an assertion failure is translated into an exception (such as: [java.lang.AssertionError](http://docs.oracle.com/javase/7/docs/api/java/lang/AssertionError.html)) that is [thrown by the assertion code](https://github.com/junit-team/junit/blob/6f817017ec28e93d83bd75aa052a8b24cf3be473/src/main/java/org/junit/Assert.java#L86). When an assertion fails, execution will bail out of the test method and will resume at a `catch {}` block at the [testing framework code](https://github.com/junit-team/junit/blob/6f817017ec28e93d83bd75aa052a8b24cf3be473/src/main/java/org/junit/runners/ParentRunner.java#L368).
 
-In Jasmine-node assertion failures do not end up with a thrown exception. Instead, they simply register the failure with the framework (so that it can be reported later), but other other than that, execution continues normally.
+In jasmine-node, assertion failures are not surfaced as thrown exception. Instead, the assertion code simply registerthe failure with the framework (so that it can be reported later), but other other than that, execution continues normally.
 
 This spec proves that:
 
@@ -83,7 +88,7 @@ Moreover, this means that if you have two failing assertion in a test, both of t
     });
 
 
-In xUnit such a situation leads to the first assertion throwing an exception and the second assertion not being executed at all. In jasmine-node output we get two separate failure reports and the summary line indicates *two* assertions:
+In xUnit such a situation leads to the first assertion throwing an exception and the second assertion not being executed at all. In the jasmine-node, things are different. looking at the output we see *two* separate failure reports and the summary line indicates *two* assertions:
 
     $ jasmine-node --captureExceptions spec/explore.spec.js 
     FF
@@ -112,7 +117,7 @@ In xUnit such a situation leads to the first assertion throwing an exception and
 
 #### Exceptions and side flows
 
-This is a nasty minefield. By 'side flow' I mean block of code that is asynchronously executed outside of the test's main flow. These are very common in Node.js (arguably, this is its value proposition).
+This is a nasty minefield. By 'side flow' I mean a block of code that is asynchronously executed outside of the test's main flow. Such blocks are very common in node.js (arguably, this is a key part of its value proposition).
 
 We'll start with properly written test, and then examine the effect of diversions. Specifically, here's a test that opens a web-page and checks its  content. 
 
@@ -132,7 +137,7 @@ We'll start with properly written test, and then examine the effect of diversion
 
 (This is just a toy example to illustrate a point. In a "real" test, you will probably bring up an HTTP server first, then access it via a `localhost:port` address).
 
-As most IO in node is async, the zombie API does not let the test's main flow see the content. Instead, `browser.visit()` takes a callback function that will be invoked once the content is available, which can be well after the test's main flow has exited.
+As most IO in node.js is async, the zombie API does not let the test's main flow see the content. Instead, `browser.visit()` takes a callback function that will be invoked once the content is available, which can be well after the test's main flow has exited.
 
 Inside that (async) callback block we first check the page's content via
 
@@ -170,7 +175,7 @@ Now, let us see two ways for shooting yourself in the foot.
 
 **Don't try this at home #1: Stop using `--captureExceptions`**
 
-Omitting the `--captureExceptions` flag from the jasmine-node command line
+Omitting the `--captureExceptions` flag from the `jasmine-node` command line
  
     $ jasmine-node spec/explore.spec.js  # DON'T DO THIS 
     $ echo $?
@@ -192,7 +197,7 @@ What happens if you move the `done()` call out of the side-flow and into the mai
       done();  // <-- O-O. done() is not called from the side flow.
     });
 
-And then invoke jasmine-node (again) without `--captureExceptions`?
+And then invoke `jasmine-node` (again) without `--captureExceptions`?
 
     $ jasmine-node spec/explore.spec.js # DON'T DO THIS
     .
@@ -214,6 +219,7 @@ This is the worst possible outcome: we get a Green line telling us everything we
 - If you start a side-flow make sure it calls `done()` (and that the main flow does not).
 - If there is no side flow, call `done()` from the bottom of the main flow.
 - Assertion failures are not reported via exceptions.
+
 
 
 

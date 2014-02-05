@@ -16,7 +16,7 @@
       },
       {
         id: "jasmine_node_failures_explained",
-        title: 'Jasmine-Node Failure Modes Explained',
+        title: 'Jasmine-Node Failures Explained',
         publishedAt: '2014-02-04T10:12:00+02:00'
       }
     ],
