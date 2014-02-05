@@ -15,7 +15,7 @@ describe('controller', function() {
 
       expect(data.posts.length).toEqual(2);
       expect(data.posts[0].body).toEqual('b1');
-      expect(data.posts[1].body).toEqual('_');
+      expect(data.posts[1].body).toEqual('b2');
     });
   });
 });
