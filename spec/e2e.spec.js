@@ -86,7 +86,7 @@ describe('site', function() {
     it('extends the main layout', function(done) {
       visit('posts', done, function() {
         var text = browser.text();
-        expect(text).toContain('(c) Itay Maman');
+        expect(text).toContain('Coding, design, and broken feedback loops');
       });
     });
   });
