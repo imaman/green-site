@@ -12,7 +12,7 @@ describe('controller', function() {
     };
 
     it('returns all posts', function() {
-      var posts = [ {id: 1, body: 'b_1'}, {id: 2, body: 'b_2'}];
+      var posts = [{id: 1, body: 'b_1'}, {id: 2, body: 'b_2'}];
       var controller = controllerModule.withModel({ posts: posts });
 
       controller.posts(null, response);
