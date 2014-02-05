@@ -2,7 +2,7 @@
   var express = require('express');
   var jade = require('jade');
   var markdown = require('markdown').markdown;
-  var moment_ = require('moment');
+  var moment = require('moment');
   var extend = require('node.extend');
   var path = require('path');
   var controller = require('./controller');
@@ -22,12 +22,12 @@
     function singlePost(post, res) {
       var temp = Object.create(post);
       temp.body = markdown.toHTML(temp.body);
-      temp.publishedAt = moment_(temp.publishedAt).fromNow();
+      temp.publishedAt = moment(temp.publishedAt).fromNow();
       res.render('post', { post: temp, headline: model.headline, options: options });
     }
 
-    app.get('/', controller.listOfPosts);
-    app.get('/posts', controller.listOfPosts);
+    app.get('/', controller.posts);
+    app.get('/posts', controller.posts);
 
     app.get('/edit', function(req, res) {
       res.redirect('/edit.html');

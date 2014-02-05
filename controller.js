@@ -8,7 +8,7 @@ exports.initialize = function(model_, options_) {
   options = options_;
 }
 
-exports.listOfPosts = function(req, res) {
+exports.posts = function(req, res) {
   var posts = model.posts.map(function(post) {
     var result = Object.create(post);
     result.publishedAt = moment(result.publishedAt).fromNow();
