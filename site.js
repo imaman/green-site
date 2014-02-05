@@ -5,6 +5,7 @@
   var moment = require('moment');
   var extend = require('node.extend');
   var path = require('path');
+  var controller = {};
 
   exports.createDriver = function(port, model, options_) {
     var options = options_ || {};
@@ -16,7 +17,6 @@
     app.set('view engine', 'jade');
     app.use(express.static(__dirname + '/public'));
 
-    var controller = {};
     controller.listOfPosts = function(req, res) {
       var posts = model.posts.map(function(post) {
         var result = Object.create(post);
