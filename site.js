@@ -5,7 +5,7 @@
   var moment = require('moment');
   var extend = require('node.extend');
   var path = require('path');
-  var controller = {};
+  var controller = require('./controller');
 
   exports.createDriver = function(port, model, options_) {
     var options = options_ || {};
