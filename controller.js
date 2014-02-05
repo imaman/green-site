@@ -2,7 +2,7 @@ var moment = require('moment');
 
 var model = {};
 
-exports.initialize = function(model_) {
+exports.withModel = function(model_) {
   model = model_;
   return exports;
 }
