@@ -27,19 +27,33 @@ describe('views', function() {
       });
       expect(html).not.toContain('addthis_config');
     });
-    it('it does not show the widgets when the showWidgets option is false', function() {
+    it('does not show the widgets when the showWidgets option is false', function() {
       var html = jade.renderFile(pathOf('post.jade'), { 
         options: { showWidgets: false },
         post: {}
       });
       expect(html).not.toContain('addthis_config');
     });
-    it('it does show the widgets when the showWidgets option is true', function() {
+    it('does show the widgets when the showWidgets option is true', function() {
       var html = jade.renderFile(pathOf('post.jade'), { 
         options: { showWidgets: true },
         post: {}
       });
       expect(html).toContain('addthis_config');
+    });
+    it('does not show the footer when the showFooter option is false', function() {
+      var html = jade.renderFile(pathOf('post.jade'), { 
+        options: { showFooter: false },
+        post: {}
+      });
+      expect(html).not.toContain('(c) Itay Maman');
+    });
+    it('does show the footer when the showFooter option is true', function() {
+      var html = jade.renderFile(pathOf('post.jade'), { 
+        options: { showFooter: true },
+        post: {}
+      });
+      expect(html).toContain('(c) Itay Maman');
     });
   });
   describe('/posts', function() {
