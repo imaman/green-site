@@ -7,14 +7,11 @@
   var path = require('path');
   var controller = require('./controller');
 
-  console.log('CONTROLLER.withModel=' + JSON.stringify(controller.withModel, null, '  '));
-  console.log('CONTROLLER.withModel=' + controller.withModel);
-
   exports.createDriver = function(port, model, options_) {
     var options = options_ || {};
     var app = express();
 
-    controller = controller.withModel(model);
+    controller.initialize(model);
 
     app.use(express.logger());
     app.set('port', port || process.env.PORT || 3000);
