@@ -13,7 +13,8 @@ describe('controller', function() {
         data = d
       }});
 
-      expect(data.posts).toEqual([]);
+      expect(data.posts.length).toEqual(2);
+      expect(data.posts[0].body).toEqual('_');
     });
   });
 });
