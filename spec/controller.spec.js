@@ -19,6 +19,13 @@ describe('controller', function() {
       expect(view).toEqual('post');
       expect(data.post.body).toEqual('<p>plain text and <strong>bolded text</strong></p>');
     });
+    it('passes the options down to the view', function() {
+      var controller = controllerModule.withModel({}, { option_a: 1, option_b: 2 });
+
+      controller.singlePost({ id: 1, body: '' }, response);
+
+      expect(data.options).toEqual({ option_a : 1, option_b: 2 });
+    });
   });
 
   describe('posts', function() {
