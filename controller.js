@@ -1,7 +1,7 @@
 var moment = require('moment');
 
 exports.withModel = function(model) {
-  var controller = exports;
+  var controller = {};
   controller.posts = function(req, res) {
     var posts = model.posts.map(function(post) {
       var result = Object.create(post);
