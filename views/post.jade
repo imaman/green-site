@@ -12,7 +12,7 @@ block content
         small= post.publishedAt
     div.body!= post.body
 
-    if display.twitterButton
+    if options.showWidgets
       div(class="addthis_toolbox addthis_floating_style addthis_32x32_style" style="left:0px;top:350px;")
         a.addthis_button_hackernews
         a.addthis_button_twitter

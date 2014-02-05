@@ -6,8 +6,8 @@
   var extend = require('node.extend');
   var path = require('path');
 
-  exports.createDriver = function(port, model, displayOptions) {
-    var display = displayOptions || {};
+  exports.createDriver = function(port, model, options_) {
+    var options = options_ || {};
     var app = express();
 
     app.use(express.logger());
@@ -29,7 +29,7 @@
       var temp = Object.create(post);
       temp.body = markdown.toHTML(temp.body);
       temp.publishedAt = moment(temp.publishedAt).fromNow();
-      res.render('post', { post: temp, headline: model.headline, display: display });
+      res.render('post', { post: temp, headline: model.headline, options: options });
     }
 
     app.get('/', listOfPosts);
