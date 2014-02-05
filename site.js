@@ -26,9 +26,7 @@
 
     app.get('/env.json', function(req, res) {
       res.json({ 
-        user: process.env.USER, 
-        home: process.env.HOME, 
-        path: process.env.PATH, 
+        what: 'just port & secret',
         port: process.env.PORT, 
         secret: process.env.SECRET });
     });
