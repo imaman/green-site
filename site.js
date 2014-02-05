@@ -11,7 +11,7 @@
     var options = options_ || {};
     var app = express();
 
-    controller.initialize(model, options);
+    controller.initialize(model);
 
     app.use(express.logger());
     app.set('port', port || process.env.PORT || 3000);
