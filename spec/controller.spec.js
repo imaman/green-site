@@ -13,7 +13,7 @@ describe('controller', function() {
         data = d
       }});
 
-      expect(view).toEqual('__');
+      expect(view).toEqual('posts');
       expect(data.posts.map(function(x) { return x.body })).toEqual(['b_1', 'b_2']);
     });
   });
