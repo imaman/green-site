@@ -41,15 +41,15 @@ describe('controller', function() {
 
     it('shows only posts marked as "main" or that have no mark', function() {
       var posts = [ 
-        {id: 1, body: 'post', mark: ['main']},
-        {id: 2, body: 'META', mark: ['meta']},
+        {id: 1, body: 'post', marks: ['main']},
+        {id: 2, body: 'FILTERED_OUT', marks: ['secondary']},
         {id: 3, body: 'another_post'},
       ];
       var controller = controllerModule.withModel({ posts: posts });
 
       controller.posts(null, response);
 
-      expect(rendered()).not.toContain('META');
+      expect(rendered()).not.toContain('FILTERED_OUT');
     });
   });
 });
