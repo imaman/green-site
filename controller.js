@@ -4,6 +4,7 @@ var model = {};
 
 exports.initialize = function(model_) {
   model = model_;
+  return exports;
 }
 
 exports.posts = function(req, res) {
