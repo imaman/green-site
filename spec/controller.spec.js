@@ -1,17 +1,29 @@
 var controllerModule = require('../controller.js');
 
 describe('controller', function() {
-  describe('posts', function() {
-    var view = null;
-    var data = null;
-    var response = { 
-      render: function(v, d) {
-        view = v;
-        data = d;
-      }
-    };
+  var view = null;
+  var data = null;
+  var response = { 
+    render: function(v, d) {
+      view = v;
+      data = d;
+    }
+  };
 
-    function rendered() { 
+  describe('single post', function() {
+    it('translates markdown to HTML', function() {
+      var controller = controllerModule.withModel({});
+
+      controller.singlePost({ id: 1, body: 'plain text and **bolded text**' }, response);
+
+      expect(view).toEqual('post');
+      expect(data.post.body).toEqual('<p>plain text and <strong>bolded text</strong></p>');
+    });
+  });
+
+  describe('posts', function() {
+
+    function renderedPosts() { 
       return data.posts.map(function(x) { return x.body }); 
     }
 
@@ -22,7 +34,7 @@ describe('controller', function() {
       controller.posts(null, response);
 
       expect(view).toEqual('posts');
-      expect(rendered()).toEqual(['b_1', 'b_2']);
+      expect(renderedPosts()).toEqual(['b_1', 'b_2']);
     });
 
     it('shows the most recent post first', function() {
@@ -36,7 +48,7 @@ describe('controller', function() {
 
       controller.posts(null, response);
 
-      expect(rendered()).toEqual(['Post from Tuesday', 'Post from Monday']);
+      expect(renderedPosts()).toEqual(['Post from Tuesday', 'Post from Monday']);
     });
 
     it('shows only posts marked as "main" or that have no mark', function() {
@@ -49,7 +61,7 @@ describe('controller', function() {
 
       controller.posts(null, response);
 
-      expect(rendered()).not.toContain('FILTERED_OUT');
+      expect(renderedPosts()).not.toContain('FILTERED_OUT');
     });
   });
 });

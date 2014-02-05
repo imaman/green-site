@@ -144,11 +144,6 @@ describe('site', function() {
         expect(browser.text()).toContain('body of 3');
       });
     });
-    it('is translated from markdown to HTML when rendered', function(done) {
-      visit('posts/4', done, function() {
-        expect(browser.html()).toContain('some text <code>some code</code> the end');
-      });
-    });
     it('can be retrieved as json', function(done) {
       model.fetchBody = function(id, done) {
         done(null, 'some *markdown* text');
