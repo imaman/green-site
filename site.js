@@ -1,30 +1,21 @@
 (function() {
   var express = require('express');
   var jade = require('jade');
-  var markdown = require('markdown').markdown;
   var moment = require('moment');
   var extend = require('node.extend');
   var path = require('path');
   var controllerModule = require('./controller');
 
-  exports.createDriver = function(port, model, options_) {
-    var options = options_ || {};
+  exports.createDriver = function(port, model, options) {
     var app = express();
 
-    var controller = controllerModule.withModel(model);
+    var controller = controllerModule.withModel(model, options || {});
 
     app.use(express.logger());
     app.set('port', port || process.env.PORT || 3000);
     app.set('views', path.join(__dirname, 'views'));
     app.set('view engine', 'jade');
     app.use(express.static(__dirname + '/public'));
-
-    function singlePost(post, res) {
-      var temp = Object.create(post);
-      temp.body = markdown.toHTML(temp.body);
-      temp.publishedAt = moment(temp.publishedAt).fromNow();
-      res.render('post', { post: temp, headline: model.headline, options: options });
-    }
 
     app.get('/', controller.posts);
     app.get('/posts', controller.posts);
@@ -62,7 +53,7 @@
     app.get('/posts/:id', function(req, res) {
       lookup(req.params.id, function(post) {
         if (post) {
-          singlePost(post, res);
+          controller.singlePost(post, res);
         } else {
           res.send(404);
         }
