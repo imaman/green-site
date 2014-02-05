@@ -1,3 +1,4 @@
+var extend = require('node.extend');
 var markdown = require('markdown').markdown;
 var moment = require('moment');
 
@@ -23,7 +24,7 @@ exports.withModel = function(model, options) {
     var temp = Object.create(post);
     temp.body = markdown.toHTML(temp.body);
     temp.publishedAt = moment(temp.publishedAt).fromNow();
-    res.render('post', { post: temp, headline: model.headline, options: options });
+    res.render('post', { post: temp, headline: model.headline, options: extend({}, options, post.options) });
   }
 
   return controller;

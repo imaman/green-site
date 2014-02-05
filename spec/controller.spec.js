@@ -26,6 +26,13 @@ describe('controller', function() {
 
       expect(data.options).toEqual({ option_a : 1, option_b: 2 });
     });
+    it('allows the post to override the options', function() {
+      var controller = controllerModule.withModel({}, { option_a: 1, option_b: 2 });
+
+      controller.singlePost({ id: 1, body: '', options: { option_a: 110011 } }, response);
+
+      expect(data.options).toEqual({ option_a : 110011, option_b: 2 });
+    });
   });
 
   describe('posts', function() {
