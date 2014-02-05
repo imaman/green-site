@@ -4,14 +4,18 @@ describe('controller', function() {
   describe('posts', function() {
     var view = null;
     var data = null;
+    var response = { 
+      render: function(v, d) {
+        view = v;
+        data = d;
+      }
+    };
+
     it('returns all posts', function() {
       var posts = [ {id: 1, body: 'b_1'}, {id: 2, body: 'b_2___'}];
       var controller = controllerModule.withModel({ posts: posts });
 
-      controller.posts(null, { render: function(v, d) {
-        view = v;
-        data = d
-      }});
+      controller.posts(null, response);
 
       expect(view).toEqual('posts');
       expect(data.posts.map(function(x) { return x.body })).toEqual(['b_1', 'b_2']);
@@ -26,10 +30,7 @@ describe('controller', function() {
       ];
       var controller = controllerModule.withModel({ posts: posts });
 
-      controller.posts(null, { render: function(v, d) {
-        view = v;
-        data = d
-      }});
+      controller.posts(null, response);
 
       expect(data.posts.map(function(x) { return x.body })).toEqual(
         ['Post from Tuesday', 'Post from Monday']);
