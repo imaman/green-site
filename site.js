@@ -53,14 +53,6 @@
     app.use(app.router);
     app.use(express.static(__dirname + '/public'));
 
-    app.get('/success', function(req, res) {
-      res.json(model.auth);
-    });
-
-    app.get('/failure', function(req, res) {
-      res.json(model.auth);
-    });
-
     app.get('/login', function(req, res) {
       res.render('login', { headline: model.headline });
     });
@@ -71,7 +63,7 @@
 
     app.get('/auth/twitter/callback', 
       passport.authenticate('twitter', 
-      { failureRedirect: '/failure', successRedirect: '/' })
+      { failureRedirect: '/login', successRedirect: '/' })
     );
 
     app.get('/', controller.posts);
