@@ -8,6 +8,7 @@
   var controllerModule = require('./controller');
   var passport = require('passport');
   var TwitterStrategy = require('passport-twitter').Strategy;
+  var devSecret = 'dev secret';
 
   passport.serializeUser(function(user, done) {
     done(null, user);
@@ -26,7 +27,7 @@
 
     passport.use(new TwitterStrategy({
         consumerKey: "FCvT4ed7oo1N8YvB1o5pQ",
-        consumerSecret: process.env.TWITTER_CONSUMER_SECRET || '',
+        consumerSecret: process.env.TWITTER_CONSUMER_SECRET || devSecret,
         callbackURL: "/auth/twitter/callback"
       },
       function(token, tokenSecret, profile, done) {
@@ -42,11 +43,11 @@
     app.set('view engine', 'jade');
 
     app.use(express.logger());
-    app.use(express.cookieParser(process.env.COOKIE_SECRET || '' )); 
+    app.use(express.cookieParser(process.env.COOKIE_SECRET || devSecret )); 
     app.use(express.bodyParser());
-    app.use(express.cookieSession({ secret: process.env.COOKIE_SESSION_SECRET || '' }));
+    app.use(express.cookieSession({ secret: process.env.COOKIE_SESSION_SECRET || devSecret }));
     app.use(express.methodOverride());
-    app.use(express.session({ secret: process.env.SESSION_SECRET || '' }));
+    app.use(express.session({ secret: process.env.SESSION_SECRET || devSecret }));
     app.use(passport.initialize());
     app.use(passport.session());    
     app.use(app.router);
