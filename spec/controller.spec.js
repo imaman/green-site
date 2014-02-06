@@ -14,7 +14,7 @@ describe('controller', function() {
     it('translates markdown to HTML', function() {
       var controller = controllerModule.withModel({});
 
-      controller.singlePost({ id: 1, body: 'plain text and **bolded text**' }, response);
+      controller.singlePost({ id: 1, body: 'plain text and **bolded text**' }, {}, response);
 
       expect(view).toEqual('post');
       expect(data.post.body).toEqual('<p>plain text and <strong>bolded text</strong></p>');
@@ -22,14 +22,14 @@ describe('controller', function() {
     it('passes the options down to the view', function() {
       var controller = controllerModule.withModel({}, { option_a: 1, option_b: 2 });
 
-      controller.singlePost({ id: 1, body: '' }, response);
+      controller.singlePost({ id: 1, body: '' }, {}, response);
 
       expect(data.options).toEqual({ option_a : 1, option_b: 2 });
     });
     it('allows the post to override the options', function() {
       var controller = controllerModule.withModel({}, { option_a: 1, option_b: 2 });
 
-      controller.singlePost({ id: 1, body: '', options: { option_a: 110011 } }, response);
+      controller.singlePost({ id: 1, body: '', options: { option_a: 110011 } }, {}, response);
 
       expect(data.options).toEqual({ option_a : 110011, option_b: 2 });
     });
@@ -45,7 +45,7 @@ describe('controller', function() {
       var posts = [{id: 1, body: 'b_1'}, {id: 2, body: 'b_2'}];
       var controller = controllerModule.withModel({ posts: posts });
 
-      controller.posts(null, response);
+      controller.posts({}, response);
 
       expect(view).toEqual('posts');
       expect(renderedPosts()).toEqual(['b_1', 'b_2']);
@@ -60,7 +60,7 @@ describe('controller', function() {
       ];
       var controller = controllerModule.withModel({ posts: posts });
 
-      controller.posts(null, response);
+      controller.posts({}, response);
 
       expect(renderedPosts()).toEqual(['Post from Tuesday', 'Post from Monday']);
     });
@@ -73,7 +73,7 @@ describe('controller', function() {
       ];
       var controller = controllerModule.withModel({ posts: posts });
 
-      controller.posts(null, response);
+      controller.posts({}, response);
 
       expect(renderedPosts()).not.toContain('FILTERED_OUT');
     });
