@@ -17,14 +17,14 @@ exports.withModel = function(model, options) {
       result.publishedAt = moment(result.publishedAt).fromNow();
       return result;
     });
-    res.render('posts', { posts: posts, headline: model.headline });
+    res.render('posts', { posts: posts, headline: model.headline, user: req.user });
   };
 
-  controller.singlePost = function(post, res) {
+  controller.singlePost = function(post, req, res) {
     var temp = Object.create(post);
     temp.body = markdown.toHTML(temp.body);
     temp.publishedAt = moment(temp.publishedAt).fromNow();
-    res.render('post', { post: temp, headline: model.headline, options: extend({}, options, post.options) });
+    res.render('post', { post: temp, headline: model.headline, user: req.user, options: extend({}, options, post.options) });
   }
 
   return controller;

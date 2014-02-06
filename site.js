@@ -1,21 +1,77 @@
 (function() {
+  var env = require('node-env-file');
   var express = require('express');
   var jade = require('jade');
   var moment = require('moment');
   var extend = require('node.extend');
   var path = require('path');
   var controllerModule = require('./controller');
+  var passport = require('passport');
+  var TwitterStrategy = require('passport-twitter').Strategy;
+
+  passport.serializeUser(function(user, done) {
+    done(null, user);
+  });
+
+  passport.deserializeUser(function(obj, done) {
+    done(null, obj);
+  });
 
   exports.createDriver = function(port, model, options) {
+    try {
+      env(__dirname + '/.env'); 
+    } catch(e) {
+      // Intentionally ignore.
+    }
+
+    passport.use(new TwitterStrategy({
+        consumerKey: "FCvT4ed7oo1N8YvB1o5pQ",
+        consumerSecret: process.env.TWITTER_CONSUMER_SECRET,
+        callbackURL: "/auth/twitter/callback"
+      },
+      function(token, tokenSecret, profile, done) {
+        done(null, profile.username);
+      }
+    ));
     var app = express();
 
     var controller = controllerModule.withModel(model, options || {});
 
-    app.use(express.logger());
     app.set('port', port || process.env.PORT || 3000);
     app.set('views', path.join(__dirname, 'views'));
     app.set('view engine', 'jade');
+
+    app.use(express.logger());
+    app.use(express.cookieParser(process.env.COOKIE_SECRET)); 
+    app.use(express.bodyParser());
+    app.use(express.cookieSession({ secret: process.env.COOKIE_SESSION_SECRET }));
+    app.use(express.methodOverride());
+    app.use(express.session({ secret: process.env.SESSION_SECRET }));
+    app.use(passport.initialize());
+    app.use(passport.session());    
+    app.use(app.router);
     app.use(express.static(__dirname + '/public'));
+
+    app.get('/success', function(req, res) {
+      res.json(model.auth);
+    });
+
+    app.get('/failure', function(req, res) {
+      res.json(model.auth);
+    });
+
+    app.get('/login', function(req, res) {
+      res.render('login', { headline: model.headline });
+    });
+
+    app.get('/auth/twitter', passport.authenticate('twitter'), 
+      function(req, res) {} // will never be called.
+    );
+
+    app.get('/auth/twitter/callback', 
+      passport.authenticate('twitter', 
+      { failureRedirect: '/failure', successRedirect: '/' })
+    );
 
     app.get('/', controller.posts);
     app.get('/posts', controller.posts);
@@ -60,7 +116,7 @@
     app.get('/posts/:id', function(req, res) {
       lookup(req.params.id, function(post) {
         if (post) {
-          controller.singlePost(post, res);
+          controller.singlePost(post, req, res);
         } else {
           res.send(404);
         }
