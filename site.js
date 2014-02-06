@@ -26,7 +26,7 @@
 
     passport.use(new TwitterStrategy({
         consumerKey: "FCvT4ed7oo1N8YvB1o5pQ",
-        consumerSecret: process.env.TWITTER_CONSUMER_SECRET,
+        consumerSecret: process.env.TWITTER_CONSUMER_SECRET || '',
         callbackURL: "/auth/twitter/callback"
       },
       function(token, tokenSecret, profile, done) {
@@ -42,11 +42,11 @@
     app.set('view engine', 'jade');
 
     app.use(express.logger());
-    app.use(express.cookieParser(process.env.COOKIE_SECRET)); 
+    app.use(express.cookieParser(process.env.COOKIE_SECRET || '' )); 
     app.use(express.bodyParser());
-    app.use(express.cookieSession({ secret: process.env.COOKIE_SESSION_SECRET }));
+    app.use(express.cookieSession({ secret: process.env.COOKIE_SESSION_SECRET || '' }));
     app.use(express.methodOverride());
-    app.use(express.session({ secret: process.env.SESSION_SECRET }));
+    app.use(express.session({ secret: process.env.SESSION_SECRET || '' }));
     app.use(passport.initialize());
     app.use(passport.session());    
     app.use(app.router);
