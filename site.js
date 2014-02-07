@@ -57,6 +57,11 @@
       res.render('login', { headline: model.headline });
     });
 
+    app.get('/logout', function(req, res) {
+      req.logout();
+      res.redirect('/');
+    });
+
     app.get('/auth/twitter', passport.authenticate('twitter'), 
       function(req, res) {} // will never be called.
     );

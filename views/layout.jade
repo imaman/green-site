@@ -13,10 +13,10 @@ html
           a.navbar-brand(href="/posts/about") About
           a.navbar-brand(href="//twitter.com/pembleton") Follow
           a.navbar-brand(href="//github.com/imaman/green-site") Fork
-        if user
         p(class='navbar-text navbar-right')
           if user
-            = 'Hello, ' + user
+            span= 'Hello, ' + user
+            a(href='/logout') (Sign out)
           else
             a(href='/login')= 'Sign in'
         div(class="navbar-collapse collapse")
