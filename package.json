@@ -21,6 +21,7 @@
     "passport": "0.2.0",
     "passport-twitter": "1.0.2",
     "zombie": "2.0.0-alpha24",
-    "passport-facebook": "~1.0.2"
+    "passport-facebook": "~1.0.2",
+    "passport-google": "~0.3.0"
   }
 }

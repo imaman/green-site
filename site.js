@@ -9,6 +9,7 @@
   var passport = require('passport');
   var TwitterStrategy = require('passport-twitter').Strategy;
   var FacebookStrategy = require('passport-facebook').Strategy;
+  var GoogleStrategy = require('passport-google').Strategy;
   var devSecret = 'dev secret';
 
 
@@ -45,10 +46,18 @@
         callbackURL: "//collidingobjects.herokuapp.com/auth/facebook/callback",
       },
       function(accessToken, refreshToken, profile, done) {
-          return done(null, profile);
+        return done(null, profile);
       }
     ));
-
+    passport.use(new GoogleStrategy({
+        returnURL: 'http://localhost:3000/auth/google/callback',
+        realm: 'http://localhost:3000/'
+      },
+      function(identifier, profile, done) {
+        profile.id = identifier;
+        return done(null, profile);
+      }
+    ));
     var app = express();
 
     var controller = controllerModule.withModel(model, options || {});
@@ -80,7 +89,6 @@
     app.get('/auth/twitter', passport.authenticate('twitter'), 
       function(req, res) {} // will never be called.
     );
-
     app.get('/auth/twitter/callback', 
       passport.authenticate('twitter', 
       { failureRedirect: '/login', successRedirect: '/' })
@@ -89,9 +97,16 @@
     app.get('/auth/facebook', passport.authenticate('facebook'),
       function(req, res) {} // will never be called.
     );
-
     app.get('/auth/facebook/callback', 
       passport.authenticate('facebook', 
+      { failureRedirect: '/login', successRedirect: '/' })
+    );
+
+    app.get('/auth/google', passport.authenticate('google'),
+      function(req, res) {} // will never be called.
+    );
+    app.get('/auth/google/callback', 
+      passport.authenticate('google', 
       { failureRedirect: '/login', successRedirect: '/' })
     );
 
