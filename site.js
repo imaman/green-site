@@ -8,6 +8,7 @@
   var controllerModule = require('./controller');
   var passport = require('passport');
   var TwitterStrategy = require('passport-twitter').Strategy;
+  var FacebookStrategy = require('passport-facebook').Strategy;
   var devSecret = 'dev secret';
 
 
@@ -38,6 +39,16 @@
         done(null, profile);
       }
     ));
+    passport.use(new FacebookStrategy({
+        clientID: "1404627676456080",
+        clientSecret: process.env.FACEBOOK_APP_SECRET || devSecret,
+        callbackURL: "//collidingobjects.herokuapp.com/auth/facebook/callback",
+      },
+      function(accessToken, refreshToken, profile, done) {
+          return done(null, profile);
+      }
+    ));
+
     var app = express();
 
     var controller = controllerModule.withModel(model, options || {});
@@ -72,6 +83,15 @@
 
     app.get('/auth/twitter/callback', 
       passport.authenticate('twitter', 
+      { failureRedirect: '/login', successRedirect: '/' })
+    );
+
+    app.get('/auth/facebook', passport.authenticate('facebook'),
+      function(req, res) {} // will never be called.
+    );
+
+    app.get('/auth/facebook/callback', 
+      passport.authenticate('facebook', 
       { failureRedirect: '/login', successRedirect: '/' })
     );
 
