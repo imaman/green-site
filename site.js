@@ -10,15 +10,18 @@
   var TwitterStrategy = require('passport-twitter').Strategy;
   var devSecret = 'dev secret';
 
-  passport.serializeUser(function(user, done) {
-    done(null, user);
-  });
-
-  passport.deserializeUser(function(obj, done) {
-    done(null, obj);
-  });
 
   exports.createDriver = function(port, model, options) {
+    model.users = model.users || {};
+    passport.serializeUser(function(user, done) {
+      model.users[user.id] = user;
+      done(null, user.id);
+    });
+
+    passport.deserializeUser(function(obj, done) {
+      done(null, model.users[obj]);
+    });
+
     try {
       env(__dirname + '/.env'); 
     } catch(e) {
@@ -31,7 +34,7 @@
         callbackURL: "/auth/twitter/callback"
       },
       function(token, tokenSecret, profile, done) {
-        done(null, profile.username);
+        done(null, profile);
       }
     ));
     var app = express();
