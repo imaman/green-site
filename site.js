@@ -19,7 +19,8 @@
     });
 
     passport.deserializeUser(function(obj, done) {
-      done(null, model.users[obj]);
+      var res = model.users[obj];
+      done(null, res || null);
     });
 
     try {
