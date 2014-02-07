@@ -13,7 +13,8 @@
   var devSecret = 'dev secret';
 
 
-  exports.createDriver = function(port, model, options) {
+  exports.createDriver = function(port_, model, options) {
+    var port = port_ || process.env.PORT || 3000;
     model.users = model.users || {};
     passport.serializeUser(function(user, done) {
       model.users[user.id] = user;
@@ -49,9 +50,11 @@
         return done(null, profile);
       }
     ));
+
+    var hostAddress = process.env.GOOGLE_HOSTNAME || 'http://localhost:' + port;
     passport.use(new GoogleStrategy({
-        returnURL: 'http://localhost:3000/auth/google/callback',
-        realm: 'http://localhost:3000/'
+        returnURL: hostAddress + '/auth/google/callback',
+        realm: hostAddress
       },
       function(identifier, profile, done) {
         profile.id = identifier;
@@ -62,7 +65,7 @@
 
     var controller = controllerModule.withModel(model, options || {});
 
-    app.set('port', port || process.env.PORT || 3000);
+    app.set('port', port);
     app.set('views', path.join(__dirname, 'views'));
     app.set('view engine', 'jade');
 
