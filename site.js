@@ -80,9 +80,8 @@
 
     app.get('/env.json', function(req, res) {
       res.json({ 
-        what: 'just port & secret',
-        port: process.env.PORT, 
-        secret: process.env.SECRET });
+        user: req.user,
+      });
     });
 
     function lookup(id, callback) {
