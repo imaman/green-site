@@ -68,6 +68,13 @@ describe('site', function() {
     });
   });
 
+  it('generates custom 404 page', function(done) {
+    visit('non_existing_page', done, function() {
+      expect(browser.statusCode).toEqual(404);
+      expect(browser.text()).toContain('We cannot find the page you are looking for');
+    });
+  });
+
   it('provides an RSS feed', function(done) {
     model.fetchBody = function(id, done) { done(null, '_'); };
     visit('rss.xml', done, function() {
