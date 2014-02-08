@@ -93,29 +93,19 @@
       res.redirect('/');
     });
 
-    app.get('/auth/twitter', passport.authenticate('twitter'), 
-      function(req, res) {} // will never be called.
-    );
-    app.get('/auth/twitter/callback', 
-      passport.authenticate('twitter', 
-      { failureRedirect: '/login', successRedirect: '/' })
-    );
+    function authRoutes(provider) {
+      app.get('/auth/' + provider, passport.authenticate(provider), 
+        function(req, res) {} // will never be called.
+      );
+      app.get('/auth/' + provider + '/callback', 
+        passport.authenticate('twitter', 
+        { failureRedirect: '/login', successRedirect: '/' })
+      );
+    }
 
-    app.get('/auth/facebook', passport.authenticate('facebook'),
-      function(req, res) {} // will never be called.
-    );
-    app.get('/auth/facebook/callback', 
-      passport.authenticate('facebook', 
-      { failureRedirect: '/login', successRedirect: '/' })
-    );
-
-    app.get('/auth/google', passport.authenticate('google'),
-      function(req, res) {} // will never be called.
-    );
-    app.get('/auth/google/callback', 
-      passport.authenticate('google', 
-      { failureRedirect: '/login', successRedirect: '/' })
-    );
+    authRoutes('twitter');
+    authRoutes('facebook');
+    authRoutes('google');
 
     app.get('/', controller.posts);
     app.get('/posts', controller.posts);
