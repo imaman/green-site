@@ -7,6 +7,7 @@ describe('site', function() {
 
   var model = {
     headline: 'SOME HEADLINE',
+    tagline: 'a clever tag-line',
     posts: [ 
       {
         id: 1,
@@ -106,7 +107,7 @@ describe('site', function() {
     it('extends the main layout', function(done) {
       visit('posts', done, function() {
         var text = browser.text();
-        expect(text).toContain('Coding, design, and broken feedback loops');
+        expect(text).toContain('a clever tag-line');
       });
     });
   });

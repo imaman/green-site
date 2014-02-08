@@ -18,14 +18,14 @@ exports.withModel = function(model, hostAddress, options) {
       result.publishedAt = moment(result.publishedAt).fromNow();
       return result;
     });
-    res.render('posts', { posts: posts, headline: model.headline, user: req.user && req.user.displayName });
+    res.render('posts', { posts: posts, headline: model.headline, tagline: model.tagline, user: req.user && req.user.displayName });
   };
 
   controller.singlePost = function(post, req, res) {
     var temp = Object.create(post);
     temp.body = markdown.toHTML(temp.body);
     temp.publishedAt = moment(temp.publishedAt).fromNow();
-    res.render('post', { post: temp, headline: model.headline, user: req.user && req.user.displayName, options: extend({}, options, post.options) });
+    res.render('post', { post: temp, headline: model.headline, tagline: model.tagline, user: req.user && req.user.displayName, options: extend({}, options, post.options) });
   }
 
   controller.rss = function(res) {
@@ -33,8 +33,8 @@ exports.withModel = function(model, hostAddress, options) {
       return (a > b) ? a : b;
     }, 0);
     var feed = new Rss({
-        title: 'title',
-        description: 'description',
+        title: model.headline,
+        description: model.tagline,
         feed_url: hostAddress + '/rss.xml',
         site_url: hostAddress,
         image_url: hostAddress,
