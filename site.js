@@ -15,6 +15,7 @@
 
   exports.createDriver = function(port_, model, options) {
     var port = port_ || process.env.PORT || 3000;
+    var hostAddress = process.env.GOOGLE_HOSTNAME || 'http://localhost:' + port;
     model.users = model.users || {};
     passport.serializeUser(function(user, done) {
       model.users[user.id] = user;
@@ -51,7 +52,6 @@
       }
     ));
 
-    var hostAddress = process.env.GOOGLE_HOSTNAME || 'http://localhost:' + port;
     passport.use(new GoogleStrategy({
         returnURL: hostAddress + '/auth/google/callback',
         realm: hostAddress
@@ -63,7 +63,7 @@
     ));
     var app = express();
 
-    var controller = controllerModule.withModel(model, options || {});
+    var controller = controllerModule.withModel(model, hostAddress, options || {});
 
     app.set('port', port);
     app.set('views', path.join(__dirname, 'views'));
