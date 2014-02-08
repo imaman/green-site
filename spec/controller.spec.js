@@ -3,12 +3,29 @@ var controllerModule = require('../controller.js');
 describe('controller', function() {
   var view = null;
   var data = null;
+  var status = null;
   var response = { 
     render: function(v, d) {
       view = v;
       data = d;
+    },
+
+    status: function(s) {
+      status = s;
     }
   };
+
+  describe('page not found', function() {
+    it('returns a 404 page when client expects html', function() {
+      var controller = controllerModule.withModel({}, '');
+
+      controller.pageNotFound({ url: 'non_existing_url', accepts: function(x) { return x == 'html' } }, response);
+
+      expect(view).toEqual('404');
+      expect(status).toEqual(404);
+      expect(data).toEqual({ url: 'non_existing_url'});
+    });
+  });
 
   describe('single post', function() {
     it('translates markdown to HTML', function() {

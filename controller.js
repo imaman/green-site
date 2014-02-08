@@ -5,6 +5,26 @@ var Rss = require('rss');
 
 exports.withModel = function(model, hostAddress, options) {
   var controller = {};
+
+  controller.pageNotFound = function(req, res, next) {
+    res.status(404);
+
+    // respond with html page
+    if (req.accepts('html')) {
+      res.render('404', { url: req.url });
+      return;
+    }
+
+    // respond with json
+    if (req.accepts('json')) {
+      res.send({ error: 'Not found' });
+      return;
+    }
+
+    // default to plain-text. send()
+    res.type('txt').send('Not found');
+  };      
+
   controller.posts = function(req, res) {
     var sorted = model.posts.filter(function(x) {
       return !x.marks || x.marks.indexOf('main') >= 0;
