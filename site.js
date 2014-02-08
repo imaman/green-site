@@ -5,7 +5,6 @@
   var moment = require('moment');
   var extend = require('node.extend');
   var path = require('path');
-  var controllerModule = require('./controller');
   var passport = require('passport');
   var TwitterStrategy = require('passport-twitter').Strategy;
   var FacebookStrategy = require('passport-facebook').Strategy;
@@ -13,9 +12,12 @@
 
   var devSecret = 'dev secret';
 
-  exports.createDriver = function(port_, model, options) {
+  exports.createDriver = function(port_, deps, options) {
+    var model = deps.model;
     var port = port_ || process.env.PORT || 3000;
     var hostAddress = process.env.GOOGLE_HOSTNAME || 'http://localhost:' + port;
+    var controller = deps.controller.withModel(model, hostAddress, options || {});
+
     model.users = model.users || {};
     passport.serializeUser(function(user, done) {
       model.users[user.id] = user;
@@ -63,7 +65,6 @@
     ));
     var app = express();
 
-    var controller = controllerModule.withModel(model, hostAddress, options || {});
 
     app.set('port', port);
     app.set('views', path.join(__dirname, 'views'));

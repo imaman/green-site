@@ -1,3 +1,4 @@
+var controllerModule = require('../controller');
 var site =  require('../site');
 var Browser = require('zombie');
 
@@ -37,7 +38,7 @@ describe('site', function() {
 
   beforeEach(function(done) {
     browser = new Browser();
-    driver = site.createDriver(3001, model);
+    driver = site.createDriver(3001, {model: model, controller: controllerModule});
     driver.start(done);
   });
 
