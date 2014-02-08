@@ -17,7 +17,7 @@ exports.withModel = function(model, hostAddress, options) {
 
     // respond with json
     if (req.accepts('json')) {
-      res.send({ error: 'Not found' });
+      res.send({ error: 'Not found', url: req.url });
       return;
     }
 

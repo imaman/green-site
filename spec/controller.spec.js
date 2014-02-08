@@ -4,6 +4,7 @@ describe('controller', function() {
   var view = null;
   var data = null;
   var status = null;
+  var type = null;
   var response = { 
     render: function(v, d) {
       view = v;
@@ -12,18 +13,44 @@ describe('controller', function() {
 
     status: function(s) {
       status = s;
+    },
+
+    send: function(d) { 
+      data = d;
+    },
+
+    type: function(t) {
+      type = t;
+      return this;
     }
   };
 
   describe('page not found', function() {
-    it('returns a 404 page when client expects html', function() {
+    it('returns a web-page when client expects html', function() {
       var controller = controllerModule.withModel({}, '');
 
       controller.pageNotFound({ url: 'non_existing_url', accepts: function(x) { return x == 'html' } }, response);
 
       expect(view).toEqual('404');
       expect(status).toEqual(404);
-      expect(data).toEqual({ url: 'non_existing_url'});
+      expect(data).toEqual({url: 'non_existing_url'});
+    });
+    it('returns json when client expects json', function() {
+      var controller = controllerModule.withModel({}, '');
+
+      controller.pageNotFound({ url: 'non_existing_url', accepts: function(x) { return x == 'json' } }, response);
+
+      expect(status).toEqual(404);
+      expect(data).toEqual({ error: 'Not found',  url: 'non_existing_url'});
+    });
+    it('returns plain text otherwise', function() {
+      var controller = controllerModule.withModel({}, '');
+
+      controller.pageNotFound({ url: 'non_existing_url', accepts: function(x) { return false } }, response);
+
+      expect(status).toEqual(404);
+      expect(type).toEqual('txt');
+      expect(data).toEqual('Not found');
     });
   });
 
