@@ -217,7 +217,7 @@ This is the worst possible outcome: we get a Green line telling us everything we
 
 - Always run with `--captureExceptions`.
 - If you start a side-flow make sure it calls `done()` (and that the main flow does not).
-- If there is no side flow, call `done()` from the bottom of the main flow.
+- If there is no side flow (no async call) your test-function should *not* declare a `done` parameter. 
 - Assertion failures are not reported via exceptions.
 
 
