@@ -3,6 +3,7 @@
 
   exports.production = {
     headline: 'Colliding Objects',
+    tagline: 'Coding, design, and broken feedback loops',
     posts: [ 
       {
         id: "intro",

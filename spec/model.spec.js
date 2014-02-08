@@ -1,6 +1,12 @@
 var model =  require('../model');
 
 describe('production model', function() {
+  it('defines a headline', function() {
+    expect(model.production.headline.length).toBeGreaterThan(3);
+  });
+  it('defines a tagline', function() {
+    expect(model.production.tagline.length).toBeGreaterThan(3);
+  });
   it('loads post body from a file', function(done) {
     model.production.fetchBody('fake_id', function(err, data) {
       expect(data.trim()).toEqual('this is not associated with any real post');
