@@ -12,7 +12,7 @@ describe('controller', function() {
 
   describe('single post', function() {
     it('translates markdown to HTML', function() {
-      var controller = controllerModule.withModel({});
+      var controller = controllerModule.withModel({}, '');
 
       controller.singlePost({ id: 1, body: 'plain text and **bolded text**' }, {}, response);
 
@@ -20,14 +20,14 @@ describe('controller', function() {
       expect(data.post.body).toEqual('<p>plain text and <strong>bolded text</strong></p>');
     });
     it('passes the options down to the view', function() {
-      var controller = controllerModule.withModel({}, { option_a: 1, option_b: 2 });
+      var controller = controllerModule.withModel({}, '', { option_a: 1, option_b: 2 });
 
       controller.singlePost({ id: 1, body: '' }, {}, response);
 
       expect(data.options).toEqual({ option_a : 1, option_b: 2 });
     });
     it('allows the post to override the options', function() {
-      var controller = controllerModule.withModel({}, { option_a: 1, option_b: 2 });
+      var controller = controllerModule.withModel({}, '', { option_a: 1, option_b: 2 });
 
       controller.singlePost({ id: 1, body: '', options: { option_a: 110011 } }, {}, response);
 
