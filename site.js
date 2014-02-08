@@ -10,8 +10,8 @@
   var TwitterStrategy = require('passport-twitter').Strategy;
   var FacebookStrategy = require('passport-facebook').Strategy;
   var GoogleStrategy = require('passport-google').Strategy;
-  var devSecret = 'dev secret';
 
+  var devSecret = 'dev secret';
 
   exports.createDriver = function(port_, model, options) {
     var port = port_ || process.env.PORT || 3000;
@@ -79,6 +79,10 @@
     app.use(passport.session());    
     app.use(app.router);
     app.use(express.static(__dirname + '/public'));
+
+    app.get('/rss.xml', function(req, res) {
+      controller.rss(res);
+    });
 
     app.get('/login', function(req, res) {
       res.render('login', { headline: model.headline });

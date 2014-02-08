@@ -1,8 +1,9 @@
 var extend = require('node.extend');
 var markdown = require('markdown').markdown;
 var moment = require('moment');
+var Rss = require('rss');
 
-exports.withModel = function(model, options) {
+exports.withModel = function(model, hostAddress, options) {
   var controller = {};
   controller.posts = function(req, res) {
     var sorted = model.posts.filter(function(x) {
@@ -26,6 +27,49 @@ exports.withModel = function(model, options) {
     temp.publishedAt = moment(temp.publishedAt).fromNow();
     res.render('post', { post: temp, headline: model.headline, user: req.user && req.user.displayName, options: extend({}, options, post.options) });
   }
+
+  controller.rss = function(res) {
+    var latest = model.posts.map(function(post) { return new Date(post.publishedAt).getTime(); }).reduce(function(a,b) {
+      return (a > b) ? a : b;
+    }, 0);
+    var feed = new Rss({
+        title: 'title',
+        description: 'description',
+        feed_url: hostAddress + '/rss.xml',
+        site_url: hostAddress,
+        image_url: hostAddress,
+        author: 'Itay Maman',
+        copyright: '2014 Itay Maman',
+        language: 'en',
+        pubDate: new Date(latest).toString(),
+        ttl: '10'
+    });      
+
+    var left = model.posts.length;
+    function publish(post, body) {
+      feed.item({
+          title:  post.title,
+          description: markdown.toHTML(post.body || body),
+          url: hostAddress + '/posts/' + post.id,
+          date: post.publishedAt,
+      });
+      --left;
+      if (left == 0) {
+        res.set('Content-Type', 'text/xml');
+        res.send(feed.xml(2));
+      }
+    }
+
+    model.posts.forEach(function(post) {
+      if (post.body) {
+        publish(post);
+        return;
+      }
+      model.fetchBody(post.id, function(err, body) {
+        publish(post, body);
+      });
+    });
+  };
 
   return controller;
 }

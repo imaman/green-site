@@ -68,6 +68,19 @@ describe('site', function() {
     });
   });
 
+  it('provides an RSS feed', function(done) {
+    model.fetchBody = function(id, done) { done(null, '_'); };
+    visit('rss.xml', done, function() {
+      var text = browser.text();
+      var xml = browser.html();
+      expect(xml).toContain('atom');
+      expect(xml).toContain('rss');
+      expect(text).toContain('Title1');
+      expect(text).toContain('Title2');
+      expect(text).toContain('Title3');
+    });
+  });
+
   describe('/posts page', function() {
     it('shows the headline', function(done) {
       visit('posts', done, function() {
