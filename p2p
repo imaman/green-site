@@ -4,6 +4,6 @@
 
 set -e
 
-npm test  
+time npm test  
 git push
 
