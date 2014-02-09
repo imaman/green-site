@@ -80,6 +80,7 @@
     app.use(passport.session());    
     app.use(app.router);
     app.use(express.static(__dirname + '/public'));
+    app.use(controller.error);
     app.use(controller.pageNotFound);
 
     app.get('/rss.xml', function(req, res) {

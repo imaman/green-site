@@ -3,6 +3,6 @@
   var controllerModule = require('./controller');
 
   require('./site').createDriver(null, 
-    { model: model.production, controller: controllerModule }, 
+    { model: model.production, controller: controllerModule.create() }, 
     { showWidgets: true, showFooter: true }).start();
 })()

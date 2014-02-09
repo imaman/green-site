@@ -3,9 +3,23 @@ var markdown = require('markdown').markdown;
 var moment = require('moment');
 var Rss = require('rss');
 
-exports.withModel = function(model, hostAddress, options) {
+exports.create = function() {
+  var model = null;
+  var hostAddress = null;
+  var options = null;
   var controller = {};
 
+  controller.withModel = function(m, h, o) {
+    model = m;
+    hostAddress = h;
+    options = o;
+    return controller;
+  }
+
+  controller.error = function(err, req, res, next) {
+    res.status(500);
+    res.render('500', { error: err });
+  };
   controller.pageNotFound = function(req, res, next) {
     res.status(404);
 

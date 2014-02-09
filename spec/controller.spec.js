@@ -27,7 +27,7 @@ describe('controller', function() {
 
   describe('page not found', function() {
     it('returns a web-page when client expects html', function() {
-      var controller = controllerModule.withModel({}, '');
+      var controller = controllerModule.create().withModel({}, '');
 
       controller.pageNotFound({ url: 'non_existing_url', accepts: function(x) { return x == 'html' } }, response);
 
@@ -36,7 +36,7 @@ describe('controller', function() {
       expect(data).toEqual({url: 'non_existing_url'});
     });
     it('returns json when client expects json', function() {
-      var controller = controllerModule.withModel({}, '');
+      var controller = controllerModule.create().withModel({}, '');
 
       controller.pageNotFound({ url: 'non_existing_url', accepts: function(x) { return x == 'json' } }, response);
 
@@ -44,7 +44,7 @@ describe('controller', function() {
       expect(data).toEqual({ error: 'Not found',  url: 'non_existing_url'});
     });
     it('returns plain text otherwise', function() {
-      var controller = controllerModule.withModel({}, '');
+      var controller = controllerModule.create().withModel({}, '');
 
       controller.pageNotFound({ url: 'non_existing_url', accepts: function(x) { return false } }, response);
 
@@ -56,7 +56,7 @@ describe('controller', function() {
 
   describe('single post', function() {
     it('translates markdown to HTML', function() {
-      var controller = controllerModule.withModel({}, '');
+      var controller = controllerModule.create().withModel({}, '');
 
       controller.singlePost({ id: 1, body: 'plain text and **bolded text**' }, {}, response);
 
@@ -64,14 +64,14 @@ describe('controller', function() {
       expect(data.post.body).toEqual('<p>plain text and <strong>bolded text</strong></p>');
     });
     it('passes the options down to the view', function() {
-      var controller = controllerModule.withModel({}, '', { option_a: 1, option_b: 2 });
+      var controller = controllerModule.create().withModel({}, '', { option_a: 1, option_b: 2 });
 
       controller.singlePost({ id: 1, body: '' }, {}, response);
 
       expect(data.options).toEqual({ option_a : 1, option_b: 2 });
     });
     it('allows the post to override the options', function() {
-      var controller = controllerModule.withModel({}, '', { option_a: 1, option_b: 2 });
+      var controller = controllerModule.create().withModel({}, '', { option_a: 1, option_b: 2 });
 
       controller.singlePost({ id: 1, body: '', options: { option_a: 110011 } }, {}, response);
 
@@ -87,7 +87,7 @@ describe('controller', function() {
 
     it('returns all posts', function() {
       var posts = [{id: 1, body: 'b_1'}, {id: 2, body: 'b_2'}];
-      var controller = controllerModule.withModel({ posts: posts });
+      var controller = controllerModule.create().withModel({ posts: posts });
 
       controller.posts({}, response);
 
@@ -102,7 +102,7 @@ describe('controller', function() {
         {id: 1, publishedAt: monday, body: 'Post from Monday'},
         {id: 2, publishedAt: tuesday, body: 'Post from Tuesday'}
       ];
-      var controller = controllerModule.withModel({ posts: posts });
+      var controller = controllerModule.create().withModel({ posts: posts });
 
       controller.posts({}, response);
 
@@ -115,7 +115,7 @@ describe('controller', function() {
         {id: 2, body: 'FILTERED_OUT', marks: ['secondary']},
         {id: 3, body: 'another_post'},
       ];
-      var controller = controllerModule.withModel({ posts: posts });
+      var controller = controllerModule.create().withModel({ posts: posts });
 
       controller.posts({}, response);
 

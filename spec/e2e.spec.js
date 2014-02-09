@@ -5,6 +5,7 @@ var Browser = require('zombie');
 describe('site', function() {
   var browser;
   var driver;
+  var controller = null;
 
   var model = {
     headline: 'SOME HEADLINE',
@@ -37,8 +38,9 @@ describe('site', function() {
   };
 
   beforeEach(function(done) {
+    controller = controllerModule.create();
     browser = new Browser();
-    driver = site.createDriver(3001, {model: model, controller: controllerModule});
+    driver = site.createDriver(3001, {model: model, controller: controller});
     driver.start(done);
   });
 
@@ -74,6 +76,14 @@ describe('site', function() {
     visit('non_existing_page', done, function() {
       expect(browser.statusCode).toEqual(404);
       expect(browser.text()).toContain('We cannot find the page you are looking for');
+    });
+  });
+
+  it('generates custom 500 page', function(done) {
+    controller.rss = function() { throw new Error('Did not work') };
+    visit('rss.xml', done, function() {
+      expect(browser.statusCode).toEqual(500);
+      expect(browser.text()).toContain('Looks like something went wrong');
     });
   });
 
