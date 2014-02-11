@@ -23,7 +23,10 @@
     } catch(e) {
       // Intentionally ignore.
     }
-    var combinedConf = extend({PORT: 3000}, process.env, loadConf(process.env.NODE_ENV), overridingConf);
+    var combinedConf = extend({}, process.env, loadConf(process.env.NODE_ENV), overridingConf);
+    if (!combinedConf.PORT) {
+      throw new Error('No .PORT value is specified');
+    }
 
     var model = deps.model;
     var port = combinedConf.PORT;
