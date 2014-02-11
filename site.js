@@ -12,12 +12,26 @@
 
   var devSecret = 'dev secret';
 
+  function loadConf(name) {
+    try {
+      return require('./conf/' + (name || 'development'));
+    } catch(e) {
+      return {};
+    }
+  }
+
   exports.createDriver = function(overridingConf, deps, options) {
-    var combinedConf = extend(process.env, overridingConf);
+    try {
+      env(__dirname + '/.env'); 
+    } catch(e) {
+      // Intentionally ignore.
+    }
+    var combinedConf = extend(process.env, loadConf(process.env.NODE_ENV), overridingConf);
 
     var model = deps.model;
     var port = combinedConf.PORT || 3000;
-    var hostAddress = combinedConf.GOOGLE_HOSTNAME || 'http://localhost:' + port;
+    var hostAddress = combinedConf.GOOGLE_HOSTNAME;
+    console.log('\n\n\n\n\n---------------------hostAddress=' + hostAddress);
     var controller = deps.controller.withModel(model, hostAddress, options || {});
 
     model.users = model.users || {};
@@ -31,11 +45,6 @@
       done(null, res || null);
     });
 
-    try {
-      env(__dirname + '/.env'); 
-    } catch(e) {
-      // Intentionally ignore.
-    }
 
     passport.use(new TwitterStrategy({
         consumerKey: "FCvT4ed7oo1N8YvB1o5pQ",
