@@ -13,11 +13,11 @@
   var devSecret = 'dev secret';
 
   exports.createDriver = function(port_, deps, options) {
-    var nodeEnv = process.env;
+    var combinedConf = process.env;
 
     var model = deps.model;
-    var port = port_ || nodeEnv.PORT || 3000;
-    var hostAddress = nodeEnv.GOOGLE_HOSTNAME || 'http://localhost:' + port;
+    var port = port_ || combinedConf.PORT || 3000;
+    var hostAddress = combinedConf.GOOGLE_HOSTNAME || 'http://localhost:' + port;
     var controller = deps.controller.withModel(model, hostAddress, options || {});
 
     model.users = model.users || {};
@@ -39,7 +39,7 @@
 
     passport.use(new TwitterStrategy({
         consumerKey: "FCvT4ed7oo1N8YvB1o5pQ",
-        consumerSecret: nodeEnv.TWITTER_CONSUMER_SECRET || devSecret,
+        consumerSecret: combinedConf.TWITTER_CONSUMER_SECRET || devSecret,
         callbackURL: "/auth/twitter/callback"
       },
       function(token, tokenSecret, profile, done) {
@@ -48,7 +48,7 @@
     ));
     passport.use(new FacebookStrategy({
         clientID: "1404627676456080",
-        clientSecret: nodeEnv.FACEBOOK_APP_SECRET || devSecret,
+        clientSecret: combinedConf.FACEBOOK_APP_SECRET || devSecret,
         callbackURL: "//collidingobjects.herokuapp.com/auth/facebook/callback",
       },
       function(accessToken, refreshToken, profile, done) {
@@ -73,11 +73,11 @@
     app.set('view engine', 'jade');
 
     app.use(express.logger());
-    app.use(express.cookieParser(nodeEnv.COOKIE_SECRET || devSecret )); 
+    app.use(express.cookieParser(combinedConf.COOKIE_SECRET || devSecret )); 
     app.use(express.bodyParser());
-    app.use(express.cookieSession({ secret: nodeEnv.COOKIE_SESSION_SECRET || devSecret }));
+    app.use(express.cookieSession({ secret: combinedConf.COOKIE_SESSION_SECRET || devSecret }));
     app.use(express.methodOverride());
-    app.use(express.session({ secret: nodeEnv.SESSION_SECRET || devSecret }));
+    app.use(express.session({ secret: combinedConf.SESSION_SECRET || devSecret }));
     app.use(passport.initialize());
     app.use(passport.session());    
     app.use(app.router);
@@ -167,7 +167,7 @@
     return {
       start: function(done) {
         this.server = app.listen(app.get('port'), function() {
-          console.log('nodeEnv.NODE_ENV=' + nodeEnv.NODE_ENV);
+          console.log('combinedConf.NODE_ENV=' + combinedConf.NODE_ENV);
           console.log('Express server [' + app.get('env') + '] started at http://localhost:' + app.get('port'));
           done && done();
         });
