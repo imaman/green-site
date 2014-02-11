@@ -13,11 +13,8 @@
   var devSecret = 'dev secret';
 
   function loadConf(name) {
-    try {
-      return require('./conf/' + (name || 'development'));
-    } catch(e) {
-      return {};
-    }
+    console.log('name='+ name);
+    return require('./conf/' + (name || 'development'));
   }
 
   exports.createDriver = function(overridingConf, deps, options) {
