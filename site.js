@@ -26,7 +26,7 @@
     } catch(e) {
       // Intentionally ignore.
     }
-    var combinedConf = extend(process.env, loadConf(process.env.NODE_ENV), overridingConf);
+    var combinedConf = extend({}, process.env, loadConf(process.env.NODE_ENV), overridingConf);
 
     var model = deps.model;
     var port = combinedConf.PORT || 3000;
