@@ -29,7 +29,7 @@
     var combinedConf = extend({PORT: 3000}, process.env, loadConf(process.env.NODE_ENV), overridingConf);
 
     var model = deps.model;
-    var port = combinedConf.PORT || 3000;
+    var port = combinedConf.PORT;
     var hostAddress = combinedConf.GOOGLE_HOSTNAME;
     console.log('\n\n\n\n\n---------------------hostAddress=' + hostAddress);
     var controller = deps.controller.withModel(model, hostAddress, options || {});
