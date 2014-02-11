@@ -12,12 +12,25 @@
 
   var devSecret = 'dev secret';
 
-  exports.createDriver = function(port_, deps, options) {
-    var nodeEnv = process.env;
+  function loadConf(name) {
+    try {
+      return require('./conf/' + (name || 'development'));
+    } catch(e) {
+      return {}
+    }
+  }
+
+  exports.createDriver = function(overridingConf, deps, options) {
+    try {
+      env(__dirname + '/.env'); 
+    } catch(e) {
+      // Intentionally ignore.
+    }
+    var conf = extend(loadConf('default'), process.env, loadConf(process.env.NODE_ENV), overridingConf);
 
     var model = deps.model;
-    var port = port_ || nodeEnv.PORT || 3000;
-    var hostAddress = nodeEnv.GOOGLE_HOSTNAME || 'http://localhost:' + port;
+    var port = conf.PORT;
+    var hostAddress = conf.GOOGLE_HOSTNAME;
     var controller = deps.controller.withModel(model, hostAddress, options || {});
 
     model.users = model.users || {};
@@ -31,15 +44,10 @@
       done(null, res || null);
     });
 
-    try {
-      env(__dirname + '/.env'); 
-    } catch(e) {
-      // Intentionally ignore.
-    }
 
     passport.use(new TwitterStrategy({
         consumerKey: "FCvT4ed7oo1N8YvB1o5pQ",
-        consumerSecret: nodeEnv.TWITTER_CONSUMER_SECRET || devSecret,
+        consumerSecret: conf.TWITTER_CONSUMER_SECRET,
         callbackURL: "/auth/twitter/callback"
       },
       function(token, tokenSecret, profile, done) {
@@ -48,7 +56,7 @@
     ));
     passport.use(new FacebookStrategy({
         clientID: "1404627676456080",
-        clientSecret: nodeEnv.FACEBOOK_APP_SECRET || devSecret,
+        clientSecret: conf.FACEBOOK_APP_SECRET,
         callbackURL: "//collidingobjects.herokuapp.com/auth/facebook/callback",
       },
       function(accessToken, refreshToken, profile, done) {
@@ -73,11 +81,11 @@
     app.set('view engine', 'jade');
 
     app.use(express.logger());
-    app.use(express.cookieParser(nodeEnv.COOKIE_SECRET || devSecret )); 
+    app.use(express.cookieParser(conf.COOKIE_SECRET));
     app.use(express.bodyParser());
-    app.use(express.cookieSession({ secret: nodeEnv.COOKIE_SESSION_SECRET || devSecret }));
+    app.use(express.cookieSession({ secret: conf.COOKIE_SESSION_SECRET }));
     app.use(express.methodOverride());
-    app.use(express.session({ secret: nodeEnv.SESSION_SECRET || devSecret }));
+    app.use(express.session({ secret: conf.SESSION_SECRET }));
     app.use(passport.initialize());
     app.use(passport.session());    
     app.use(app.router);
@@ -103,7 +111,7 @@
         function(req, res) {} // will never be called.
       );
       app.get('/auth/' + provider + '/callback', 
-        passport.authenticate('twitter', 
+        passport.authenticate(provider,
         { failureRedirect: '/login', successRedirect: '/' })
       );
     }
@@ -167,7 +175,7 @@
     return {
       start: function(done) {
         this.server = app.listen(app.get('port'), function() {
-          console.log('nodeEnv.NODE_ENV=' + nodeEnv.NODE_ENV);
+          console.log('conf=' + JSON.stringify(conf, null, '  '));
           console.log('Express server [' + app.get('env') + '] started at http://localhost:' + app.get('port'));
           done && done();
         });
