@@ -103,7 +103,7 @@
         function(req, res) {} // will never be called.
       );
       app.get('/auth/' + provider + '/callback', 
-        passport.authenticate('twitter', 
+        passport.authenticate(provider,
         { failureRedirect: '/login', successRedirect: '/' })
       );
     }
