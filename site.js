@@ -12,11 +12,11 @@
 
   var devSecret = 'dev secret';
 
-  exports.createDriver = function(port_, deps, options) {
-    var combinedConf = process.env;
+  exports.createDriver = function(overridingConf, deps, options) {
+    var combinedConf = extend(process.env, overridingConf);
 
     var model = deps.model;
-    var port = port_ || combinedConf.PORT || 3000;
+    var port = combinedConf.PORT || 3000;
     var hostAddress = combinedConf.GOOGLE_HOSTNAME || 'http://localhost:' + port;
     var controller = deps.controller.withModel(model, hostAddress, options || {});
 

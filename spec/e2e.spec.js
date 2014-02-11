@@ -40,7 +40,7 @@ describe('site', function() {
   beforeEach(function(done) {
     controller = controllerModule.create();
     browser = new Browser();
-    driver = site.createDriver(3001, {model: model, controller: controller});
+    driver = site.createDriver({ PORT: 3001 }, {model: model, controller: controller});
     driver.start(done);
   });
 
