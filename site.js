@@ -10,20 +10,38 @@
   var FacebookStrategy = require('passport-facebook').Strategy;
   var GoogleStrategy = require('passport-google').Strategy;
 
-  var devSecret = 'dev secret';
-
   function loadConf(name) {
     return require('./conf/' + name);
   }
 
+  function check(map, keys) {
+    keys.forEach(function(key) {
+      if (map[key] == undefined) {
+        throw new Error('.' + key + ' is not defined in ' + map.NODE_ENV);
+      }
+    });
+  }
+
   exports.createDriver = function(overridingConf, deps, options) {
     try {
-      env(__dirname + '/.env'); 
+      env(__dirname + '/conf/.env'); 
     } catch(e) {
       // Intentionally ignore.
     }
     var confName = process.env.NODE_ENV || 'development';
-    var combinedConf = extend({ VERTICAL_SPACE: '' }, process.env, loadConf(confName), overridingConf, {NODE_ENV: confName});
+    var combinedConf = extend(
+      loadConf('default'), 
+      process.env, 
+      loadConf(confName), 
+      overridingConf, 
+      {NODE_ENV: confName}
+    );
+
+    // Sanity checks on the configuration (hard to unit-test).
+    check(combinedConf, ['PORT', 'NODE_ENV', 'TWITTER_CONSUMER_SECRET', 'COOKIE_SESSION_SECRET']);
+    if (combinedConf.NODE_ENV === 'production' && combinedConf.TWITTER_CONSUMER_SECRET === combinedConf.TWITTER_CONSUMER_SECRET) {
+      throw new Error('Same consumer secret for two different providers in ' + combinedConf.NODE_ENV);
+    };
     if (!combinedConf.PORT) {
       throw new Error('No .PORT value is specified');
     }
@@ -47,7 +65,7 @@
 
     passport.use(new TwitterStrategy({
         consumerKey: "FCvT4ed7oo1N8YvB1o5pQ",
-        consumerSecret: combinedConf.TWITTER_CONSUMER_SECRET || devSecret,
+        consumerSecret: combinedConf.TWITTER_CONSUMER_SECRET,
         callbackURL: "/auth/twitter/callback"
       },
       function(token, tokenSecret, profile, done) {
@@ -56,7 +74,7 @@
     ));
     passport.use(new FacebookStrategy({
         clientID: "1404627676456080",
-        clientSecret: combinedConf.FACEBOOK_APP_SECRET || devSecret,
+        clientSecret: combinedConf.FACEBOOK_APP_SECRET,
         callbackURL: "//collidingobjects.herokuapp.com/auth/facebook/callback",
       },
       function(accessToken, refreshToken, profile, done) {
@@ -81,11 +99,11 @@
     app.set('view engine', 'jade');
 
     app.use(express.logger());
-    app.use(express.cookieParser(combinedConf.COOKIE_SECRET || devSecret )); 
+    app.use(express.cookieParser(combinedConf.COOKIE_SECRET)); 
     app.use(express.bodyParser());
-    app.use(express.cookieSession({ secret: combinedConf.COOKIE_SESSION_SECRET || devSecret }));
+    app.use(express.cookieSession({ secret: combinedConf.COOKIE_SESSION_SECRET}));
     app.use(express.methodOverride());
-    app.use(express.session({ secret: combinedConf.SESSION_SECRET || devSecret }));
+    app.use(express.session({ secret: combinedConf.SESSION_SECRET}));
     app.use(passport.initialize());
     app.use(passport.session());    
     app.use(app.router);
