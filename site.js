@@ -13,8 +13,7 @@
   var devSecret = 'dev secret';
 
   function loadConf(name) {
-    console.log('name='+ name);
-    return require('./conf/' + (name || 'development'));
+    return require('./conf/' + name);
   }
 
   exports.createDriver = function(overridingConf, deps, options) {
@@ -23,7 +22,8 @@
     } catch(e) {
       // Intentionally ignore.
     }
-    var combinedConf = extend({}, process.env, loadConf(process.env.NODE_ENV), overridingConf);
+    var confName = process.env.NODE_ENV || 'development';
+    var combinedConf = extend({}, process.env, loadConf(confName), overridingConf, {NODE_ENV: confName});
     if (!combinedConf.PORT) {
       throw new Error('No .PORT value is specified');
     }
@@ -31,7 +31,6 @@
     var model = deps.model;
     var port = combinedConf.PORT;
     var hostAddress = combinedConf.GOOGLE_HOSTNAME;
-    console.log('\n\n\n\n\n---------------------hostAddress=' + hostAddress);
     var controller = deps.controller.withModel(model, hostAddress, options || {});
 
     model.users = model.users || {};
@@ -176,8 +175,9 @@
     return {
       start: function(done) {
         this.server = app.listen(app.get('port'), function() {
-          console.log('combinedConf.NODE_ENV=' + combinedConf.NODE_ENV);
-          console.log('Express server [' + app.get('env') + '] started at http://localhost:' + app.get('port'));
+          var verticalSpace = '\n>\n>\n>\n>\n>\n';
+          console.log(verticalSpace + '> Express server [' + combinedConf.NODE_ENV 
+            + '] started at http://localhost:' + app.get('port') + verticalSpace);
           done && done();
         });
       },
