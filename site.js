@@ -80,6 +80,8 @@
     mongo.Db.connect(combinedConf.MONGOHQ_URL, function(err, db) {
       if (err) return done(err);
 
+      deps.db = db;
+
       app.use(express.logger());
       app.use(express.cookieParser(combinedConf.COOKIE_SECRET)); 
       app.use(express.bodyParser());
@@ -206,18 +208,23 @@
 
     return {
       start: function(done) {
+        var self = this;
         createApp(combinedConf, deps, options, function(err, app) {
           if (err) return done(err);
-          this.server = app.listen(app.get('port'), function() {
+          self.server = app.listen(app.get('port'), function(err) {
+            if (err) return done(err);
             console.log(combinedConf.VERTICAL_SPACE + '> Express server [' + combinedConf.NODE_ENV 
               + '] started at http://localhost:' + app.get('port') + combinedConf.VERTICAL_SPACE);
-            done && done();
+            done && done(err);
           });
         });
       },
 
       stop: function(done) {
-        this.server.close(done);
+        this.server.close(function(err) {
+          if (err) return done(err);
+          deps.db.close(done);
+        });
       }
     };
   };
