@@ -39,7 +39,7 @@
 
     // Sanity checks on the configuration (hard to unit-test).
     check(combinedConf, ['PORT', 'NODE_ENV', 'TWITTER_CONSUMER_SECRET', 'COOKIE_SESSION_SECRET']);
-    if (combinedConf.NODE_ENV === 'production' && combinedConf.TWITTER_CONSUMER_SECRET === combinedConf.TWITTER_CONSUMER_SECRET) {
+    if (combinedConf.NODE_ENV === 'production' && combinedConf.TWITTER_CONSUMER_SECRET === combinedConf.FACEBOOK_APP_SECRET) {
       throw new Error('Same consumer secret for two different providers in ' + combinedConf.NODE_ENV);
     };
     if (!combinedConf.PORT) {
