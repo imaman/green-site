@@ -23,7 +23,7 @@
       // Intentionally ignore.
     }
     var confName = process.env.NODE_ENV || 'development';
-    var combinedConf = extend({}, process.env, loadConf(confName), overridingConf, {NODE_ENV: confName});
+    var combinedConf = extend({ VERTICAL_SPACE: '' }, process.env, loadConf(confName), overridingConf, {NODE_ENV: confName});
     if (!combinedConf.PORT) {
       throw new Error('No .PORT value is specified');
     }
@@ -175,9 +175,8 @@
     return {
       start: function(done) {
         this.server = app.listen(app.get('port'), function() {
-          var verticalSpace = '\n>\n>\n>\n>\n>\n';
-          console.log(verticalSpace + '> Express server [' + combinedConf.NODE_ENV 
-            + '] started at http://localhost:' + app.get('port') + verticalSpace);
+          console.log(combinedConf.VERTICAL_SPACE + '> Express server [' + combinedConf.NODE_ENV 
+            + '] started at http://localhost:' + app.get('port') + combinedConf.VERTICAL_SPACE);
           done && done();
         });
       },
