@@ -3,6 +3,8 @@
   var express = require('express');
   var jade = require('jade');
   var moment = require('moment');
+  var mongo = require('mongodb');
+  var MongoStore = require('connect-mongo')(express);
   var extend = require('node.extend');
   var path = require('path');
   var passport = require('passport');
@@ -22,30 +24,7 @@
     });
   }
 
-  exports.createDriver = function(overridingConf, deps, options) {
-    try {
-      env(__dirname + '/conf/.env'); 
-    } catch(e) {
-      // Intentionally ignore.
-    }
-    var confName = process.env.NODE_ENV || 'development';
-    var combinedConf = extend(
-      loadConf('default'), 
-      process.env, 
-      loadConf(confName), 
-      overridingConf, 
-      {NODE_ENV: confName}
-    );
-
-    // Sanity checks on the configuration (hard to unit-test).
-    check(combinedConf, ['PORT', 'NODE_ENV', 'TWITTER_CONSUMER_SECRET', 'COOKIE_SESSION_SECRET']);
-    if (combinedConf.NODE_ENV === 'production' && combinedConf.TWITTER_CONSUMER_SECRET === combinedConf.FACEBOOK_APP_SECRET) {
-      throw new Error('Same consumer secret for two different providers in ' + combinedConf.NODE_ENV);
-    };
-    if (!combinedConf.PORT) {
-      throw new Error('No .PORT value is specified');
-    }
-
+  function createApp(combinedConf, deps, options, done) {
     var model = deps.model;
     var port = combinedConf.PORT;
     var hostAddress = combinedConf.GOOGLE_HOSTNAME;
@@ -98,104 +77,142 @@
     app.set('views', path.join(__dirname, 'views'));
     app.set('view engine', 'jade');
 
-    app.use(express.logger());
-    app.use(express.cookieParser(combinedConf.COOKIE_SECRET)); 
-    app.use(express.bodyParser());
-    app.use(express.cookieSession({ secret: combinedConf.COOKIE_SESSION_SECRET}));
-    app.use(express.methodOverride());
-    app.use(express.session({ secret: combinedConf.SESSION_SECRET}));
-    app.use(passport.initialize());
-    app.use(passport.session());    
-    app.use(app.router);
-    app.use(express.static(__dirname + '/public'));
-    app.use(controller.error);
-    app.use(controller.pageNotFound);
+    mongo.Db.connect(combinedConf.MONGOHQ_URL, function(err, db) {
+      if (err) return done(err);
 
-    app.get('/rss.xml', function(req, res) {
-      controller.rss(res);
-    });
+      app.use(express.logger());
+      app.use(express.cookieParser(combinedConf.COOKIE_SECRET)); 
+      app.use(express.bodyParser());
+      app.use(express.cookieSession({ secret: combinedConf.COOKIE_SESSION_SECRET}));
+      app.use(express.methodOverride());
+      app.use(express.session({
+          secret: combinedConf.SESSION_SECRET,
+          store: new MongoStore({ db: db })
+        }));
+      app.use(passport.initialize());
+      app.use(passport.session());    
+      app.use(app.router);
+      app.use(express.static(__dirname + '/public'));
+      app.use(controller.error);
+      app.use(controller.pageNotFound);
 
-    app.get('/login', function(req, res) {
-      res.render('login', { headline: model.headline });
-    });
-
-    app.get('/logout', function(req, res) {
-      req.logout();
-      res.redirect('/');
-    });
-
-    function authRoutes(provider) {
-      app.get('/auth/' + provider, passport.authenticate(provider), 
-        function(req, res) {} // will never be called.
-      );
-      app.get('/auth/' + provider + '/callback', 
-        passport.authenticate(provider,
-        { failureRedirect: '/login', successRedirect: '/' })
-      );
-    }
-
-    authRoutes('twitter');
-    authRoutes('facebook');
-    authRoutes('google');
-
-    app.get('/', controller.posts);
-    app.get('/posts', controller.posts);
-
-    app.get('/edit', function(req, res) {
-      res.redirect('/edit.html');
-    });
-
-    app.get('/env.json', function(req, res) {
-      res.json({ 
-      });
-    });
-
-    function lookup(id, callback) {
-      var post = null;
-      model.posts.forEach(function(current) {
-        if (current.id == id) {
-          post = current;
-        }
+      app.get('/rss.xml', function(req, res) {
+        controller.rss(res);
       });
 
-      if (!post) {
-        callback(null);
+      app.get('/login', function(req, res) {
+        res.render('login', { headline: model.headline });
+      });
+
+      app.get('/logout', function(req, res) {
+        req.logout();
+        res.redirect('/');
+      });
+
+      function authRoutes(provider) {
+        app.get('/auth/' + provider, passport.authenticate(provider), 
+          function(req, res) {} // will never be called.
+        );
+        app.get('/auth/' + provider + '/callback', 
+          passport.authenticate(provider,
+          { failureRedirect: '/login', successRedirect: '/' })
+        );
       }
 
-      if (post.body) {
-        callback(post);
-      }
-      model.fetchBody(id, function(err, body) {
-        callback(extend({body: body}, post));
+      authRoutes('twitter');
+      authRoutes('facebook');
+      authRoutes('google');
+
+      app.get('/', controller.posts);
+      app.get('/posts', controller.posts);
+
+      app.get('/edit', function(req, res) {
+        res.redirect('/edit.html');
       });
+
+      app.get('/env.json', function(req, res) {
+        res.json({ 
+        });
+      });
+
+      function lookup(id, callback) {
+        var post = null;
+        model.posts.forEach(function(current) {
+          if (current.id == id) {
+            post = current;
+          }
+        });
+
+        if (!post) {
+          callback(null);
+        }
+
+        if (post.body) {
+          callback(post);
+        }
+        model.fetchBody(id, function(err, body) {
+          callback(extend({body: body}, post));
+        });
+      }
+
+      app.get('/posts/:id.json', function(req, res) {
+        lookup(req.params.id, function(post) {
+          res.json(post);
+        });
+      });
+
+      app.get('/posts/:id', function(req, res) {
+        lookup(req.params.id, function(post) {
+          if (post) {
+            controller.singlePost(post, req, res);
+          } else {
+            res.send(404);
+          }
+        });
+      });
+
+      app.get('/posts/:id/edit', function(req, res) {
+        res.sendfile(__dirname + '/public/edit.html');
+      });
+
+      done(null, app);
+    });
+  }
+
+  exports.createDriver = function(overridingConf, deps, options) {
+    try {
+      env(__dirname + '/conf/.env'); 
+    } catch(e) {
+      // Intentionally ignore.
+    }
+    var confName = process.env.NODE_ENV || 'development';
+    var combinedConf = extend(
+      loadConf('default'), 
+      process.env, 
+      loadConf(confName), 
+      overridingConf, 
+      {NODE_ENV: confName}
+    );
+
+    // Sanity checks on the configuration (hard to unit-test).
+    check(combinedConf, ['PORT', 'NODE_ENV', 'TWITTER_CONSUMER_SECRET', 'COOKIE_SESSION_SECRET']);
+    if (combinedConf.NODE_ENV === 'production' && combinedConf.TWITTER_CONSUMER_SECRET === combinedConf.FACEBOOK_APP_SECRET) {
+      throw new Error('Same consumer secret for two different providers in ' + combinedConf.NODE_ENV);
+    };
+    if (!combinedConf.PORT) {
+      throw new Error('No .PORT value is specified');
     }
 
-    app.get('/posts/:id.json', function(req, res) {
-      lookup(req.params.id, function(post) {
-        res.json(post);
-      });
-    });
-
-    app.get('/posts/:id', function(req, res) {
-      lookup(req.params.id, function(post) {
-        if (post) {
-          controller.singlePost(post, req, res);
-        } else {
-          res.send(404);
-        }
-      });
-    });
-
-    app.get('/posts/:id/edit', function(req, res) {
-      res.sendfile(__dirname + '/public/edit.html');
-    });
 
     return {
       start: function(done) {
-        this.server = app.listen(app.get('port'), function() {
-          console.log(combinedConf.VERTICAL_SPACE + '> Express server [' + combinedConf.NODE_ENV 
-            + '] started at http://localhost:' + app.get('port') + combinedConf.VERTICAL_SPACE);
-          done && done();
+        createApp(combinedConf, deps, options, function(err, app) {
+          if (err) return done(err);
+          this.server = app.listen(app.get('port'), function() {
+            console.log(combinedConf.VERTICAL_SPACE + '> Express server [' + combinedConf.NODE_ENV 
+              + '] started at http://localhost:' + app.get('port') + combinedConf.VERTICAL_SPACE);
+            done && done();
+          });
         });
       },
 
