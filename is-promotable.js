@@ -11,14 +11,6 @@ var github = new GitHubApi({
     version: "3.0.0",
 });
 
-github.repos.getBranch(
-  {user: 'imaman', repo: 'green-site', branch: 'master'}, 
-  function(err, data) { 
-    if (err) return console.log(err.stack); 
-    console.log(data.commit.sha); 
-  }
-);
-
 
 var jasmineEnv = jasmine.getEnv();
 
@@ -32,31 +24,6 @@ afterEach = function(func, timeout) {
     return jasmine.getEnv().afterEach(func, timeout);
 };
 
-(function() {
-  var lines = [];
-  function print(str) {
-    lines.push(util.format(str));
-  }
-
-  function removeJasmineFrames(text) {
-    return text;
-  }
-
-  jasmineEnv.addReporter(new jasmine.TerminalVerboseReporter({ 
-      print: print,
-      color: true,
-      onComplete: function(e) { 
-        if (e.results().failedCount === 0) {
-          process.exit(0);
-        } 
-        console.log(lines.join(''));
-        process.exit(1);
-      },
-      stackFilter: removeJasmineFrames
-    }
-  ));
-})();
-                                                         
 describe('staged deployment', function() {
   var browser = new Browser();
 
@@ -89,5 +56,55 @@ describe('staged deployment', function() {
   });
 });
 
-jasmineEnv.execute();
+function extractCommit(callback) {
+  github.repos.getBranch(
+    {user: 'imaman', repo: 'green-site', branch: 'master'}, 
+    callback);
+}
+
+
+(function() {
+  var lines = [];
+  var commit = null;
+  function print(str) {
+    lines.push(util.format(str));
+  }
+
+  function removeJasmineFrames(text) {
+    return text;
+  }
+
+  jasmineEnv.addReporter(new jasmine.TerminalVerboseReporter({ 
+      print: print,
+      color: true,
+      onComplete: function(e) { 
+        if (e.results().failedCount === 0) {
+          return recheck();
+        } 
+        console.log(lines.join(''));
+        process.exit(1);
+      },
+      stackFilter: removeJasmineFrames
+    }
+  ));
+
+  function recheck() {
+    extractCommit(function(err, data) {
+      if (err) { console.log(err); process.exit(1); }
+      if (commit !== data.commit.sha) {
+        process.exit(1);
+      }
+
+      console.log(data.commit.sha); 
+      process.exit(0);
+    });
+  }
+
+  extractCommit(function(err, data) {
+    if (err) { console.log(err.stack); process.exit(1); }
+    commit = data.commit.sha;
+    jasmineEnv.execute();
+  });
+})();
+                                                         
 
