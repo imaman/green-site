@@ -1,6 +1,7 @@
 #!/bin/bash
 
-git checkout -b release.tmp `latest-commit`
+set -e
+git checkout -b release.tmp `node latest-commit`
 git push heroku release.tmp:master
 git checkout master 
 git branch -D release.tmp 
