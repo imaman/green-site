@@ -4,7 +4,7 @@ services:
 deploy:
   provider: heroku
   api_key:
-    secure: DsHOq9SRt8aPGf2dHz9OipFugBCi8KuiitWIY5z523CDBHNrPeBxCZV/Erulal7i0tdqy2qTikKEjy7h4KTjsfPpFWkgoOgXNozONXHJqMTGjanNR81VGeux43AFobWa0PgPvO6+f+26Cm3hn9S85gtb282mf0qdk+9cb/UZtpI=
-  app: collidingobjects
+    secure: GMnGHau4TB4wztSflPEVZz+o2g1bwhs7h/RUpS/tXpMDP9KqTKwrT7H+g8de34y5YmT/m/hbNylIDGjomFQUeIs0wIhv1arQlQw+VsWwLEX7pBRq2Wy8ADgZICxntZPGFKGiuykwXonMTQopoNAm53SoRUp9ldNAz++kuevubaw=
+  app: collidingobjects-staging
   on:
     repo: imaman/green-site
