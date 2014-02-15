@@ -123,6 +123,16 @@ describe('acceptance criteria', function() {
     extractCommit(function(err, commitData) {
       if (err) { console.log(err); process.exit(1); }
       if (commit !== commitData.sha) {
+        console.log('**************************************************');
+        console.log('*                                                *');
+        console.log('* PROMOTION HALTED                               *');
+        console.log('*                                                *');
+        console.log('* Reason: Staging has changed mid-air            *');
+        console.log('* From: ' + commit + ' *');
+        console.log('*   To: ' + commitData.sha + ' *');
+        console.log('*                                                *');
+        console.log('**************************************************');
+
         process.exit(1);
       }
 
