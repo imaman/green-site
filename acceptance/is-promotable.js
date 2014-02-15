@@ -1,4 +1,3 @@
-var Browser = require('zombie');
 var jasmine = require('jasmine-node'); 
 var extractCommit = require('./commit-query')('imaman', 'green-site', 'master').extractCommit;
 
@@ -22,6 +21,7 @@ afterEach = function(func, timeout) {
 };
 
 describe('acceptance criteria', function() {
+  var Browser = require('zombie');
   var browser = new Browser();
 
   function visit(path, done, callback) {
@@ -92,11 +92,8 @@ describe('acceptance criteria', function() {
   });
 });
 
-
-
-(function() {
+function runSpecs(callback) {
   var lines = [];
-  var commit = null;
   function print(str) {
     lines.push(util.format(str));
   }
@@ -109,15 +106,22 @@ describe('acceptance criteria', function() {
       print: print,
       color: true,
       onComplete: function(e) { 
-        if (e.results().failedCount === 0) {
-          return recheck();
-        } 
-        console.log(lines.join(''));
-        process.exit(1);
+        callback(e.results(), lines);
       },
       stackFilter: removeJasmineFrames
     }
   ));
+  jasmineEnv.execute();
+}
+
+(function() {
+  function completionCallback(results, lines) {
+    if (results.failedCount === 0) {
+      return recheck();
+    } 
+    console.log(lines.join(''));
+    process.exit(1);
+  }
 
   function recheck() {
     extractCommit(function(err, commitData) {
@@ -144,8 +148,7 @@ describe('acceptance criteria', function() {
   extractCommit(function(err, commitData) {
     if (err) { console.log(err.stack); process.exit(1); }
     commit = commitData.sha;
-    jasmineEnv.execute();
+    runSpecs(completionCallback);
   });
 })();
-                                                         
 
