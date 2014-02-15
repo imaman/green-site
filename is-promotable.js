@@ -87,7 +87,8 @@ describe('staged deployment', function() {
         var href = browser.xpath('//a[contains(text(), "Facebook")]/@href').iterateNext();
         visit(href.textContent, done, function() {
           expect(browser.success).toBe(true);
-          expect(browser.location.href).toContain('https://api.twitter.com/oauth/authenticate?oauth_token=');
+          expect(browser.location.href).toContain('https://www.facebook.com/login.php?');
+          expect(browser.location.href).toContain('api_key');
         });
       });
     });
