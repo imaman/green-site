@@ -69,6 +69,22 @@ describe('staged deployment', function() {
       expect(browser.text()).toContain('Does Design Exist?');
     });
   });
+
+  describe('login', function() {
+    it('to twitter', function(done) {
+      visit('login', function() {}, function() {
+        expect(browser.success).toBe(true);
+        var link = browser.xpath('//a[contains(text(), "Twitter")]');
+        var x = link.iterateNext();
+        expect(x).toBeTruthy();
+        var href = x.getAttribute('href');
+        visit(href, done, function() {
+          expect(browser.success).toBe(true);
+          expect(browser.location.href).toContain('https://api.twitter.com/oauth/authenticate?oauth_token=');
+        });
+      });
+    });
+  });
 });
 
 function extractCommit(callback) {
