@@ -1,6 +1,6 @@
 var Browser = require('zombie');
 var jasmine = require('jasmine-node'); 
-var extractCommit = require('./commit-query').extractCommit;
+var extractCommit = require('./commit-query')('imaman', 'green-site', 'master').extractCommit;
 
 var util;
 try {

@@ -3,16 +3,24 @@ var github = new GitHubApi({
     version: "3.0.0",
 });
 
-exports.extractBranch = function(callback) {
-  github.repos.getBranch(
-    {user: 'imaman', repo: 'green-site', branch: 'master'}, 
-    callback);
-}
+module.exports = function(user, repo, branchName) {
+  function extractBranch(callback) {
+    github.repos.getBranch(
+      { user: user, repo: repo, branch: branchName },
+      callback);
+  }
 
-exports.extractCommit = function(callback) {
-  exports.extractBranch(function(err, branch) {
-    if (err) return callback(err);
-    callback(null, branch.commit);
-  });
-}
+  function extractCommit(callback) {
+    extractBranch(function(err, branch) {
+      if (err) return callback(err);
+      callback(null, branch.commit);
+    });
+  }
+
+  return {
+    extractBranch: extractBranch,
+    extractCommit: extractCommit
+  };
+};
+
 
