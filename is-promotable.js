@@ -54,6 +54,21 @@ describe('staged deployment', function() {
       expect(text).toContain('Does Design Exist?');
     });
   });
+
+  it('serves a single post', function(done) {
+    visit('posts/intro', done, function() {
+      expect(browser.success).toBe(true);
+      expect(browser.text()).toContain('The purposeful or inventive arrangement of parts or details');
+    });
+  });
+
+  it('serves a list of posts', function(done) {
+    visit('posts', done, function() {
+      expect(browser.success).toBe(true);
+      expect(browser.text()).toContain('Refactor on Red ?!');
+      expect(browser.text()).toContain('Does Design Exist?');
+    });
+  });
 });
 
 function extractCommit(callback) {
