@@ -1,24 +1,5 @@
-var jasmine = require('jasmine-node'); 
+var jasmineNodeApi = require('./jasmine-node-api');
 var extractCommit = require('./commit-query')('imaman', 'green-site', 'master').extractCommit;
-
-var util;
-try {
-  util = require('util')
-} catch(e) {
-  util = require('sys')
-}
-
-var jasmineEnv = jasmine.getEnv();
-
-it = function(desc, func, timeout) {
-    return jasmine.getEnv().it(desc, func, timeout);
-};
-beforeEach = function(func, timeout) {
-    return jasmine.getEnv().beforeEach(func, timeout);
-};
-afterEach = function(func, timeout) {
-    return jasmine.getEnv().afterEach(func, timeout);
-};
 
 describe('acceptance criteria', function() {
   var Browser = require('zombie');
@@ -92,27 +73,6 @@ describe('acceptance criteria', function() {
   });
 });
 
-function runSpecs(callback) {
-  var lines = [];
-  function print(str) {
-    lines.push(util.format(str));
-  }
-
-  function removeJasmineFrames(text) {
-    return text;
-  }
-
-  jasmineEnv.addReporter(new jasmine.TerminalVerboseReporter({ 
-      print: print,
-      color: true,
-      onComplete: function(e) { 
-        callback(e.results(), lines);
-      },
-      stackFilter: removeJasmineFrames
-    }
-  ));
-  jasmineEnv.execute();
-}
 
 (function() {
   function completionCallback(results, lines) {
@@ -148,7 +108,7 @@ function runSpecs(callback) {
   extractCommit(function(err, commitData) {
     if (err) { console.log(err.stack); process.exit(1); }
     commit = commitData.sha;
-    runSpecs(completionCallback);
+    jasmineNodeApi.runSpecs(completionCallback);
   });
 })();
 
