@@ -1,16 +1,13 @@
-var GitHubApi = require("github");
 var Browser = require('zombie');
 var jasmine = require('jasmine-node'); 
+var extractCommit = require('./commit-query').extractCommit;
+
 var util;
 try {
   util = require('util')
 } catch(e) {
   util = require('sys')
 }
-var github = new GitHubApi({
-    version: "3.0.0",
-});
-
 
 var jasmineEnv = jasmine.getEnv();
 
@@ -95,11 +92,6 @@ describe('acceptance criteria', function() {
   });
 });
 
-function extractCommit(callback) {
-  github.repos.getBranch(
-    {user: 'imaman', repo: 'green-site', branch: 'master'}, 
-    callback);
-}
 
 
 (function() {
@@ -128,20 +120,20 @@ function extractCommit(callback) {
   ));
 
   function recheck() {
-    extractCommit(function(err, data) {
+    extractCommit(function(err, commitData) {
       if (err) { console.log(err); process.exit(1); }
-      if (commit !== data.commit.sha) {
+      if (commit !== commitData.sha) {
         process.exit(1);
       }
 
-      console.log(data.commit.sha); 
+      console.log(commitData.sha); 
       process.exit(0);
     });
   }
 
-  extractCommit(function(err, data) {
+  extractCommit(function(err, commitData) {
     if (err) { console.log(err.stack); process.exit(1); }
-    commit = data.commit.sha;
+    commit = commitData.sha;
     jasmineEnv.execute();
   });
 })();
