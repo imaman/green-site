@@ -71,7 +71,7 @@ describe('staged deployment', function() {
   });
 
   describe('login', function() {
-    it('to twitter', function(done) {
+    it('authenticates with twitter', function(done) {
       visit('login', function() {}, function() {
         expect(browser.success).toBe(true);
         var href = browser.xpath('//a[contains(text(), "Twitter")]/@href').iterateNext();
