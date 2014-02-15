@@ -24,7 +24,7 @@ afterEach = function(func, timeout) {
     return jasmine.getEnv().afterEach(func, timeout);
 };
 
-describe('staged deployment', function() {
+describe('acceptance criteria', function() {
   var browser = new Browser();
 
   function visit(path, done, callback) {
@@ -70,8 +70,8 @@ describe('staged deployment', function() {
     });
   });
 
-  describe('login', function() {
-    it('authenticates with Twitter', function(done) {
+  describe('a user can authenticate with', function() {
+    it('Twitter', function(done) {
       visit('login', function() {}, function() {
         expect(browser.success).toBe(true);
         var href = browser.xpath('//a[contains(text(), "Twitter")]/@href').iterateNext();
@@ -81,7 +81,7 @@ describe('staged deployment', function() {
         });
       });
     });
-    it('authenticates with Facebook', function(done) {
+    it('Facebook', function(done) {
       visit('login', function() {}, function() {
         expect(browser.success).toBe(true);
         var href = browser.xpath('//a[contains(text(), "Facebook")]/@href').iterateNext();
