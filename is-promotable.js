@@ -71,10 +71,20 @@ describe('staged deployment', function() {
   });
 
   describe('login', function() {
-    it('authenticates with twitter', function(done) {
+    it('authenticates with Twitter', function(done) {
       visit('login', function() {}, function() {
         expect(browser.success).toBe(true);
         var href = browser.xpath('//a[contains(text(), "Twitter")]/@href').iterateNext();
+        visit(href.textContent, done, function() {
+          expect(browser.success).toBe(true);
+          expect(browser.location.href).toContain('https://api.twitter.com/oauth/authenticate?oauth_token=');
+        });
+      });
+    });
+    it('authenticates with Facebook', function(done) {
+      visit('login', function() {}, function() {
+        expect(browser.success).toBe(true);
+        var href = browser.xpath('//a[contains(text(), "Facebook")]/@href').iterateNext();
         visit(href.textContent, done, function() {
           expect(browser.success).toBe(true);
           expect(browser.location.href).toContain('https://api.twitter.com/oauth/authenticate?oauth_token=');
