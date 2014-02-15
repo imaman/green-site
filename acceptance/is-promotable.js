@@ -76,37 +76,38 @@ function specs(describe, it, beforeEach, afterEach) {
 }
 
 
-(function() {
-  function completionCallback(results, lines) {
-    if (results.failedCount === 0) {
-      return recheck();
-    } 
-    console.log(lines.join(''));
-    process.exit(1);
-  }
+var commit = null;
+function completionCallback(results, lines) {
+  if (results.failedCount === 0) {
+    return recheck();
+  } 
+  console.log(lines.join(''));
+  process.exit(1);
+}
 
-  function recheck() {
-    extractCommit(function(err, commitData) {
-      if (err) { console.log(err); process.exit(1); }
-      if (commit !== commitData.sha) {
-        console.log('**************************************************');
-        console.log('*                                                *');
-        console.log('* PROMOTION HALTED                               *');
-        console.log('*                                                *');
-        console.log('* Reason: Staging has changed mid-air            *');
-        console.log('* From: ' + commit + ' *');
-        console.log('*   To: ' + commitData.sha + ' *');
-        console.log('*                                                *');
-        console.log('**************************************************');
+function recheck() {
+  extractCommit(function(err, commitData) {
+    if (err) { console.log(err); process.exit(1); }
+    if (commit !== commitData.sha) {
+      console.log('**************************************************');
+      console.log('*                                                *');
+      console.log('* PROMOTION HALTED                               *');
+      console.log('*                                                *');
+      console.log('* Reason: Staging has changed mid-air            *');
+      console.log('* From: ' + commit + ' *');
+      console.log('*   To: ' + commitData.sha + ' *');
+      console.log('*                                                *');
+      console.log('**************************************************');
 
-        process.exit(1);
-      }
+      process.exit(1);
+    }
 
-      console.log(commitData.sha); 
-      process.exit(0);
-    });
-  }
+    console.log(commitData.sha); 
+    process.exit(0);
+  });
+}
 
+function main() {
   extractCommit(function(err, commitData) {
     if (err) { console.log(err.stack); process.exit(1); }
     commit = commitData.sha;
@@ -114,5 +115,7 @@ function specs(describe, it, beforeEach, afterEach) {
     api.onCompletion(completionCallback);
     api.runSpecs(specs);
   });
-})();
+}
+
+main();
 
