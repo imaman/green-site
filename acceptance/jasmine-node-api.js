@@ -8,17 +8,17 @@ try {
 
 var jasmineEnv = jasmine.getEnv();
 
-it = function(desc, func, timeout) {
-    return jasmine.getEnv().it(desc, func, timeout);
+var it = function(desc, func, timeout) {
+  return jasmine.getEnv().it(desc, func, timeout);
 };
-beforeEach = function(func, timeout) {
-    return jasmine.getEnv().beforeEach(func, timeout);
+var beforeEach = function(func, timeout) {
+  return jasmine.getEnv().beforeEach(func, timeout);
 };
-afterEach = function(func, timeout) {
-    return jasmine.getEnv().afterEach(func, timeout);
+var afterEach = function(func, timeout) {
+  return jasmine.getEnv().afterEach(func, timeout);
 };
 
-exports.runSpecs = function(callback) {
+exports.runSpecs = function(specs, callback) {
   var lines = [];
   function print(str) {
     lines.push(util.format(str));
@@ -37,6 +37,8 @@ exports.runSpecs = function(callback) {
       stackFilter: removeJasmineFrames
     }
   ));
+
+  specs(describe, it, beforeEach, afterEach);
   jasmineEnv.execute();
 };
 
