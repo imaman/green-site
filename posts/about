@@ -12,7 +12,7 @@ Since 2009 I am teaching [Software Design](http://webcourse.cs.technion.ac.il/23
 While I could theoretically use an existing blogging platform (actually I tried it for a couple of years: [javadots](http://javadots.blogspot.com)) I decided to work on my own platofrm. While part of the reason is the passion to try new technolgies, there were additional reasons. My wishlist included:
 
 - Markdown. WYSIWYG editing always frustrates (all sort of hidden styles lurking underneath). When you go down to the HTML level to fix it you see maze of divs and spans which no one has ever managed to solve.
-- Full control over the layout/look.
+- Full control over look/feel/layout.
 - Some server side logic for supporting "advanced" features which go beyond statically-served files (in particular: programming quizzes and challenges).
 
 So several weeks ago, while on vacation (seems like all best programs are written on vacations, isn't it?) I sat down and hacked this web-site. 
