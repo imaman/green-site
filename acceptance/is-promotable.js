@@ -1,4 +1,4 @@
-var jasmineNodeApi = require('./jasmine-node-api');
+var JasmineNodeApi = require('./jasmine-node-api');
 var extractCommit = require('./commit-query')('imaman', 'green-site', 'master').extractCommit;
 
 function specs(describe, it, beforeEach, afterEach) {
@@ -110,7 +110,9 @@ function specs(describe, it, beforeEach, afterEach) {
   extractCommit(function(err, commitData) {
     if (err) { console.log(err.stack); process.exit(1); }
     commit = commitData.sha;
-    jasmineNodeApi.runSpecs(specs, completionCallback);
+    var api = new JasmineNodeApi();
+    api.onCompletion(completionCallback);
+    api.runSpecs(specs);
   });
 })();
 

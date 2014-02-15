@@ -18,7 +18,16 @@ var afterEach = function(func, timeout) {
   return jasmine.getEnv().afterEach(func, timeout);
 };
 
-exports.runSpecs = function(specs, callback) {
+function JasmineNodeApi() {
+  this.completion = function() {};
+}
+
+JasmineNodeApi.prototype.onCompletion = function(callback) {
+  this.completion = callback;
+}
+
+JasmineNodeApi.prototype.runSpecs = function(specs) {
+  var self = this;
   var lines = [];
   function print(str) {
     lines.push(util.format(str));
@@ -32,7 +41,7 @@ exports.runSpecs = function(specs, callback) {
       print: print,
       color: true,
       onComplete: function(e) { 
-        callback(e.results(), lines);
+        self.completion(e.results(), lines);
       },
       stackFilter: removeJasmineFrames
     }
@@ -41,4 +50,6 @@ exports.runSpecs = function(specs, callback) {
   specs(describe, it, beforeEach, afterEach);
   jasmineEnv.execute();
 };
+
+module.exports = JasmineNodeApi;
 
