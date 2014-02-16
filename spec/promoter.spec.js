@@ -11,6 +11,8 @@ Promoter.__set__('exec', function(cmd, done) {
 var options = null;
 var app = null;
 var releases = {};
+var createOptions = null;
+var createResult = null;
 
 function FakeHeroku(opts) {
   options = opts;
@@ -21,6 +23,11 @@ function FakeHeroku(opts) {
         return {
           list: function(done) {
             done(null, releases[s]);
+          },
+
+          create: function(createOpts, done) {
+            createOptions = createOpts;
+            done(null, createResult);
           }
         };
       } 
@@ -76,6 +83,18 @@ describe('Promoter', function() {
       promoter.mostRecentRelease('a3', function(err, r) {
         expect(err).toBe(null);
         expect(r).toBe(null);
+        done();
+      });
+    });
+  });
+
+  it('deploys', function(done) {
+    createResult = { value: 'CREATE_RESULT' };
+    new Promoter().init(function(err, promoter) {
+      promoter.deploy('a4', 'SLUG_ID', 'DESCRIPTION', function(err, data) {
+        expect(createOptions).toEqual({slug: 'SLUG_ID', description: 'DESCRIPTION'});
+        expect(err).toBe(null);
+        expect(data).toEqual({ value: 'CREATE_RESULT' });
         done();
       });
     });
