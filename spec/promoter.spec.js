@@ -6,6 +6,7 @@ promoter.__set__('acceptanceSpecs', {});
 
 function DeployerStub() {
   this.init = function(done) { done(); };
+  this.mostRecentRelease = {};
 }
 
 promoter.__set__('Deployer', DeployerStub);
