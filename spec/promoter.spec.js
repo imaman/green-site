@@ -5,7 +5,7 @@ var promoter = rewire('../acceptance/promoter.js');
 function JasmineNodeApiStub() {
   this.onCompletion = function(done) { this.done = done };
   this.runSpecs = function(specs) {
-    this.done();
+    this.done({ failedCount: 0 });
   };
 };
 
