@@ -6,4 +6,5 @@ set -e
 
 time npm test  
 git push
+git push heroku-staging
 
