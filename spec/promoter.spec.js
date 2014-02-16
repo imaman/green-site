@@ -3,6 +3,7 @@ var promoter = rewire('../acceptance/promoter.js');
 
 
 function JasmineNodeApiStub() {
+  this.onCompletion = function() {};
 };
 
 promoter.__set__('JasmineNodeApi', JasmineNodeApiStub);
