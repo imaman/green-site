@@ -1,9 +1,6 @@
-#!/usr/bin/env node
-var argv = require('minimist')(process.argv.slice(2));
-var JasmineNodeApi = require('./acceptance/jasmine-node-api');
-var acceptanceSpecs = require('./acceptance/specs.js');
-var Deployer = require('./acceptance/deployer.js');
-
+var JasmineNodeApi = require('./jasmine-node-api');
+var acceptanceSpecs = require('./specs.js');
+var Deployer = require('./deployer.js');
 
 function bail(err) {
   if (err.stack) {
@@ -22,7 +19,8 @@ function bail(err) {
 }
 
 
-function main(stagingApp, prodApp, specs) {
+function main(stagingApp, prodApp, status) {
+  var specs = status ? null : acceptanceSpecs;
   var candidate = null;
 
   function postDeploy(err, data) {
@@ -94,6 +92,4 @@ function main(stagingApp, prodApp, specs) {
   });
 }
 
-main('collidingobjects-staging', 'collidingobjects', argv.status ? null : acceptanceSpecs);
-
-
+module.exports = main;
