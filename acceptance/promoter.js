@@ -10,7 +10,7 @@ function main(stagingApp, prodApp, status, bail) {
     if (err) return bail(err);
     console.log('>>>>>>>>>> ALL\'S WELL');
     console.log(JSON.stringify(data, null, '  '));
-    process.exit(0);
+    bail(null);
   }
 
   function deploy(err) {

@@ -3,6 +3,10 @@ var argv = require('minimist')(process.argv.slice(2));
 var promoter = require('./acceptance/promoter.js');
 
 function bail(err) {
+  if (!err) {
+    process.exit(0);
+  }
+
   if (err.stack) {
     console.log(err.stack);
     process.exit(1);
