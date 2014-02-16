@@ -58,12 +58,10 @@ function main(stagingApp, prodApp, specs) {
     promoter.fetchReleases(stagingApp, verifyAndDeploy);
   }
 
-  function checkNeedAndTest(err, rs) {
+  function checkNeedAndTest(err, live) {
     if (err) return bail(err);
-    var slugged = rs.filter(function(x) { return x.slug && x.slug.id });
-    if (slugged.length > 0) {
-      var live = slugged[0];
-      if (live.slug.id === candidate.slug.id) return bail('Slug at staging is already live in prod.');
+    if (live && (live.slug.id === candidate.slug.id)) {
+      return bail('Slug at staging is already live in prod.');
     }
 
     var api = new JasmineNodeApi();
@@ -71,19 +69,19 @@ function main(stagingApp, prodApp, specs) {
     api.runSpecs(specs);
   }
 
-  function establishCandidate(err, rs) {
+  function establishCandidate(err, mostRecent) {
     if (err) return bail(err);
-    var slugged = rs.filter(function(x) { return x.slug && x.slug.id });
-    if (slugged.length == 0) return bail('no slugged releases');
-    candidate = slugged[0];
+    candidate = mostRecent;
 
-    promoter.fetchReleases(prodApp, checkNeedAndTest);
+    promoter.mostRecentRelease(prodApp, checkNeedAndTest);
   }
 
   var promoter = new Promoter();
   promoter.init(function(err) {
     if (err) return bail(err);
-    promoter.fetchReleases(stagingApp, establishCandidate);
+    if (acceptanceSpecs) {
+      return promoter.mostRecentRelease(stagingApp, establishCandidate);
+    }
   });
 }
 

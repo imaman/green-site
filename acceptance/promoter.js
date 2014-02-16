@@ -32,6 +32,15 @@ Promoter.prototype.fetchReleases = function(app, done) {
   });
 };
 
+Promoter.prototype.mostRecentRelease = function(app, done) {
+  this.fetchReleases(app, function(err, rs) {
+    if (err) return done(err);
+    var slugged = rs.filter(function(x) { return x.slug && x.slug.id });
+    if (slugged.length == 0) return done();
+    done(null, slugged[0]);
+  });
+}
+
 Promoter.prototype.deploy = function(app, slugId, description, done) {
   this.heroku.apps(app).releases().create({ 
       slug: slugId,
