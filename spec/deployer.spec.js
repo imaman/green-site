@@ -1,5 +1,5 @@
 var rewire = require('rewire');
-var Deployer = rewire('../acceptance/promoter.js');
+var Deployer = rewire('../acceptance/deployer.js');
 
 var command = null;
 Deployer.__set__('exec', function(cmd, done) {

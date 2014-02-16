@@ -2,7 +2,7 @@
 var argv = require('minimist')(process.argv.slice(2));
 var JasmineNodeApi = require('./acceptance/jasmine-node-api');
 var acceptanceSpecs = require('./acceptance/specs.js');
-var Deployer = require('./acceptance/promoter.js');
+var Deployer = require('./acceptance/deployer.js');
 
 
 function bail(err) {
