@@ -23,10 +23,13 @@ promoter.__set__('Deployer', DeployerStub);
 
 
 
+
 describe('promoter', function() {
   it('does something', function(done) {
-    promoter('a', 'b');
-    done();
+    promoter('a', 'b', false, function(err) { 
+      expect(err).toBe(null);
+      done();
+    });
   });
 });
 

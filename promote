@@ -2,6 +2,24 @@
 var argv = require('minimist')(process.argv.slice(2));
 var promoter = require('./acceptance/promoter.js');
 
-promoter('collidingobjects-staging', 'collidingobjects', argv.status);
+function bail(err) {
+  if (err.stack) {
+    console.log(err.stack);
+    process.exit(1);
+  }
+
+  console.log('**************************************************');
+  console.log('*                                                *');
+  console.log('* PROMOTION HALTED                               *');
+  console.log('*                                                *');
+  console.log('* Reason: ' + err);
+  console.log('*                                                *');
+  console.log('**************************************************');
+  process.exit(1);
+}
+
+
+  
+promoter('collidingobjects-staging', 'collidingobjects', argv.status, bail);
 
 

@@ -2,24 +2,7 @@ var JasmineNodeApi = require('./jasmine-node-api');
 var acceptanceSpecs = require('./specs.js');
 var Deployer = require('./deployer.js');
 
-function bail(err) {
-  if (err.stack) {
-    console.log(err.stack);
-    process.exit(1);
-  }
-
-  console.log('**************************************************');
-  console.log('*                                                *');
-  console.log('* PROMOTION HALTED                               *');
-  console.log('*                                                *');
-  console.log('* Reason: ' + err);
-  console.log('*                                                *');
-  console.log('**************************************************');
-  process.exit(1);
-}
-
-
-function main(stagingApp, prodApp, status) {
+function main(stagingApp, prodApp, status, bail) {
   var specs = status ? null : acceptanceSpecs;
   var candidate = null;
 
