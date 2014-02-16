@@ -16,6 +16,7 @@ function DeployerStub() {
   this.init = function(done) { done(); };
   this.mostRecentRelease = function(app, done) { done(null, { slug: { id: app + '_slug_id' }}); };
   this.fetchReleases = function(app, done) { done(null, [ { slug: { id: app + '_slug_id' }} ]); };
+  this.deploy = {};
 }
 
 promoter.__set__('Deployer', DeployerStub);
