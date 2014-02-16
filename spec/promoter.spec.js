@@ -1,0 +1,84 @@
+var rewire = require('rewire');
+var Promoter = rewire('../acceptance/promoter.js');
+
+var command = null;
+Promoter.__set__('exec', function(cmd, done) {
+  command = cmd;
+  done(null, 'AAA', '');
+});
+
+
+var options = null;
+var app = null;
+var releases = {};
+
+function FakeHeroku(opts) {
+  options = opts;
+  this.apps = function(s) { 
+    app = s; 
+    return { 
+      releases: function() { 
+        return {
+          list: function(done) {
+            done(null, releases[s]);
+          }
+        };
+      } 
+    } 
+  };
+};
+
+Promoter.__set__('Heroku', FakeHeroku);
+
+describe('Promoter', function() {
+  it('uses the Heroku CLI for obtaining a token', function(done) {
+    new Promoter().init(function(err) {
+      expect(err).toBe(null);
+      expect(command).toEqual('heroku auth:token');
+      expect(options).toEqual({ token: 'AAA' });
+      done();
+    });
+  });
+
+  it('lists releases in reverse order of versions', function(done) {
+    releases['a1'] = [ { description: 'old', version: 100}, { description: 'recent', version: 200} ];
+    new Promoter().init(function(err, promoter) {
+      promoter.fetchReleases('a1', function(err, rs) {
+        expect(err).toBe(null);
+        expect(rs).toEqual([ {description: 'recent', version: 200 }, {description: 'old', version: 100} ]);
+        done();
+      });
+    });
+  });
+
+  it('provides the most recent release with a slug', function(done) {
+    releases['a2'] = [ 
+      { description: 'slug_old', version: 100, slug: {id: 1}}, 
+      { description: 'slug_new', version: 200, slug: {id: 2}},
+      { description: 'no_slug_newer', version: 300},
+      { description: 'no_slug_id_newer', version: 400, slug: {}} 
+    ];
+    new Promoter().init(function(err, promoter) {
+      promoter.mostRecentRelease('a2', function(err, r) {
+        expect(err).toBe(null);
+        expect(r).toEqual({description: 'slug_new', version: 200, slug: {id: 2}});
+        done();
+      });
+    });
+  });
+
+  it('provides null if no slugged release is found', function(done) {
+    releases['a3'] = [ 
+      { description: 'no_slug_1', version: 300},
+      { description: 'no_slug_2', version: 400, slug: {}} 
+    ];
+    new Promoter().init(function(err, promoter) {
+      promoter.mostRecentRelease('a3', function(err, r) {
+        expect(err).toBe(null);
+        expect(r).toBe(null);
+        done();
+      });
+    });
+  });
+});
+

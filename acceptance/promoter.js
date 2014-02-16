@@ -36,7 +36,7 @@ Promoter.prototype.mostRecentRelease = function(app, done) {
   this.fetchReleases(app, function(err, rs) {
     if (err) return done(err);
     var slugged = rs.filter(function(x) { return x.slug && x.slug.id });
-    if (slugged.length == 0) return done();
+    if (slugged.length == 0) return done(null, null);
     done(null, slugged[0]);
   });
 }
