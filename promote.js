@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 var JasmineNodeApi = require('./acceptance/jasmine-node-api');
 var acceptanceSpecs = require('./acceptance/specs.js');
 var Promoter = require('./acceptance/promoter.js');
