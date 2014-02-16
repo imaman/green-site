@@ -5,7 +5,7 @@ promoter.__set__('JasmineNodeApi', {});
 promoter.__set__('acceptanceSpecs', {});
 
 function DeployerStub() {
-  this.init = function() {};
+  this.init = function(done) { done(); };
 }
 
 promoter.__set__('Deployer', DeployerStub);
