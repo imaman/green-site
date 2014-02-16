@@ -30,7 +30,7 @@ describe('promoter', function() {
   it('does something', function(done) {
     promoter('a', 'b', false, function(err, data) { 
       expect(err).toBe(null);
-      expect(data).toBe('_______');
+      expect(data).toBe('Deploying a_slug_id/Promotion of: undefined to b');
       done();
     });
   });
