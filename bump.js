@@ -17,9 +17,9 @@ function extractToken(callback) {
   }
 }
 
-function Bumper() {}
+function Promoter() {}
 
-Bumper.prototype.init = function(done) {
+Promoter.prototype.init = function(done) {
   var self = this;
   exec("heroku auth:token", extractToken(function(err, token) {
     if (err) return done(err);
@@ -28,7 +28,7 @@ Bumper.prototype.init = function(done) {
   }));
 };
 
-Bumper.prototype.fetchReleases = function(app, done) {
+Promoter.prototype.fetchReleases = function(app, done) {
   this.heroku.apps(app).releases().list(function(err, releases) { 
     if (err) return done(err);
     releases.sort(function(lhs, rhs) {
@@ -41,7 +41,7 @@ Bumper.prototype.fetchReleases = function(app, done) {
   });
 };
 
-Bumper.prototype.deploy = function(app, slugId, description, done) {
+Promoter.prototype.deploy = function(app, slugId, description, done) {
   this.heroku.apps(app).releases().create({ 
       slug: slugId,
       description: description
@@ -52,14 +52,14 @@ Bumper.prototype.deploy = function(app, slugId, description, done) {
 
 function main(stagingApp, prodApp, specs) {
   var candidate = null;
-  var bumper = new Bumper();
+  var promoter = new Promoter();
 
   function testsCompleted(results, lines) {
     if (results.failedCount === 0) {
       return recheck(function(err) {
         if (err) return bail(1, err);
         console.log('Promoting slug ' + candidate.slug.id + ' to prod.');
-        bumper.deploy(prodApp, candidate.slug.id, 'Promotion of: ' + candidate.description, function(err, data) {
+        promoter.deploy(prodApp, candidate.slug.id, 'Promotion of: ' + candidate.description, function(err, data) {
           if (err) return bail(1, err);
           console.log('>>>>>>>>>> ALL\'S WELL');
           console.log(JSON.stringify(data, null, '  '));
@@ -72,7 +72,7 @@ function main(stagingApp, prodApp, specs) {
   }
 
   function recheck(done) {
-    bumper.fetchReleases(stagingApp, function(err, rs) {
+    promoter.fetchReleases(stagingApp, function(err, rs) {
       var slugged = rs.filter(function(x) { return x.slug && x.slug.id });
       if (slugged.length == 0) return done('no slugged releases');
       var latest = slugged[0];
@@ -93,9 +93,9 @@ function main(stagingApp, prodApp, specs) {
     });
   }
 
-  bumper.init(function(err) {
+  promoter.init(function(err) {
     if (err) return bail(1, err);
-    bumper.fetchReleases(stagingApp, function(err, rs) {
+    promoter.fetchReleases(stagingApp, function(err, rs) {
       var slugged = rs.filter(function(x) { return x.slug && x.slug.id });
       if (slugged.length == 0) return bail(1, 'no slugged releases');
       candidate = slugged[0];
