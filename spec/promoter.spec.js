@@ -1,7 +1,11 @@
 var rewire = require('rewire');
 var promoter = rewire('../acceptance/promoter.js');
 
-promoter.__set__('JasmineNodeApi', {});
+
+function JasmineNodeApiStub() {
+};
+
+promoter.__set__('JasmineNodeApi', JasmineNodeApiStub);
 promoter.__set__('acceptanceSpecs', {});
 
 function DeployerStub() {
