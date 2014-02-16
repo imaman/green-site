@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-
+var argv = require('minimist')(process.argv.slice(2));
 var JasmineNodeApi = require('./acceptance/jasmine-node-api');
 var acceptanceSpecs = require('./acceptance/specs.js');
 var Promoter = require('./acceptance/promoter.js');
@@ -79,12 +79,21 @@ function main(stagingApp, prodApp, specs) {
   var promoter = new Promoter();
   promoter.init(function(err) {
     if (err) return bail(err);
-    if (acceptanceSpecs) {
+    if (specs) {
       return promoter.mostRecentRelease(stagingApp, establishCandidate);
+    } else {
+      promoter.mostRecentRelease(stagingApp, function(err, staged) {
+        if (err) return bail(err);
+        console.log('staged=' + JSON.stringify(staged, null, '  '));
+        promoter.mostRecentRelease(prodApp, function(err, live) {
+          if (err) return bail(err);
+          console.log('live=' + JSON.stringify(live, null, '  '));
+        });
+      });
     }
   });
 }
 
-main('collidingobjects-staging', 'collidingobjects', acceptanceSpecs);
+main('collidingobjects-staging', 'collidingobjects', argv.status ? null : acceptanceSpecs);
 
 
