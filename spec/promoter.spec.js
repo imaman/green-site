@@ -1,8 +1,8 @@
 var rewire = require('rewire');
-var Promoter = rewire('../acceptance/promoter.js');
+var Deployer = rewire('../acceptance/promoter.js');
 
 var command = null;
-Promoter.__set__('exec', function(cmd, done) {
+Deployer.__set__('exec', function(cmd, done) {
   command = cmd;
   done(null, 'AAA', '');
 });
@@ -35,11 +35,11 @@ function FakeHeroku(opts) {
   };
 };
 
-Promoter.__set__('Heroku', FakeHeroku);
+Deployer.__set__('Heroku', FakeHeroku);
 
-describe('Promoter', function() {
+describe('Deployer', function() {
   it('uses the Heroku CLI for obtaining a token', function(done) {
-    new Promoter().init(function(err) {
+    new Deployer().init(function(err) {
       expect(err).toBe(null);
       expect(command).toEqual('heroku auth:token');
       expect(options).toEqual({ token: 'AAA' });
@@ -49,8 +49,8 @@ describe('Promoter', function() {
 
   it('lists releases in reverse order of versions', function(done) {
     releases['a1'] = [ { description: 'old', version: 100}, { description: 'recent', version: 200} ];
-    new Promoter().init(function(err, promoter) {
-      promoter.fetchReleases('a1', function(err, rs) {
+    new Deployer().init(function(err, deployer) {
+      deployer.fetchReleases('a1', function(err, rs) {
         expect(err).toBe(null);
         expect(rs).toEqual([ {description: 'recent', version: 200 }, {description: 'old', version: 100} ]);
         done();
@@ -65,8 +65,8 @@ describe('Promoter', function() {
       { description: 'no_slug_newer', version: 300},
       { description: 'no_slug_id_newer', version: 400, slug: {}} 
     ];
-    new Promoter().init(function(err, promoter) {
-      promoter.mostRecentRelease('a2', function(err, r) {
+    new Deployer().init(function(err, Deployer) {
+      Deployer.mostRecentRelease('a2', function(err, r) {
         expect(err).toBe(null);
         expect(r).toEqual({description: 'slug_new', version: 200, slug: {id: 2}});
         done();
@@ -79,8 +79,8 @@ describe('Promoter', function() {
       { description: 'no_slug_1', version: 300},
       { description: 'no_slug_2', version: 400, slug: {}} 
     ];
-    new Promoter().init(function(err, promoter) {
-      promoter.mostRecentRelease('a3', function(err, r) {
+    new Deployer().init(function(err, deployer) {
+      deployer.mostRecentRelease('a3', function(err, r) {
         expect(err).toBe(null);
         expect(r).toBe(null);
         done();
@@ -90,8 +90,8 @@ describe('Promoter', function() {
 
   it('deploys', function(done) {
     createResult = { value: 'CREATE_RESULT' };
-    new Promoter().init(function(err, promoter) {
-      promoter.deploy('a4', 'SLUG_ID', 'DESCRIPTION', function(err, data) {
+    new Deployer().init(function(err, deployer) {
+      deployer.deploy('a4', 'SLUG_ID', 'DESCRIPTION', function(err, data) {
         expect(createOptions).toEqual({slug: 'SLUG_ID', description: 'DESCRIPTION'});
         expect(err).toBe(null);
         expect(data).toEqual({ value: 'CREATE_RESULT' });

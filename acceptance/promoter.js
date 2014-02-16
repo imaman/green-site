@@ -8,9 +8,9 @@ function extractToken(callback) {
   }
 }
 
-function Promoter() {}
+function Deployer() {}
 
-Promoter.prototype.init = function(done) {
+Deployer.prototype.init = function(done) {
   var self = this;
   exec("heroku auth:token", extractToken(function(err, token) {
     if (err) return done(err);
@@ -19,7 +19,7 @@ Promoter.prototype.init = function(done) {
   }));
 };
 
-Promoter.prototype.fetchReleases = function(app, done) {
+Deployer.prototype.fetchReleases = function(app, done) {
   this.heroku.apps(app).releases().list(function(err, releases) { 
     if (err) return done(err);
     releases.sort(function(lhs, rhs) {
@@ -32,7 +32,7 @@ Promoter.prototype.fetchReleases = function(app, done) {
   });
 };
 
-Promoter.prototype.mostRecentRelease = function(app, done) {
+Deployer.prototype.mostRecentRelease = function(app, done) {
   this.fetchReleases(app, function(err, rs) {
     if (err) return done(err);
     var slugged = rs.filter(function(x) { return x.slug && x.slug.id });
@@ -41,7 +41,7 @@ Promoter.prototype.mostRecentRelease = function(app, done) {
   });
 }
 
-Promoter.prototype.deploy = function(app, slugId, description, done) {
+Deployer.prototype.deploy = function(app, slugId, description, done) {
   this.heroku.apps(app).releases().create({ 
       slug: slugId,
       description: description
@@ -49,6 +49,6 @@ Promoter.prototype.deploy = function(app, slugId, description, done) {
     done);
 };
 
-module.exports = Promoter;
+module.exports = Deployer;
 
 

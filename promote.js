@@ -2,7 +2,7 @@
 var argv = require('minimist')(process.argv.slice(2));
 var JasmineNodeApi = require('./acceptance/jasmine-node-api');
 var acceptanceSpecs = require('./acceptance/specs.js');
-var Promoter = require('./acceptance/promoter.js');
+var Deployer = require('./acceptance/promoter.js');
 
 
 function bail(err) {
@@ -35,7 +35,7 @@ function main(stagingApp, prodApp, specs) {
   function deploy(err) {
     if (err) return bail(err);
     console.log('Promoting slug ' + candidate.slug.id + ' to prod.');
-    promoter.deploy(prodApp, 
+    deployer.deploy(prodApp, 
       candidate.slug.id, 
       'Promotion of: ' + candidate.description, 
       postDeploy);
@@ -55,7 +55,7 @@ function main(stagingApp, prodApp, specs) {
 
   function testsCompleted(results, lines) {
     if (results.failedCount !== 0) return bail(lines.join(''));
-    promoter.fetchReleases(stagingApp, verifyAndDeploy);
+    deployer.fetchReleases(stagingApp, verifyAndDeploy);
   }
 
   function checkNeedAndTest(err, live) {
@@ -73,19 +73,19 @@ function main(stagingApp, prodApp, specs) {
     if (err) return bail(err);
     candidate = mostRecent;
 
-    promoter.mostRecentRelease(prodApp, checkNeedAndTest);
+    deployer.mostRecentRelease(prodApp, checkNeedAndTest);
   }
 
-  var promoter = new Promoter();
-  promoter.init(function(err) {
+  var deployer = new Deployer();
+  deployer.init(function(err) {
     if (err) return bail(err);
     if (specs) {
-      return promoter.mostRecentRelease(stagingApp, establishCandidate);
+      return deployer.mostRecentRelease(stagingApp, establishCandidate);
     } else {
-      promoter.mostRecentRelease(stagingApp, function(err, staged) {
+      deployer.mostRecentRelease(stagingApp, function(err, staged) {
         if (err) return bail(err);
         console.log('staged=' + JSON.stringify(staged, null, '  '));
-        promoter.mostRecentRelease(prodApp, function(err, live) {
+        deployer.mostRecentRelease(prodApp, function(err, live) {
           if (err) return bail(err);
           console.log('live=' + JSON.stringify(live, null, '  '));
         });
