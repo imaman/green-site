@@ -41,7 +41,7 @@ function main(stagingApp, prodApp, status) {
 
   function verifyAndDeploy(err, rs) {
     var slugged = rs.filter(function(x) { return x.slug && x.slug.id });
-    if (slugged.length == 0) return done('no slugged releases');
+    if (slugged.length == 0) return bail('no slugged releases');
     var latest = slugged[0];
 
     if (latest.version !== candidate.version || latest.slug.id !== candidate.slug.id) {
