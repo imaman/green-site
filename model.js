@@ -27,7 +27,12 @@
         marks: [ 'meta' ],
         options: { showFooter: false },
         publishedAt: '2014-02-05T16:30:00+02:00'
-      }
+      },
+      {
+        id: 'game_of_stubs',
+        title: 'Game of Stubs',
+        publishedAt: '2014-02-17T15:18:00+02:00'
+      },
     ],
 
     fetchBody: function(id, done) {

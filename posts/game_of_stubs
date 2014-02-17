@@ -1,0 +1,73 @@
+So you just spiked out some new functionality. It took a whole day and you now have a nice pile of code which does it job, but for which you have no tests. Obviously you want to add tests, but then you find yourself in a dilemma:
+
+It is often the case that *your code is untestable*, that is: there are no means for you to exercise the pieces of functionality that make you want to test and/or there are no means for you to inspect their outputs or side effects. If you try to refactor the code into a more testing-friendly shape you soon realize that your options are limited: as there are no tests, there is no way for you to determine whether a refactoring step was indeed behavior-preserving. In other words: to add tests you need to refactor. Alas, without tests you can't refactor. There are some techniques to cope with that. But they deserve their own post. 
+
+Let us focus on the other case. You somehow managed to write testable code but you still have to cope with this: in order to have meaningful tests you need to *reverse engineer meaningful inputs from the code*. 
+These inputs can either be data that passed directly from your tests to the production code (usually by means of parameter passing) or collaborator objects which the production code depends upon. Either way these "inputs" need to be *meaningful* in the sense that they need to make execution pass through the paths, in the production code, that your test cares about.
+
+Here is the technique that I usually use for reverse engineering inputs. I call it **Game of Stubs**
+
+1. Start from a simple test the has no assertions. 
+1. Stub all collaborators. This will isolate the code and prevent tests runs from affecting the outer world. These stubs should initially be the most degenerate value that could possibly work. a `null` or an empty object `{}` is a good starting point.
+1. Run your test. It will usually fail with an exception because your stubs do not provide the services they are expected to provide.
+1. Examine the failure message. Add the missing bit to the stub.
+1. Repeat until execution passes through the path you are interested at. 
+1. Add assertions/expectations as needed.
+
+Here's an example. 
+
+We start with an assertion-free test and we stub all collaborators. In node.js I use the rewire module which provides a way for tests to alter dependencies of production code:
+
+    var rewire = require('rewire');
+    var promoter = rewire('../acceptance/promoter.js');
+    
+    promoter.__set__('Deployer', {});
+    
+    describe('promoter', function() {
+      it('does something', function(done) {
+        promoter('a', 'b');
+        done();
+      });
+    });
+
+
+When I run this test I get an exception-induced failure:
+
+    1) promoter does something
+     Message:
+       TypeError: object is not a function
+     Stacktrace:
+       TypeError: object is not a function
+      at main (/home/imaman/workspace/green-site/acceptance/promoter.js:77:18)
+      at null.<anonymous> (/home/imaman/workspace/green-site/spec/promoter.spec.js:12:5)
+      at null.<anonymous> (/home/imaman/workspace/green-site/node_modules/jasmine-node/lib/jasmine-node/async-callback.js:45:37)
+
+
+We failed with an `object is not a function` error. Thus, we change the `Deployer` collaborator into a function.
+
+    var rewire = require('rewire');
+    var promoter = rewire('../acceptance/promoter.js');
+    
+    function DeployerStub() {
+    }
+    promoter.__set__('Deployer', DeployerStub);    
+    ...
+
+We now repeat the process. Running the test again, yields this failure: `TypeError: Object #<DeployerStub> has no method 'init'`, so we add an `init()` function:
+
+    function DeployerStub() {
+      this.init = function() {};
+    }
+
+    promoter.__set__('Deployer', DeployerStub);
+
+
+And so on....
+
+This may take a while but you can do it almost on auto-pilot. Instead of digging into the production code you just need to look at the failure message and add whatever it is that is missing there.
+
+
+
+
+
+
