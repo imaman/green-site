@@ -26,7 +26,7 @@ JasmineNodeApi.prototype.onCompletion = function(callback) {
   this.completion = callback;
 }
 
-JasmineNodeApi.prototype.runSpecs = function(specs) {
+JasmineNodeApi.prototype.runSpecs = function(specs, done) {
   var self = this;
   var lines = [];
   function print(str) {
@@ -41,7 +41,8 @@ JasmineNodeApi.prototype.runSpecs = function(specs) {
       print: print,
       color: true,
       onComplete: function(e) { 
-        self.completion(e.results(), lines);
+        var actual = done || self.completion;
+        actual(e.results(), lines);
       },
       stackFilter: removeJasmineFrames
     }

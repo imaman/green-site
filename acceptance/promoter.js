@@ -39,15 +39,14 @@ function main(stagingApp, prodApp, status, bail) {
     deployer.fetchReleases(stagingApp, verifyAndDeploy);
   }
 
-  function checkNeedAndTest(err, live) {
+  function checkNeedAndTest(err, live, next) {
     if (err) return bail(err);
     if (live && (live.slug.id === candidate.slug.id)) {
       return bail('Slug at staging is already live in prod.');
     }
 
     var api = new JasmineNodeApi();
-    api.onCompletion(testsCompleted);
-    api.runSpecs(specs);
+    next(api, api.runSpecs, specs);
   }
 
   function establishCandidate(err, mostRecent, next) {
@@ -81,8 +80,20 @@ function main(stagingApp, prodApp, status, bail) {
       var f = target.f;
       var r = target.r;
 
-      var next = function(en, vn) {
-        applyAt(en, vn, i + 1);
+      function next(en, vn) {
+        if (arguments.length === 2) {
+          return applyAt(en, vn, i + 1);
+        }
+
+        if (arguments.length != 3) {
+          throw new Error('args.len != 3');
+        }
+
+        var r = arguments[0];
+        var f = arguments[1];
+        var v = arguments[2];
+
+        return f.apply(r, [v, next]);
       };
 
 
@@ -106,7 +117,7 @@ function main(stagingApp, prodApp, status, bail) {
   deployer.init(function(err) {
     if (err) return bail(err);
     if (specs) {
-      return new Seq().to(deployer, deployer.mostRecentRelease).to(establishCandidate).stop(checkNeedAndTest).apply(stagingApp);
+      return new Seq().to(deployer, deployer.mostRecentRelease).to(establishCandidate).to(checkNeedAndTest).stop(testsCompleted).apply(stagingApp);
     } else {
       deployer.mostRecentRelease(stagingApp, function(err, staged) {
         if (err) return bail(err);
