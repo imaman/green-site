@@ -21,8 +21,7 @@ function main(stagingApp, prodApp, status, options, bail) {
       next);
   }
 
-  function verifyAndDeploy(err, rs, next) {
-    if (err) return next(err);
+  function verifyAndDeploy(rs, next) {
     var slugged = rs.filter(function(x) { return x.slug && x.slug.id });
     if (slugged.length == 0) return next('no slugged releases', null);
     var latest = slugged[0];
@@ -34,15 +33,12 @@ function main(stagingApp, prodApp, status, options, bail) {
     next(null, null);
   }
 
-  function testsCompleted(err, outcome, next) {
-    if (err) return next(err);
-    console.log('err=' + err + ', outcome=' + JSON.stringify(outcome) + ', next=' + next);
+  function testsCompleted(outcome, next) {
     if (outcome.results.failedCount !== 0) return bail(outcome.lines.join(''));
     deployer.fetchReleases(stagingApp, next);
   }
 
-  function checkNeedAndTest(err, live, next) {
-    if (err) return bail(err);
+  function checkNeedAndTest(live, next) {
     if (live && (live.slug.id === candidate.slug.id)) {
       return bail('Slug at staging is already live in prod.');
     }
@@ -51,8 +47,7 @@ function main(stagingApp, prodApp, status, options, bail) {
     new Seq().to(api, Seq.valDone(api.runSpecs)).stop(next).apply(specs);
   }
 
-  function establishCandidate(err, mostRecent, next) {
-    if (err) return bail(err);
+  function establishCandidate(mostRecent, next) {
     candidate = mostRecent;
 
     deployer.mostRecentRelease(prodApp, next);
@@ -65,10 +60,10 @@ function main(stagingApp, prodApp, status, options, bail) {
     if (specs) {
       return new Seq().
         to(deployer, Seq.valDone(deployer.mostRecentRelease)).
-        to(establishCandidate).
-        to(checkNeedAndTest).
-        to(testsCompleted).
-        to(verifyAndDeploy).
+        to(Seq.valDone(establishCandidate)).
+        to(Seq.valDone(checkNeedAndTest)).
+        to(Seq.valDone(testsCompleted)).
+        to(Seq.valDone(verifyAndDeploy)).
         to(Seq.valDone(deploy)).
         stop(postDeploy).
         apply(stagingApp);
