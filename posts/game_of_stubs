@@ -74,10 +74,5 @@ We now repeat the process. Running the test again, we get: `TypeError: Object #<
 
 And so on....
 
-This may take a while but you can do it almost on auto-pilot mode. Instead of digging into the production code you just need to look at the failure message and add whatever it is that is missing there. Eventually, you will get nice, yet minmal, stubs, which is exactly what is needed for a good unit test.
-
-
-
-
-
+This may take a while but you can do it almost on auto-pilot mode. Instead of digging into the production code you just need to look at the failure message and add whatever it is that is missing there. Eventually, you will get a nice set of minimal stubs, which is exactly what is needed for a good unit test.
 
