@@ -9,10 +9,10 @@ If you try to refactor the code into a more testing-friendly shape you soon real
 In other words: 
 >To add tests you need to refactor. When there are no tests you can't refactor. 
 
-There are some techniques to cope with that. But they deserve their own post. 
+There are some techniques to cope with that. But they deserve their own post. Let us focus on the second case.
 
 ### Situation 2: Reverse Engineering.
-Let us focus on the other case. You somehow managed to write testable code but you still have to cope with this: in order to have meaningful tests you need to *reverse engineer meaningful inputs from the code*. 
+You somehow managed to write testable code but, still, you did not write any tests yet. You now have to cope with this: in order to have meaningful tests you need to *reverse engineer meaningful inputs from the code*. 
 These inputs can either be data that is passed directly from your test to the production code (usually by means of parameter passing) or collaborator objects injected into the production code depends upon. Either way these "inputs" need to be *meaningful* in the sense that they need to make execution pass through the paths, in the production code, that your test cares about.
 
 Here is the technique that I usually use for reverse engineering inputs. I call it **Game of Stubs**
