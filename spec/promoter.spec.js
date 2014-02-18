@@ -49,11 +49,10 @@ describe('promoter', function() {
     });
   });
   it('reports an error if fetchReleases fails', function(done) {
-    var problem = new Error('SOMETHING WENT WRONG');
     var deployer = new DeployerStub();
-    deployer.fetchReleases = function(app, done) { done(problem); };
+    deployer.fetchReleases = function(app, done) { done('FAILURE IN deployer.fetchReleases()'); };
     promoter('a', 'b', false, { deployer: deployer }, function(err, data) { 
-      expect(err).toBe(problem);
+      expect(err).toEqual('FAILURE IN deployer.fetchReleases()');
       expect(data).toBe(undefined);
       done();
     });
