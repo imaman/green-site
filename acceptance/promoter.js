@@ -47,7 +47,7 @@ function main(stagingApp, prodApp, status, bail) {
     }
 
     var api = new JasmineNodeApi();
-    new Seq().to(api, api.runSpecs).stop(next).apply(specs);
+    new Seq().to(api, Seq.valDone(api.runSpecs)).stop(next).apply(specs);
   }
 
   function establishCandidate(err, mostRecent, next) {
@@ -71,7 +71,7 @@ function main(stagingApp, prodApp, status, bail) {
     return this;
   }
 
-  Seq.prototype.apply = function(arg, done) {
+  Seq.prototype.asFunction = function() {
     var self = this;
     function applyAt(e, v, i) {
       if (i >= self.targets.length) {
@@ -88,9 +88,6 @@ function main(stagingApp, prodApp, status, bail) {
 
 
       var args = [e, v, next];
-      if (f.length === 2) {
-        args = [v, next];
-      }
       console.log('args=' + JSON.stringify(args));
 
       try {
@@ -101,7 +98,20 @@ function main(stagingApp, prodApp, status, bail) {
       }
     };
 
-    applyAt(null, arg, 0);
+    return function(arg) {
+      applyAt(null, arg, 0);
+    };
+  };
+
+  Seq.prototype.apply = function(arg) {
+    return this.asFunction()(arg);
+  };
+
+  Seq.valDone = function(f) { 
+    return function(e, v, next) {
+      if (e) return next(e);
+      return f(v, next);
+    }
   };
 
   var deployer = new Deployer();
@@ -109,7 +119,7 @@ function main(stagingApp, prodApp, status, bail) {
     if (err) return bail(err);
     if (specs) {
       return new Seq().
-        to(deployer, deployer.mostRecentRelease).
+        to(deployer, Seq.valDone(deployer.mostRecentRelease)).
         to(establishCandidate).
         to(checkNeedAndTest).
         to(testsCompleted).
