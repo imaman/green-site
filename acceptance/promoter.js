@@ -2,7 +2,7 @@ var JasmineNodeApi = require('./jasmine-node-api');
 var acceptanceSpecs = require('./specs.js');
 var Deployer = require('./deployer.js');
 
-function main(stagingApp, prodApp, status, bail) {
+function main(stagingApp, prodApp, status, options, bail) {
   var specs = status ? null : acceptanceSpecs;
   var candidate = null;
 
@@ -57,64 +57,8 @@ function main(stagingApp, prodApp, status, bail) {
     deployer.mostRecentRelease(prodApp, next);
   }
 
-  function Seq() {
-    this.targets = [];
-  }
 
-  Seq.prototype.to = function(r, f) {
-    this.targets.push({ r: f ? r : null, f: f || r });
-    return this;
-  }
-
-  Seq.prototype.stop = function(t) {
-    this.terminator = t;
-    return this;
-  }
-
-  Seq.prototype.asFunction = function() {
-    var self = this;
-    function applyAt(e, v, i) {
-      if (i >= self.targets.length) {
-        return self.terminator(e, v);
-      }
-
-      var target = self.targets[i];
-      var f = target.f;
-      var r = target.r;
-
-      function next(en, vn) {
-        return applyAt(en, vn, i + 1);
-      };
-
-
-      var args = [e, v, next];
-      console.log('args=' + JSON.stringify(args));
-
-      try {
-        f.apply(r, args);
-      } catch(e) {
-        console.log('\n\n===================================================================\n' + e.stack);
-        throw e;
-      }
-    };
-
-    return function(arg) {
-      applyAt(null, arg, 0);
-    };
-  };
-
-  Seq.prototype.apply = function(arg) {
-    return this.asFunction()(arg);
-  };
-
-  Seq.valDone = function(f) { 
-    return function(e, v, next) {
-      if (e) return next(e);
-      return f(v, next);
-    }
-  };
-
-  var deployer = new Deployer();
+  var deployer = options.deployer || new Deployer();
   deployer.init(function(err) {
     if (err) return bail(err);
     if (specs) {
@@ -139,5 +83,62 @@ function main(stagingApp, prodApp, status, bail) {
     }
   });
 }
+
+function Seq() {
+  this.targets = [];
+}
+
+Seq.prototype.to = function(r, f) {
+  this.targets.push({ r: f ? r : null, f: f || r });
+  return this;
+}
+
+Seq.prototype.stop = function(t) {
+  this.terminator = t;
+  return this;
+}
+
+Seq.prototype.asFunction = function() {
+  var self = this;
+  function applyAt(e, v, i) {
+    if (i >= self.targets.length) {
+      return self.terminator(e, v);
+    }
+
+    var target = self.targets[i];
+    var f = target.f;
+    var r = target.r;
+
+    function next(en, vn) {
+      return applyAt(en, vn, i + 1);
+    };
+
+
+    var args = [e, v, next];
+    console.log('args=' + JSON.stringify(args));
+
+    try {
+      f.apply(r, args);
+    } catch(e) {
+      console.log('\n\n===================================================================\n' + e.stack);
+      throw e;
+    }
+  };
+
+  return function(arg) {
+    applyAt(null, arg, 0);
+  };
+};
+
+Seq.prototype.apply = function(arg) {
+  return this.asFunction()(arg);
+};
+
+Seq.valDone = function(f) { 
+  return function(e, v, next) {
+    if (e) return next(e);
+    return f(v, next);
+  }
+};
 
 module.exports = main;
