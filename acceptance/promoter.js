@@ -13,8 +13,7 @@ function main(stagingApp, prodApp, status, options, bail) {
     bail(null, data);
   }
 
-  function deploy(err, ignore, next) {
-    if (err) return bail(err);
+  function deploy(ignore, next) {
     console.log('Promoting slug ' + candidate.slug.id + ' to prod.');
     deployer.deploy(prodApp, 
       candidate.slug.id, 
@@ -36,6 +35,7 @@ function main(stagingApp, prodApp, status, options, bail) {
   }
 
   function testsCompleted(err, outcome, next) {
+    if (err) return next(err);
     console.log('err=' + err + ', outcome=' + JSON.stringify(outcome) + ', next=' + next);
     if (outcome.results.failedCount !== 0) return bail(outcome.lines.join(''));
     deployer.fetchReleases(stagingApp, next);
@@ -69,7 +69,7 @@ function main(stagingApp, prodApp, status, options, bail) {
         to(checkNeedAndTest).
         to(testsCompleted).
         to(verifyAndDeploy).
-        to(deploy).
+        to(Seq.valDone(deploy)).
         stop(postDeploy).
         apply(stagingApp);
     } else {
