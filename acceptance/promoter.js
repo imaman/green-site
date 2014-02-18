@@ -50,26 +50,63 @@ function main(stagingApp, prodApp, status, bail) {
     api.runSpecs(specs);
   }
 
-  function establishCandidate(err, mostRecent) {
+  function establishCandidate(err, mostRecent, next) {
     if (err) return bail(err);
     candidate = mostRecent;
 
-    deployer.mostRecentRelease(prodApp, checkNeedAndTest);
+    deployer.mostRecentRelease(prodApp, next);
   }
 
-  function seq(r1, f1, r2, f2) {
-    return function(arg) {
+  var Seq = function() {
+    this.targets = [];
+  }
+  Seq.prototype.to = function(r, f) {
+    this.targets.push({ r: f ? r : null, f: f || r });
+    return this;
+  }
+
+  Seq.prototype.stop = function(t) {
+    this.terminator = t;
+    return this;
+  }
+
+  Seq.prototype.apply = function(arg, done) {
+    function applyAt(e, v, i) {
+      if (i >= this.targets.length) {
+        return this.terminator(e, v);
+      }
+      var target = this.targets[i];
+      var f = target.f;
+      var r = targer.r;
+
+      var next = function(en, vn) {
+        applyAt(en, en, i + 1);
+      }
+
+      var args = f.length == 3 ? [e, v, next] : [v, next];
+      f.apply(r, [ e, v, next ]);
+    };
+
+    applyAt(null, arg, 0);
+  };
+
+  function seq(r1, f1, r2, f2, r3, f3) {
+    var binSeq = function(arg) {
       f1.apply(r1, [arg, function(err, value) {
-        f2.apply(r2, [err, value]);                
+        f2.apply(r2, [err, value, function(e, v) {
+          f3.apply(r3, [e, v]);
+        }]);
       }]);
-    }
+    };
+
+    return binSeq;
   }
 
   var deployer = new Deployer();
   deployer.init(function(err) {
     if (err) return bail(err);
     if (specs) {
-      return seq(deployer, deployer.mostRecentRelease, null, establishCandidate)(stagingApp);
+      return seq(deployer, deployer.mostRecentRelease, null, establishCandidate, null, checkNeedAndTest)(stagingApp);
     } else {
       deployer.mostRecentRelease(stagingApp, function(err, staged) {
         if (err) return bail(err);
