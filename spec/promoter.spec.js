@@ -59,11 +59,10 @@ describe('promoter', function() {
     });
   });
   it('reports an error if deploy fails', function(done) {
-    var problem = new Error('SOMETHING WENT WRONG');
     var deployer = new DeployerStub();
-    deployer.deploy = function(app, slug, description, done) { done(problem); };
+    deployer.deploy = function(app, slug, description, done) { done('FAILURE IN deployer.deploy()'); };
     promoter('a', 'b', false, { deployer: deployer }, function(err, data) { 
-      expect(err).toBe(problem);
+      expect(err).toEqual('FAILURE IN deployer.deploy()');
       expect(data).toBe(undefined);
       done();
     });
