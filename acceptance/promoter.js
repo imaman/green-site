@@ -3,7 +3,7 @@ var acceptanceSpecs = require('./specs.js');
 var Deployer = require('./deployer.js');
 
 function main(stagingApp, prodApp, status, options, bail) {
-  var specs = status ? null : acceptanceSpecs;
+  var specs = status ? null : (options.specs || acceptanceSpecs);
   var candidate = null;
 
   function postDeploy(err, data) {
@@ -23,6 +23,7 @@ function main(stagingApp, prodApp, status, options, bail) {
   }
 
   function verifyAndDeploy(err, rs, next) {
+    if (err) return next(err);
     var slugged = rs.filter(function(x) { return x.slug && x.slug.id });
     if (slugged.length == 0) return next('no slugged releases', null);
     var latest = slugged[0];

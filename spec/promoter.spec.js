@@ -38,5 +38,35 @@ describe('promoter', function() {
       done();
     });
   });
+  it('reports an error if mostRecentRelease fails', function(done) {
+    var problem = new Error('SOMETHING WENT WRONG');
+    var deployer = new DeployerStub();
+    deployer.mostRecentRelease = function(app, done) { done(problem); };
+    promoter('a', 'b', false, { deployer: deployer }, function(err, data) { 
+      expect(err).toBe(problem);
+      expect(data).toBe(undefined);
+      done();
+    });
+  });
+  it('reports an error if fetchReleases fails', function(done) {
+    var problem = new Error('SOMETHING WENT WRONG');
+    var deployer = new DeployerStub();
+    deployer.fetchReleases = function(app, done) { done(problem); };
+    promoter('a', 'b', false, { deployer: deployer }, function(err, data) { 
+      expect(err).toBe(problem);
+      expect(data).toBe(undefined);
+      done();
+    });
+  });
+  it('reports an error if deploy fails', function(done) {
+    var problem = new Error('SOMETHING WENT WRONG');
+    var deployer = new DeployerStub();
+    deployer.deploy = function(app, slug, description, done) { done(problem); };
+    promoter('a', 'b', false, { deployer: deployer }, function(err, data) { 
+      expect(err).toBe(problem);
+      expect(data).toBe(undefined);
+      done();
+    });
+  });
 });
 
