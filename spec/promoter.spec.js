@@ -29,5 +29,14 @@ describe('promoter', function() {
       done();
     });
   });
+  it('reports an error if init fails', function(done) {
+    var deployer = new DeployerStub();
+    deployer.init = function(done) { done('SOME PROBLEM'); };
+    promoter('a', 'b', false, { deployer: deployer }, function(err, data) { 
+      expect(err).toEqual('SOME PROBLEM');
+      expect(data).toBe(undefined);
+      done();
+    });
+  });
 });
 
