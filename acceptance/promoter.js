@@ -71,42 +71,42 @@ function main(stagingApp, prodApp, status, bail) {
   }
 
   Seq.prototype.apply = function(arg, done) {
+    var self = this;
     function applyAt(e, v, i) {
-      if (i >= this.targets.length) {
-        return this.terminator(e, v);
+      if (i >= self.targets.length) {
+        return self.terminator(e, v);
       }
-      var target = this.targets[i];
+
+      var target = self.targets[i];
       var f = target.f;
-      var r = targer.r;
+      var r = target.r;
 
       var next = function(en, vn) {
-        applyAt(en, en, i + 1);
+        applyAt(en, vn, i + 1);
+      };
+
+
+      var args = [e, v, next];
+      if (f.length === 2) {
+        args = [v, next];
       }
 
-      var args = f.length == 3 ? [e, v, next] : [v, next];
-      f.apply(r, [ e, v, next ]);
+      try {
+        f.apply(r, args);
+      } catch(e) {
+        console.log('\n\n===================================================================\n' + e.stack);
+        throw e;
+      }
     };
 
     applyAt(null, arg, 0);
   };
 
-  function seq(r1, f1, r2, f2, r3, f3) {
-    var binSeq = function(arg) {
-      f1.apply(r1, [arg, function(err, value) {
-        f2.apply(r2, [err, value, function(e, v) {
-          f3.apply(r3, [e, v]);
-        }]);
-      }]);
-    };
-
-    return binSeq;
-  }
-
   var deployer = new Deployer();
   deployer.init(function(err) {
     if (err) return bail(err);
     if (specs) {
-      return seq(deployer, deployer.mostRecentRelease, null, establishCandidate, null, checkNeedAndTest)(stagingApp);
+      return new Seq().to(deployer, deployer.mostRecentRelease).to(establishCandidate).stop(checkNeedAndTest).apply(stagingApp);
     } else {
       deployer.mostRecentRelease(stagingApp, function(err, staged) {
         if (err) return bail(err);
