@@ -22,16 +22,16 @@ function main(stagingApp, prodApp, status, bail) {
       postDeploy);
   }
 
-  function verifyAndDeploy(err, rs) {
+  function verifyAndDeploy(err, rs, next) {
     var slugged = rs.filter(function(x) { return x.slug && x.slug.id });
-    if (slugged.length == 0) return bail('no slugged releases');
+    if (slugged.length == 0) return next('no slugged releases', null);
     var latest = slugged[0];
 
     if (latest.version !== candidate.version || latest.slug.id !== candidate.slug.id) {
-      return deploy('Staging has changed mid-air');
+      return next('Staging has changed mid-air', null);
     }
 
-    deploy(null);
+    next(null, null);
   }
 
   function testsCompleted(err, outcome, next) {
@@ -126,7 +126,8 @@ function main(stagingApp, prodApp, status, bail) {
         to(establishCandidate).
         to(checkNeedAndTest).
         to(testsCompleted).
-        stop(verifyAndDeploy).
+        to(verifyAndDeploy).
+        stop(deploy).
         apply(stagingApp);
     } else {
       deployer.mostRecentRelease(stagingApp, function(err, staged) {
