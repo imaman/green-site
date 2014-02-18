@@ -42,7 +42,7 @@ JasmineNodeApi.prototype.runSpecs = function(specs, done) {
       color: true,
       onComplete: function(e) { 
         var actual = done || self.completion;
-        actual(e.results(), lines);
+        actual(null, { results: e.results(), lines: lines});
       },
       stackFilter: removeJasmineFrames
     }

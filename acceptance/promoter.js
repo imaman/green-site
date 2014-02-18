@@ -34,9 +34,10 @@ function main(stagingApp, prodApp, status, bail) {
     deploy(null);
   }
 
-  function testsCompleted(results, lines) {
-    if (results.failedCount !== 0) return bail(lines.join(''));
-    deployer.fetchReleases(stagingApp, verifyAndDeploy);
+  function testsCompleted(err, outcome, next) {
+    console.log('err=' + err + ', outcome=' + JSON.stringify(outcome) + ', next=' + next);
+    if (outcome.results.failedCount !== 0) return bail(outcome.lines.join(''));
+    deployer.fetchReleases(stagingApp, next);
   }
 
   function checkNeedAndTest(err, live, next) {
@@ -72,6 +73,7 @@ function main(stagingApp, prodApp, status, bail) {
   Seq.prototype.apply = function(arg, done) {
     var self = this;
     function applyAt(e, v, i) {
+      console.log('e=' + e + ', v=' + JSON.stringify(v) + ', i=' + i + ' ::: ' + JSON.stringify(self.targets[i]) + ', arguments.length=' +arguments.length);
       if (i >= self.targets.length) {
         return self.terminator(e, v);
       }
@@ -79,6 +81,7 @@ function main(stagingApp, prodApp, status, bail) {
       var target = self.targets[i];
       var f = target.f;
       var r = target.r;
+      console.log('r=' + JSON.stringify(r) + ', f=' + f);
 
       function next(en, vn) {
         if (arguments.length === 2) {
@@ -101,6 +104,7 @@ function main(stagingApp, prodApp, status, bail) {
       if (f.length === 2) {
         args = [v, next];
       }
+      console.log('args=' + JSON.stringify(args));
 
       try {
         f.apply(r, args);
@@ -117,7 +121,13 @@ function main(stagingApp, prodApp, status, bail) {
   deployer.init(function(err) {
     if (err) return bail(err);
     if (specs) {
-      return new Seq().to(deployer, deployer.mostRecentRelease).to(establishCandidate).to(checkNeedAndTest).stop(testsCompleted).apply(stagingApp);
+      return new Seq().
+        to(deployer, deployer.mostRecentRelease).
+        to(establishCandidate).
+        to(checkNeedAndTest).
+        to(testsCompleted).
+        stop(verifyAndDeploy).
+        apply(stagingApp);
     } else {
       deployer.mostRecentRelease(stagingApp, function(err, staged) {
         if (err) return bail(err);
