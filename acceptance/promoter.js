@@ -47,7 +47,7 @@ function main(stagingApp, prodApp, status, bail) {
     }
 
     var api = new JasmineNodeApi();
-    next(api, api.runSpecs, specs);
+    new Seq().to(api, api.runSpecs).stop(next).apply(specs);
   }
 
   function establishCandidate(err, mostRecent, next) {
@@ -57,9 +57,10 @@ function main(stagingApp, prodApp, status, bail) {
     deployer.mostRecentRelease(prodApp, next);
   }
 
-  var Seq = function() {
+  function Seq() {
     this.targets = [];
   }
+
   Seq.prototype.to = function(r, f) {
     this.targets.push({ r: f ? r : null, f: f || r });
     return this;
@@ -73,7 +74,6 @@ function main(stagingApp, prodApp, status, bail) {
   Seq.prototype.apply = function(arg, done) {
     var self = this;
     function applyAt(e, v, i) {
-      console.log('e=' + e + ', v=' + JSON.stringify(v) + ', i=' + i + ' ::: ' + JSON.stringify(self.targets[i]) + ', arguments.length=' +arguments.length);
       if (i >= self.targets.length) {
         return self.terminator(e, v);
       }
@@ -81,22 +81,9 @@ function main(stagingApp, prodApp, status, bail) {
       var target = self.targets[i];
       var f = target.f;
       var r = target.r;
-      console.log('r=' + JSON.stringify(r) + ', f=' + f);
 
       function next(en, vn) {
-        if (arguments.length === 2) {
-          return applyAt(en, vn, i + 1);
-        }
-
-        if (arguments.length != 3) {
-          throw new Error('args.len != 3');
-        }
-
-        var r = arguments[0];
-        var f = arguments[1];
-        var v = arguments[2];
-
-        return f.apply(r, [v, next]);
+        return applyAt(en, vn, i + 1);
       };
 
 
