@@ -57,11 +57,19 @@ function main(stagingApp, prodApp, status, bail) {
     deployer.mostRecentRelease(prodApp, checkNeedAndTest);
   }
 
+  function seq(r1, f1, r2, f2) {
+    return function(arg) {
+      f1.apply(r1, [arg, function(err, value) {
+        f2.apply(r2, [err, value]);                
+      }]);
+    }
+  }
+
   var deployer = new Deployer();
   deployer.init(function(err) {
     if (err) return bail(err);
     if (specs) {
-      return deployer.mostRecentRelease(stagingApp, establishCandidate);
+      return seq(deployer, deployer.mostRecentRelease, null, establishCandidate)(stagingApp);
     } else {
       deployer.mostRecentRelease(stagingApp, function(err, staged) {
         if (err) return bail(err);
