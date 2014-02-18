@@ -13,13 +13,13 @@ function main(stagingApp, prodApp, status, bail) {
     bail(null, data);
   }
 
-  function deploy(err) {
+  function deploy(err, ignore, next) {
     if (err) return bail(err);
     console.log('Promoting slug ' + candidate.slug.id + ' to prod.');
     deployer.deploy(prodApp, 
       candidate.slug.id, 
       'Promotion of: ' + candidate.description, 
-      postDeploy);
+      next);
   }
 
   function verifyAndDeploy(err, rs, next) {
@@ -127,7 +127,8 @@ function main(stagingApp, prodApp, status, bail) {
         to(checkNeedAndTest).
         to(testsCompleted).
         to(verifyAndDeploy).
-        stop(deploy).
+        to(deploy).
+        stop(postDeploy).
         apply(stagingApp);
     } else {
       deployer.mostRecentRelease(stagingApp, function(err, staged) {
