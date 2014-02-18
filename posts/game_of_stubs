@@ -5,8 +5,9 @@ It is often the case that *your code is untestable*, that is: there are no means
 This happens because in a spiking sitatuation you care mostly (solely?) about getting the code to do whatever it is you want it do. 
 Hence, you do not write tests, so you never have to deal with testability obstacles that plauge your code (the exact degree of which may vary).
 If you try to refactor the code into a more testing-friendly shape you soon realize that your options are limited: as there are no tests, there is no way for you to determine whether a refactoring step was indeed behavior-preserving. 
+
 In other words: 
->To add tests you need to refactor. Alas, without tests you can't refactor. 
+>To add tests you need to refactor. When there are no tests you can't refactor. 
 
 There are some techniques to cope with that. But they deserve their own post. 
 
