@@ -52,35 +52,31 @@ function main(stagingApp, prodApp, options, bail) {
 
 
   var deployer = options.deployer || new Deployer();
-  deployer.init(function(err) {
-    if (err) return bail(err);
-    if (!options.status) {
-      return new FunFlow().seq(
-        deployer.mostRecentRelease.bind(deployer, stagingApp),
-        establishCandidate,
-        checkNeedAndTest,
-        testsCompleted,
-        verifyAndDeploy,
-        deploy, 
-        postDeploy)();
-    } else {
-      var text = [];
 
-      function collect(err, v) {
-        if (err) return bail(err);
-        text.push(v);
-      }
-      deployer.mostRecentRelease(stagingApp, function(err, staged) {
-        if (err) return collect(err);
-        collect(null, 'staged=' + JSON.stringify(staged, null, '  '));
-        deployer.mostRecentRelease(prodApp, function(err, live) {
-          if (err) return collect(err);
-          collect(null, 'live=' + JSON.stringify(live, null, '  '));
-          bail(null, text.join('\n'));
-        });
-      });
+  if (!options.status) {
+    return new FunFlow().seq(
+      deployer.init.bind(deployer),
+      deployer.mostRecentRelease.bind(deployer, stagingApp),
+      establishCandidate,
+      checkNeedAndTest,
+      testsCompleted,
+      verifyAndDeploy,
+      deploy, 
+      postDeploy)();
+  } else {
+    var text = [];
+    function collect(title, v, next) {
+      text.push(title + '=' + JSON.stringify(v, null, '  '));
+      next();
     }
-  });
+
+    return new FunFlow().seq(
+      deployer.mostRecentRelease.bind(deployer, stagingApp), 
+      collect.bind(null, 'staged'),
+      deployer.mostRecentRelease.bind(deployer, prodApp), 
+      collect.bind(null, 'live'),
+      function(next) { bail(null, text.join('\n')) })();
+  };
 }
 
 module.exports = main;
