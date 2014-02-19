@@ -102,7 +102,6 @@ FunFlow.prototype.asFunction = function() {
   var self = this;
   function applyAt(i, e) {
     var incomingArgs = Array.prototype.slice.call(arguments, 2);
-    var v = incomingArgs[0];
     if (i >= self.targets.length) {
       return self.terminator.apply(null, [e].concat(incomingArgs));
     }
