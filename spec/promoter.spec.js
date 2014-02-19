@@ -79,5 +79,16 @@ describe('promoter', function() {
       done();
     });
   });
+  it('reports status of prod. and staging', function(done) {
+    var deployer = new DeployerStub();
+    promoter('a', 'b', { status: true, deployer: deployer }, function(err, data) { 
+      expect(err).toBe(null);
+      expect(data).toContain('"description": "most_recent_at_a"');
+      expect(data).toContain('"id": "a_slug_id"');
+      expect(data).toContain('"description": "most_recent_at_b"');
+      expect(data).toContain('"id": "b_slug_id"');
+      done();
+    });
+  });
 });
 

@@ -4,9 +4,9 @@ var promoter = require('./acceptance/promoter.js');
 var JasmineNodeApi = require('./acceptance/jasmine-node-api');
 var acceptanceSpecs = require('./acceptance/specs.js');
 
-function bail(err) {
+function bail(err, text) {
   if (!err) {
-    process.exit(0);
+    return console.log(text);
   }
 
   if (err.stack) {

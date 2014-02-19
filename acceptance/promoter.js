@@ -64,12 +64,19 @@ function main(stagingApp, prodApp, options, bail) {
         deploy, 
         postDeploy)();
     } else {
-      deployer.mostRecentRelease(stagingApp, function(err, staged) {
+      var text = [];
+
+      function collect(err, v) {
         if (err) return bail(err);
-        console.log('staged=' + JSON.stringify(staged, null, '  '));
+        text.push(v);
+      }
+      deployer.mostRecentRelease(stagingApp, function(err, staged) {
+        if (err) return collect(err);
+        collect(null, 'staged=' + JSON.stringify(staged, null, '  '));
         deployer.mostRecentRelease(prodApp, function(err, live) {
-          if (err) return bail(err);
-          console.log('live=' + JSON.stringify(live, null, '  '));
+          if (err) return collect(err);
+          collect(null, 'live=' + JSON.stringify(live, null, '  '));
+          bail(null, text.join('\n'));
         });
       });
     }
