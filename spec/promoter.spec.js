@@ -70,5 +70,14 @@ describe('promoter', function() {
       done();
     });
   });
+  it('fails if the tests fail', function(done) {
+    var deployer = new DeployerStub();
+    deployer.deploy = function() { throw new Error('SHOULD NOT BE CALLED'); };
+    promoter('a', 'b', { deployer: deployer, runSpecs: function(done) { done('TESTS FAILED') } }, function(err, data) { 
+      expect(err).toEqual('TESTS FAILED');
+      expect(data).toBe(undefined);
+      done();
+    });
+  });
 });
 
