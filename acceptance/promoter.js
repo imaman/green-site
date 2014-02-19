@@ -10,7 +10,7 @@ function main(stagingApp, prodApp, options, bail) {
     bail(null, data);
   }
 
-  function deploy(ignore, next) {
+  function deploy(next) {
     console.log('Promoting slug ' + candidate.slug.id + ' to prod.');
     deployer.deploy(prodApp, 
       candidate.slug.id, 
@@ -27,7 +27,7 @@ function main(stagingApp, prodApp, options, bail) {
       return next('Staging has changed mid-air', null);
     }
 
-    next(null, null);
+    next(null);
   }
 
   function testsCompleted(outcome, next) {
