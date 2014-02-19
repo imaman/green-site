@@ -111,8 +111,8 @@ FunFlow.prototype.asFunction = function() {
     var f = target.f;
     var r = target.r;
 
-    function next(en, vn) {
-      return applyAt(i + 1, en, vn);
+    function next() {
+      return applyAt.apply(null, [i + 1].concat(Array.prototype.slice.call(arguments, 0)));
     };
 
 
