@@ -55,14 +55,14 @@ function main(stagingApp, prodApp, options, bail) {
     if (err) return bail(err);
     if (!options.status) {
       return new FunFlow().seq(
-        deployer.mostRecentRelease.bind(deployer),
+        deployer.mostRecentRelease.bind(deployer, stagingApp),
         establishCandidate,
         checkNeedAndTest,
         testsCompleted,
         verifyAndDeploy,
         deploy).
         stop(postDeploy).
-        apply(stagingApp);
+        apply();
     } else {
       deployer.mostRecentRelease(stagingApp, function(err, staged) {
         if (err) return bail(err);
@@ -130,8 +130,8 @@ FunFlow.prototype.asFunction = function() {
   };
 };
 
-FunFlow.prototype.apply = function(arg) {
-  return this.asFunction()(arg);
+FunFlow.prototype.apply = function() {
+  return this.asFunction().apply(this, Array.prototype.slice.call(arguments, 0));
 };
 
 module.exports = main;
