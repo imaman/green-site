@@ -54,13 +54,13 @@ function main(stagingApp, prodApp, options, bail) {
   deployer.init(function(err) {
     if (err) return bail(err);
     if (!options.status) {
-      return new Seq().
-        to(deployer, Seq.valDone(deployer.mostRecentRelease)).
-        to(Seq.valDone(establishCandidate)).
-        to(Seq.valDone(checkNeedAndTest)).
-        to(Seq.valDone(testsCompleted)).
-        to(Seq.valDone(verifyAndDeploy)).
-        to(Seq.valDone(deploy)).
+      return new Seq().seq(
+        deployer.mostRecentRelease.bind(deployer),
+        establishCandidate,
+        checkNeedAndTest,
+        testsCompleted,
+        verifyAndDeploy,
+        deploy).
         stop(postDeploy).
         apply(stagingApp);
     } else {
@@ -79,6 +79,14 @@ function main(stagingApp, prodApp, options, bail) {
 function Seq() {
   this.targets = [];
 }
+
+Seq.prototype.seq = function() {
+  var self = this;
+  Array.prototype.slice.call(arguments, 0).forEach(function(current) {
+    self.to(Seq.valDone(current));
+  });
+  return this;
+};
 
 Seq.prototype.to = function(r, f) {
   this.targets.push({ r: f ? r : null, f: f || r });
