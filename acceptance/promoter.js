@@ -54,7 +54,7 @@ function main(stagingApp, prodApp, options, bail) {
   deployer.init(function(err) {
     if (err) return bail(err);
     if (!options.status) {
-      return new Seq().seq(
+      return new FunFlow().seq(
         deployer.mostRecentRelease.bind(deployer),
         establishCandidate,
         checkNeedAndTest,
@@ -76,29 +76,29 @@ function main(stagingApp, prodApp, options, bail) {
   });
 }
 
-function Seq() {
+function FunFlow() {
   this.targets = [];
 }
 
-Seq.prototype.seq = function() {
+FunFlow.prototype.seq = function() {
   var self = this;
   Array.prototype.slice.call(arguments, 0).forEach(function(current) {
-    self.to(Seq.valDone(current));
+    self.to(FunFlow.valDone(current));
   });
   return this;
 };
 
-Seq.prototype.to = function(r, f) {
+FunFlow.prototype.to = function(r, f) {
   this.targets.push({ r: f ? r : null, f: f || r });
   return this;
 }
 
-Seq.prototype.stop = function(t) {
+FunFlow.prototype.stop = function(t) {
   this.terminator = t;
   return this;
 }
 
-Seq.prototype.asFunction = function() {
+FunFlow.prototype.asFunction = function() {
   var self = this;
   function applyAt(e, v, i) {
     if (i >= self.targets.length) {
@@ -128,11 +128,11 @@ Seq.prototype.asFunction = function() {
   };
 };
 
-Seq.prototype.apply = function(arg) {
+FunFlow.prototype.apply = function(arg) {
   return this.asFunction()(arg);
 };
 
-Seq.valDone = function(f) { 
+FunFlow.valDone = function(f) { 
   return function(e, v, next) {
     if (e) return next(e);
     try {
