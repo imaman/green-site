@@ -7,7 +7,7 @@
   "private": true,
   "scripts": {
     "start": "node site.js",
-    "test": "jasmine-node --captureExceptions spec"
+    "test": "jasmine-node --captureExceptions spec integration"
   },
   "dependencies": {
     "base64": "*",
