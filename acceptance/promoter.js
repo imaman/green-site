@@ -116,9 +116,9 @@ FunFlow.prototype.asFunction = function() {
     };
 
 
-    var args = [e, v, next];
+    var outgoingArgs = [e].concat(incomingArgs).concat([next]);
     try {
-      f.apply(r, args);
+      f.apply(r, outgoingArgs);
     } catch(e) {
       console.log('\n\n===================================================================\n' + e.stack);
       throw e;
