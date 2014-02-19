@@ -116,7 +116,7 @@ FunFlow.prototype.asFunction = function() {
     };
 
 
-    var args = [e, v, next];
+    var args = [e].concat([v]).concat([next]);
     try {
       f.apply(r, args);
     } catch(e) {
