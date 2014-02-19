@@ -100,7 +100,7 @@ FunFlow.prototype.stop = function(t) {
 
 FunFlow.prototype.asFunction = function() {
   var self = this;
-  function applyAt(e, v, i) {
+  function applyAt(i, e, v) {
     if (i >= self.targets.length) {
       return self.terminator(e, v);
     }
@@ -110,7 +110,7 @@ FunFlow.prototype.asFunction = function() {
     var r = target.r;
 
     function next(en, vn) {
-      return applyAt(en, vn, i + 1);
+      return applyAt(i + 1, en, vn, i + 1);
     };
 
 
@@ -123,8 +123,9 @@ FunFlow.prototype.asFunction = function() {
     }
   };
 
-  return function(arg) {
-    applyAt(null, arg, 0);
+  return function() {
+    var list = [0, null].concat(Array.prototype.slice.call(arguments, 0));
+    applyAt.apply(null, list);
   };
 };
 
