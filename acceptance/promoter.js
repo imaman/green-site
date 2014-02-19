@@ -3,9 +3,9 @@ var acceptanceSpecs = require('./specs.js');
 var Deployer = require('./deployer.js');
 
 function main(stagingApp, prodApp, options, bail) {
-  var specs = options.status ? null : (options.specs || acceptanceSpecs);
+//  var specs = options.status ? null : (options.specs || acceptanceSpecs);
   var candidate = null;
-  options.runSpecs = options.runSpecs ||  function(done) { new JasmineNodeApi().runSpecs(specs, done) };
+ // options.runSpecs = options.runSpecs ||  function(done) { new JasmineNodeApi().runSpecs(specs, done) };
 
   function postDeploy(err, data) {
     if (err) return bail(err);
