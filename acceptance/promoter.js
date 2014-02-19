@@ -1,5 +1,5 @@
-var JasmineNodeApi = require('./jasmine-node-api');
-var acceptanceSpecs = require('./specs.js');
+//var JasmineNodeApi = require('./jasmine-node-api');
+//var acceptanceSpecs = require('./specs.js');
 var Deployer = require('./deployer.js');
 
 function main(stagingApp, prodApp, options, bail) {
