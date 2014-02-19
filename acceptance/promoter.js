@@ -55,14 +55,14 @@ function main(stagingApp, prodApp, options, bail) {
     if (err) return bail(err);
     if (!options.status) {
       return new FunFlow().seq(
-        function rebind(ignore, next) { deployer.mostRecentRelease(stagingApp, next); },
+        deployer.mostRecentRelease.bind(deployer),
         establishCandidate,
         checkNeedAndTest,
         testsCompleted,
         verifyAndDeploy,
         deploy).
         stop(postDeploy).
-        apply();
+        apply(stagingApp);
     } else {
       deployer.mostRecentRelease(stagingApp, function(err, staged) {
         if (err) return bail(err);
@@ -83,10 +83,15 @@ function FunFlow() {
 FunFlow.prototype.seq = function() {
   var self = this;
   Array.prototype.slice.call(arguments, 0).forEach(function(current) {
-    self.targets.push(current);
+    self.to(FunFlow.valDone(current));
   });
   return this;
 };
+
+FunFlow.prototype.to = function(r, f) {
+  this.targets.push({ r: f ? r : null, f: f || r });
+  return this;
+}
 
 FunFlow.prototype.stop = function(t) {
   this.terminator = t;
@@ -95,47 +100,36 @@ FunFlow.prototype.stop = function(t) {
 
 FunFlow.prototype.asFunction = function() {
   var self = this;
-  function applyAt(e, args, i) {
-    var fullArgs;
+  function applyAt(e, v, i) {
     if (i >= self.targets.length) {
-      fullArgs = [e].concat(args).concat(next);
-      console.log('TERMINATING ' + self.terminator);
-      fullArgs && fullArgs.forEach(function(x) {
-        console.log('    -' + x);
-      });
-      return self.terminator.apply(self, fullArgs);
+      return self.terminator(e, v);
     }
-    fullArgs = args.concat(next);
 
     var target = self.targets[i];
-    var f = target;
-    console.log('calling ' + f);
-    fullArgs && fullArgs.forEach(function(x) {
-      console.log('    -' + x);
-    });
-    function next(en) {
-      var xx = Array.prototype.slice.call(arguments, 1);
-      console.log('xx=' + JSON.stringify(xx));
-      return applyAt(en, xx, i + 1);
+    var f = target.f;
+    var r = target.r;
+
+    function next(en, vn) {
+      return applyAt(en, vn, i + 1);
     };
 
 
+    var args = [e, v, next];
     try {
-      f.apply(fullArgs);
+      f.apply(r, args);
     } catch(e) {
-      self.terminator(e);
+      console.log('\n\n===================================================================\n' + e.stack);
+      throw e;
     }
   };
 
-  return function() {
-    console.log('\n\n\n>>>>>>>>>>>>>>>>>>>>>>>>> STARTING');
-    var argsAsArray = Array.prototype.slice.call(arguments, 0);
-    applyAt(null, argsAsArray, 0);
+  return function(arg) {
+    applyAt(null, arg, 0);
   };
 };
 
-FunFlow.prototype.apply = function() {
-  return this.asFunction()();
+FunFlow.prototype.apply = function(arg) {
+  return this.asFunction()(arg);
 };
 
 FunFlow.valDone = function(f) { 

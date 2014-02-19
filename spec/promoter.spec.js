@@ -12,9 +12,7 @@ function DeployerStub() {
   this.mostRecentRelease = function(app, done) { done(null, { description: 'most_recent_at_' + app, slug: { id: app + '_slug_id' }}); };
   this.fetchReleases = function(app, done) { done(null, [ { slug: { id: app + '_slug_id' }} ]); };
   this.deploy = function(app, slug, description, done) { 
-    var output = 'Deploying ' + slug + ' to app ' + app+ ' {' + description + '}';
-    console.log('%%%%%%%%%%%%%%%%%%%%%%%%%%%5 Calling done(null, ' + JSON.stringify(output) + ')');
-    done(null, output);
+    done(null, 'Deploying ' + slug + ' to app ' + app+ ' {' + description + '}');
   };
 }
 
