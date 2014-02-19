@@ -40,7 +40,7 @@ function main(stagingApp, prodApp, status, options, bail) {
 
   function checkNeedAndTest(live, next) {
     if (live && (live.slug.id === candidate.slug.id)) {
-      return bail('Slug at staging is already live in prod.');
+      throw new Error('Slug at staging is already live in prod.');
     }
 
     var api = new JasmineNodeApi();
@@ -111,8 +111,6 @@ Seq.prototype.asFunction = function() {
 
 
     var args = [e, v, next];
-    console.log('args=' + JSON.stringify(args));
-
     try {
       f.apply(r, args);
     } catch(e) {
@@ -133,7 +131,11 @@ Seq.prototype.apply = function(arg) {
 Seq.valDone = function(f) { 
   return function(e, v, next) {
     if (e) return next(e);
-    return f(v, next);
+    try {
+      return f(v, next);
+    } catch (e) {
+      next(e);
+    }
   }
 };
 

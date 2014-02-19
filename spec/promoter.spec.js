@@ -70,7 +70,7 @@ describe('promoter', function() {
     var deployer = new DeployerStub();
     deployer.mostRecentRelease = function(app, done) { done(null, { description: 'DESC', slug: { id: 'SLUG_ID' }}); };
     promoter('a', 'b', false, { deployer: deployer }, function(err, data) { 
-      expect(err).toEqual('Slug at staging is already live in prod.');
+      expect(err.message).toEqual('Slug at staging is already live in prod.');
       expect(data).toBe(undefined);
       done();
     });
