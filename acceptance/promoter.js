@@ -116,7 +116,7 @@ FunFlow.prototype.asFunction = function() {
     };
 
 
-    var outgoingArgs = [e].concat([v]).concat([next]);
+    var outgoingArgs = [e].concat([incomingArgs[0]]).concat([next]);
     try {
       f.apply(r, outgoingArgs);
     } catch(e) {
