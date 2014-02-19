@@ -100,10 +100,9 @@ FunFlow.prototype.stop = function(t) {
 
 FunFlow.prototype.asFunction = function() {
   var self = this;
-  function applyAt(i, e) {
-    var incomingArgs = Array.prototype.slice.call(arguments, 2); 
+  function applyAt(i, e, v) {
     if (i >= self.targets.length) {
-      return self.terminator(e, incomingArgs[0]);
+      return self.terminator(e, v);
     }
 
     var target = self.targets[i];
