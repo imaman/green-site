@@ -83,7 +83,7 @@ function FunFlow() {
 FunFlow.prototype.seq = function() {
   var self = this;
   Array.prototype.slice.call(arguments, 0).forEach(function(current) {
-    self.to(FunFlow.valDone(current));
+    self.to(current);
   });
   return this;
 };
@@ -115,12 +115,12 @@ FunFlow.prototype.asFunction = function() {
     };
 
 
-    var outgoingArgs = [e].concat([incomingArgs[0]]).concat([next]);
+    var outgoingArgs = [incomingArgs[0]].concat([next]);
     try {
+      if (e) return next(e);
       f.apply(r, outgoingArgs);
     } catch(e) {
-      console.log('\n\n===================================================================\n' + e.stack);
-      throw e;
+      next(e);
     }
   };
 
