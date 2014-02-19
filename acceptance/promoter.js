@@ -5,6 +5,7 @@ var Deployer = require('./deployer.js');
 function main(stagingApp, prodApp, options, bail) {
   var specs = options.status ? null : (options.specs || acceptanceSpecs);
   var candidate = null;
+  options.runSpecs = options.runSpecs ||  function(done) { new JasmineNodeApi().runSpecs(specs, done) };
 
   function postDeploy(err, data) {
     if (err) return bail(err);
@@ -43,8 +44,7 @@ function main(stagingApp, prodApp, options, bail) {
       throw new Error('Slug at staging is already live in prod.');
     }
 
-    var api = new JasmineNodeApi();
-    new Seq().to(api, Seq.valDone(api.runSpecs)).stop(next).apply(specs);
+    options.runSpecs(next);
   }
 
   function establishCandidate(mostRecent, next) {
@@ -57,7 +57,7 @@ function main(stagingApp, prodApp, options, bail) {
   var deployer = options.deployer || new Deployer();
   deployer.init(function(err) {
     if (err) return bail(err);
-    if (specs) {
+    if (!options.status) {
       return new Seq().
         to(deployer, Seq.valDone(deployer.mostRecentRelease)).
         to(Seq.valDone(establishCandidate)).
