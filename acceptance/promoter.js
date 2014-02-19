@@ -112,7 +112,7 @@ FunFlow.prototype.asFunction = function() {
     var r = target.r;
 
     function next(en, vn) {
-      return applyAt.apply(null, [i + 1, en].concat(incomingArgs));
+      return applyAt(i + 1, en, vn);
     };
 
 
