@@ -61,8 +61,7 @@ function main(stagingApp, prodApp, options, bail) {
         testsCompleted,
         verifyAndDeploy,
         deploy, 
-        postDeploy).
-        apply();
+        postDeploy)();
     } else {
       deployer.mostRecentRelease(stagingApp, function(err, staged) {
         if (err) return bail(err);
@@ -85,7 +84,7 @@ FunFlow.prototype.seq = function() {
   Array.prototype.slice.call(arguments, 0).forEach(function(current) {
     self.targets.push(current);
   });
-  return this;
+  return this.asFunction();
 };
 
 FunFlow.prototype.asFunction = function() {
@@ -116,10 +115,6 @@ FunFlow.prototype.asFunction = function() {
     var list = [0, null].concat(Array.prototype.slice.call(arguments, 0));
     applyAt.apply(null, list);
   };
-};
-
-FunFlow.prototype.apply = function() {
-  return this.asFunction().apply(this, Array.prototype.slice.call(arguments, 0));
 };
 
 module.exports = main;
