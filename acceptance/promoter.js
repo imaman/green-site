@@ -2,8 +2,8 @@ var JasmineNodeApi = require('./jasmine-node-api');
 var acceptanceSpecs = require('./specs.js');
 var Deployer = require('./deployer.js');
 
-function main(stagingApp, prodApp, status, options, bail) {
-  var specs = status ? null : (options.specs || acceptanceSpecs);
+function main(stagingApp, prodApp, options, bail) {
+  var specs = options.status ? null : (options.specs || acceptanceSpecs);
   var candidate = null;
 
   function postDeploy(err, data) {

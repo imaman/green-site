@@ -24,6 +24,6 @@ function bail(err) {
 
 
   
-promoter('collidingobjects-staging', 'collidingobjects', argv.status, bail);
+promoter('collidingobjects-staging', 'collidingobjects', { status: argv.status }, bail);
 
 
