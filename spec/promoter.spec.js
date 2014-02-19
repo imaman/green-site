@@ -2,19 +2,10 @@ var rewire = require('rewire');
 var promoter = rewire('../acceptance/promoter.js');
 
 
-function JasmineNodeApiStub() {
-  this.onCompletion = function(done) { this.done = done };
-  this.runSpecs = function(specs, done) {
-    (done || this.done)(null, { results: { failedCount: 0 }, lines: []});
-  };
-};
-
 function runSpecs(done) {
   done(null, { results: { failedCount: 0 }, lines: []});
 }
 
-promoter.__set__('JasmineNodeApi', JasmineNodeApiStub);
-promoter.__set__('acceptanceSpecs', {});
 
 function DeployerStub() {
   this.init = function(done) { done(); };
