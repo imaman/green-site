@@ -83,15 +83,10 @@ function FunFlow() {
 FunFlow.prototype.seq = function() {
   var self = this;
   Array.prototype.slice.call(arguments, 0).forEach(function(current) {
-    self.to(current);
+    self.targets.push(current);
   });
   return this;
 };
-
-FunFlow.prototype.to = function(r, f) {
-  this.targets.push({ r: f ? r : null, f: f || r });
-  return this;
-}
 
 FunFlow.prototype.stop = function(t) {
   this.terminator = t;
@@ -106,9 +101,7 @@ FunFlow.prototype.asFunction = function() {
       return self.terminator.apply(null, [e].concat(incomingArgs));
     }
 
-    var target = self.targets[i];
-    var f = target.f;
-    var r = target.r;
+    var f = self.targets[i];
 
     function next() {
       return applyAt.apply(null, [i + 1].concat(Array.prototype.slice.call(arguments, 0)));
@@ -118,7 +111,7 @@ FunFlow.prototype.asFunction = function() {
     var outgoingArgs = incomingArgs.concat([next]);
     try {
       if (e) return next(e);
-      f.apply(r, outgoingArgs);
+      f.apply(null, outgoingArgs);
     } catch(e) {
       next(e);
     }
