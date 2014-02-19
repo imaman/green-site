@@ -134,15 +134,4 @@ FunFlow.prototype.apply = function(arg) {
   return this.asFunction()(arg);
 };
 
-FunFlow.valDone = function(f) { 
-  return function(e, v, next) {
-    if (e) return next(e);
-    try {
-      return f(v, next);
-    } catch (e) {
-      next(e);
-    }
-  }
-};
-
 module.exports = main;
