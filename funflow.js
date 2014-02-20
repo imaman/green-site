@@ -23,7 +23,7 @@ FunFlow.prototype.asFunction = function() {
       return f.apply(null, [e].concat(incomingArgs));
     }
 
-    trace.push(f.name + '()');
+    trace.push((f.name || '?') + '()');
 
 
     function next() {

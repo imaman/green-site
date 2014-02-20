@@ -100,6 +100,22 @@ describe('FunFlow', function() {
             done();
           })();
       });
+      it('handles unnamed function', function(done) {
+        new FunFlow().seq(
+          function (next) { next() }, 
+          function second(next) { next() },
+          function (next) { throw new Error('ABORT') },
+          function (next) { next() },
+          function final(e, v) {
+            expect(e.flowTrace.split('\n')).toEqual([
+              'Error: ABORT',
+              '?()',
+              'second()',
+              '?()'
+            ]);
+            done();
+          })();
+      });
     });
   });
 });
