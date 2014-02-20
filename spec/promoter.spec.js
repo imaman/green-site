@@ -106,5 +106,14 @@ describe('promoter', function() {
       done();
     });
   });
+  it('properly fails if could not receive a status of prod. or staging', function(done) {
+    var deployer = new DeployerStub();
+    deployer.mostRecentRelease = function(app, done) { done('mostRecentRelease() failed') };
+    promoter('a', 'b', { status: true, deployer: deployer }, function(err, data) { 
+      expect(err).toEqual('mostRecentRelease() failed'); 
+      expect(data).toBe(undefined);
+      done();
+    });
+  });
 });
 
