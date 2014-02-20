@@ -38,12 +38,15 @@ Deployer.prototype.fetchReleases = function(app, done) {
 };
 
 Deployer.prototype.mostRecentRelease = function(app, done) {
-  this.fetchReleases(app, function(err, rs) {
-    if (err) return done(err);
-    var slugged = rs.filter(function(x) { return x.slug && x.slug.id });
-    if (slugged.length == 0) return done(null, null);
-    done(null, slugged[0]);
-  });
+  var self = this;
+  new FunFlow().seq( 
+    self.fetchReleases.bind(self, app),
+    function(rs, next) {
+      var slugged = rs.filter(function(x) { return x.slug && x.slug.id });
+      if (slugged.length == 0) return next(null, null);
+      next(null, slugged[0]);
+    },
+    done)();
 }
 
 Deployer.prototype.deploy = function(app, slugId, description, done) {
