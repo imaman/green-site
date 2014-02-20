@@ -71,6 +71,7 @@ function main(stagingApp, prodApp, options, bail) {
   }
 
   return new FunFlow().seq(
+    deployer.init.bind(deployer), // NOT TESTED
     deployer.mostRecentRelease.bind(deployer, stagingApp), 
     collect.bind(null, 'staged'),
     deployer.mostRecentRelease.bind(deployer, prodApp), 
