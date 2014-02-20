@@ -4,11 +4,10 @@ var FunFlow = require('../funflow.js');
 function main(stagingApp, prodApp, options, bail) {
   var candidate = null;
 
-  function postDeploy(err, data) {
-    if (err) return bail(err);
+  function postDeploy(data, next) {
     console.log('>>>>>>>>>> ALL\'S WELL');
     console.log(JSON.stringify(data, null, '  '));
-    bail(null, data);
+    next(null, data);
   }
 
   function deploy(next) {
@@ -62,7 +61,8 @@ function main(stagingApp, prodApp, options, bail) {
       testsCompleted,
       verifyAndDeploy,
       deploy, 
-      postDeploy)();
+      postDeploy,
+      bail)();
   } else {
     var text = [];
     function collect(title, v, next) {
