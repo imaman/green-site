@@ -23,32 +23,29 @@ Deployer.prototype.init = function(done) {
 };
 
 Deployer.prototype.fetchReleases = function(app, done) {
-  var appReleases = this.heroku.apps(app).releases();
   var self = this;
-  new FunFlow().seq(
+  new FunFlow(done).seq(
     function list(next) { self.heroku.apps(app).releases().list(next); },
     function sortByVersion(releases, next) {
-      releases.sort(function compareByVersion(lhs, rhs) {
+      releases.sort(function (lhs, rhs) {
         var naturalOrder = lhs.version < rhs.version ? -1 
           : lhs.version > rhs.version ? 1
           : 0;
         return -naturalOrder;
       });
       next(null, releases);
-    },
-    done)();
+    })();
 };
 
 Deployer.prototype.mostRecentRelease = function(app, done) {
   var self = this;
-  new FunFlow().seq( 
+  new FunFlow(done).seq(
     self.fetchReleases.bind(self, app),
     function(rs, next) {
       var slugged = rs.filter(function(x) { return x.slug && x.slug.id });
       if (slugged.length == 0) return next(null, null);
       next(null, slugged[0]);
-    },
-    done)();
+    })();
 }
 
 Deployer.prototype.deploy = function(app, slugId, description, done) {

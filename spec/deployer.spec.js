@@ -41,12 +41,14 @@ Deployer.__set__('Heroku', FakeHeroku);
 
 describe('Deployer', function() {
   it('uses the Heroku CLI for obtaining a token', function(done) {
-    new Deployer().init(function(err) {
-      expect(err).toBeFalsy();
-      expect(command).toEqual('heroku auth:token');
-      expect(options).toEqual({ token: 'AAA' });
-      done();
-    });
+    var deployer = new Deployer();
+    new FunFlow(done).seq(
+      deployer.init.bind(deployer),
+      function(next) {
+        expect(command).toEqual('heroku auth:token');
+        expect(options).toEqual({ token: 'AAA' });
+        next();
+      })();
   });
 
   it('lists releases in reverse order of versions', function(done) {
