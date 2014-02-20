@@ -94,6 +94,14 @@ describe('FunFlow', function() {
         expect(captured).toEqual([null, 9]);
         done();
       });
+      it('can be the sole target', function(done) {
+        var captured;
+        new FunFlow(function trap(e, v) { captured = Array.prototype.slice.call(arguments, 0) }).seq(
+        )(50);
+
+        expect(captured).toEqual([null, 50]);
+        done();
+      });
     });
 
     describe('error reporting', function() {
