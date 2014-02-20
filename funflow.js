@@ -9,15 +9,11 @@ function FunFlow(a, b) {
 }
 
 FunFlow.prototype.seq = function() {
-  if (arguments.length === 0) 
+  this.targets = Array.prototype.slice.call(arguments, 0);
+  this.trap && this.targets.push(this.trap);
+  if (this.targets.length === 0) 
     throw new Error('At least one function must be specified');
 
-  var self = this;
-  Array.prototype.slice.call(arguments, 0).forEach(function(current) {
-    self.targets.push(current);
-  });
-
-  this.trap && this.targets.push(this.trap);
   return this.asFunction();
 };
 
