@@ -135,5 +135,17 @@ describe('FunFlow', function() {
       });
     });
   });
+
+  describe('conc', function() {
+    it('can execute a single function', function(done) {
+      function trap(err, arr) {
+        expect(arr).toEqual([ 'first' ]);
+        done();
+      }
+      new FunFlow(trap).conc(
+        function (next) { next(null, 'first') }
+      )();
+    });
+  });
 });
 
