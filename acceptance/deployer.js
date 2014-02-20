@@ -4,8 +4,6 @@ var FunFlow = require('../funflow');
 
 function extractToken(callback) {
   return function(error, stdout, stderr) {
-    var token = stdout.trim();
-    callback(error || stderr, token);
   }
 }
 
@@ -13,11 +11,17 @@ function Deployer() {}
 
 Deployer.prototype.init = function(done) {
   var self = this;
-  exec("heroku auth:token", extractToken(function(err, token) {
-    if (err) return done(err);
-    self.heroku = new Heroku({ token: token });
-    done(null);
-  }));
+  new FunFlow({verbose: true}).seq(
+    exec,
+    function extractToken(stdout, stderr, next) {
+      next(stderr, stdout.trim());
+    }, 
+    function assign(token, next) {
+      self.heroku = new Heroku({ token: token });
+      next();
+    },
+    done
+  )("heroku auth:token");
 };
 
 Deployer.prototype.fetchReleases = function(app, done) {

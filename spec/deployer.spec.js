@@ -42,7 +42,7 @@ Deployer.__set__('Heroku', FakeHeroku);
 describe('Deployer', function() {
   it('uses the Heroku CLI for obtaining a token', function(done) {
     new Deployer().init(function(err) {
-      expect(err).toBe(null);
+      expect(err).toBeFalsy();
       expect(command).toEqual('heroku auth:token');
       expect(options).toEqual({ token: 'AAA' });
       done();
