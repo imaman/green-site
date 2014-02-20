@@ -70,13 +70,14 @@ describe('Deployer', function() {
       { description: 'no_slug_id_newer', version: 400, slug: {}} 
     ];
     var deployer = new Deployer();
-    deployer.init(function(err) {
-      deployer.mostRecentRelease('a2', function(err, r) {
-        expect(err).toBe(null);
+    new FunFlow().seq(
+      deployer.init.bind(deployer),
+      deployer.mostRecentRelease.bind(deployer, 'a2'),
+      function(r, next) {
         expect(r).toEqual({description: 'slug_new', version: 200, slug: {id: 2}});
-        done();
-      });
-    });
+        next();
+      },
+      done)();
   });
 
   it('provides null if no slugged release is found', function(done) {
@@ -85,26 +86,28 @@ describe('Deployer', function() {
       { description: 'no_slug_2', version: 400, slug: {}} 
     ];
     var deployer = new Deployer();
-    deployer.init(function(err) {
-      deployer.mostRecentRelease('a3', function(err, r) {
-        expect(err).toBe(null);
+    new FunFlow().seq( 
+      deployer.init.bind(deployer),
+      deployer.mostRecentRelease.bind(deployer,'a3'),
+      function(r, next) {
         expect(r).toBe(null);
-        done();
-      });
-    });
+        next();
+      },
+      done)();
   });
 
   it('deploys', function(done) {
     createResult = { value: 'CREATE_RESULT' };
     var deployer = new Deployer();
-    deployer.init(function(err) {
-      deployer.deploy('a4', 'SLUG_ID', 'DESCRIPTION', function(err, data) {
+    new FunFlow().seq(
+      deployer.init.bind(deployer),
+      deployer.deploy.bind(deployer, 'a4', 'SLUG_ID', 'DESCRIPTION'),
+      function(data, next) {
         expect(createOptions).toEqual({slug: 'SLUG_ID', description: 'DESCRIPTION'});
-        expect(err).toBe(null);
         expect(data).toEqual({ value: 'CREATE_RESULT' });
-        done();
-      });
-    });
+        next();
+      },
+      done)();
   });
 });
 
