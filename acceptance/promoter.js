@@ -75,7 +75,8 @@ function main(stagingApp, prodApp, options, bail) {
       collect.bind(null, 'staged'),
       deployer.mostRecentRelease.bind(deployer, prodApp), 
       collect.bind(null, 'live'),
-      function(next) { bail(null, text.join('\n')) })();
+      function(next) { next(null, text.join('\n')) },
+      bail)();
   };
 }
 
