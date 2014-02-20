@@ -32,7 +32,7 @@ function main(stagingApp, prodApp, options, bail) {
   }
 
   function testsCompleted(outcome, next) {
-    if (outcome.results.failedCount !== 0) return bail(outcome.lines.join(''));
+    if (outcome.results.failedCount !== 0) return next(outcome.lines.join(''));
     deployer.fetchReleases(stagingApp, next);
   }
 

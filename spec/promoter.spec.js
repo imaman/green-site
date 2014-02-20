@@ -70,7 +70,7 @@ describe('promoter', function() {
       done();
     });
   });
-  it('fails if the tests fail', function(done) {
+  it('fails if the tests throw', function(done) {
     var deployer = new DeployerStub();
     deployer.deploy = function() { throw new Error('SHOULD NOT BE CALLED'); };
     promoter('a', 'b', { deployer: deployer, runSpecs: function(done) { done('TESTS FAILED') } }, function(err, data) { 
@@ -78,6 +78,22 @@ describe('promoter', function() {
       expect(data).toBe(undefined);
       done();
     });
+  });
+  it('fails if the fail count reported by tests is non zero', function(done) {
+    var deployer = new DeployerStub();
+    deployer.deploy = function() { throw new Error('SHOULD NOT BE CALLED'); };
+    promoter('a', 'b', {
+        deployer: deployer, 
+        runSpecs: function(done) { 
+          done(null, { 
+            results: { failedCount: 1 }, 
+            lines: ['TEST_1_FAILED ', 'TEST_2_FAILED']
+      })}},
+      function(err, data) { 
+        expect(err).toEqual('TEST_1_FAILED TEST_2_FAILED');
+        expect(data).toBe(undefined);
+        done();
+      });
   });
   it('reports status of prod. and staging', function(done) {
     var deployer = new DeployerStub();
