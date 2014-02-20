@@ -110,8 +110,7 @@ describe('promoter', function() {
     var deployer = new DeployerStub();
     deployer.mostRecentRelease = function(app, done) { done('mostRecentRelease() failed') };
     promoter('a', 'b', { status: true, deployer: deployer }, function(err, data) { 
-      expect(err).toEqual('mostRecentRelease() failed'); 
-      expect(data).toBe(undefined);
+      expect(err).toEqual('mostRecentRelease() failed') && expect(data).toBe(undefined);
       done();
     });
   });
