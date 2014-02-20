@@ -63,21 +63,20 @@ function main(stagingApp, prodApp, options, bail) {
       deploy, 
       postDeploy,
       bail)();
-  } else {
-    var text = [];
-    function collect(title, v, next) {
-      text.push(title + '=' + JSON.stringify(v, null, '  '));
-      next();
-    }
+  } 
+  var text = [];
+  function collect(title, v, next) {
+    text.push(title + '=' + JSON.stringify(v, null, '  '));
+    next();
+  }
 
-    return new FunFlow().seq(
-      deployer.mostRecentRelease.bind(deployer, stagingApp), 
-      collect.bind(null, 'staged'),
-      deployer.mostRecentRelease.bind(deployer, prodApp), 
-      collect.bind(null, 'live'),
-      function(next) { next(null, text.join('\n')) },
-      bail)();
-  };
+  return new FunFlow().seq(
+    deployer.mostRecentRelease.bind(deployer, stagingApp), 
+    collect.bind(null, 'staged'),
+    deployer.mostRecentRelease.bind(deployer, prodApp), 
+    collect.bind(null, 'live'),
+    function(next) { next(null, text.join('\n')) },
+    bail)();
 }
 
 module.exports = main;
