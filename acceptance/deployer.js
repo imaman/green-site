@@ -11,7 +11,7 @@ function Deployer() {}
 
 Deployer.prototype.init = function(done) {
   var self = this;
-  new FunFlow({verbose: true}).seq(
+  new FunFlow(done).seq(
     exec,
     function extractToken(stdout, stderr, next) {
       next(stderr, stdout.trim());
@@ -19,9 +19,7 @@ Deployer.prototype.init = function(done) {
     function assign(token, next) {
       self.heroku = new Heroku({ token: token });
       next();
-    },
-    done
-  )("heroku auth:token");
+    })("heroku auth:token");
 };
 
 Deployer.prototype.fetchReleases = function(app, done) {

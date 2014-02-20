@@ -52,14 +52,13 @@ describe('Deployer', function() {
   it('lists releases in reverse order of versions', function(done) {
     releases['a1'] = [ { description: 'old', version: 100}, { description: 'recent', version: 200} ];
     var deployer = new Deployer();
-    new FunFlow({verbose: true}).seq(
+    new FunFlow(done).seq(
       deployer.init.bind(deployer), 
       deployer.fetchReleases.bind(deployer, 'a1'),
       function(rs, next) {
         expect(rs).toEqual([ {description: 'recent', version: 200 }, {description: 'old', version: 100} ]);
         next();
-      }, 
-      done)();
+      })();
   });
 
   it('provides the most recent release with a slug', function(done) {
@@ -70,14 +69,13 @@ describe('Deployer', function() {
       { description: 'no_slug_id_newer', version: 400, slug: {}} 
     ];
     var deployer = new Deployer();
-    new FunFlow().seq(
+    new FunFlow(done).seq(
       deployer.init.bind(deployer),
       deployer.mostRecentRelease.bind(deployer, 'a2'),
       function(r, next) {
         expect(r).toEqual({description: 'slug_new', version: 200, slug: {id: 2}});
         next();
-      },
-      done)();
+      })();
   });
 
   it('provides null if no slugged release is found', function(done) {
@@ -86,28 +84,26 @@ describe('Deployer', function() {
       { description: 'no_slug_2', version: 400, slug: {}} 
     ];
     var deployer = new Deployer();
-    new FunFlow().seq( 
+    new FunFlow(done).seq(
       deployer.init.bind(deployer),
       deployer.mostRecentRelease.bind(deployer,'a3'),
       function(r, next) {
         expect(r).toBe(null);
         next();
-      },
-      done)();
+      })();
   });
 
   it('deploys', function(done) {
     createResult = { value: 'CREATE_RESULT' };
     var deployer = new Deployer();
-    new FunFlow().seq(
+    new FunFlow(done).seq(
       deployer.init.bind(deployer),
       deployer.deploy.bind(deployer, 'a4', 'SLUG_ID', 'DESCRIPTION'),
       function(data, next) {
         expect(createOptions).toEqual({slug: 'SLUG_ID', description: 'DESCRIPTION'});
         expect(data).toEqual({ value: 'CREATE_RESULT' });
         next();
-      },
-      done)();
+      })();
   });
 });
 
