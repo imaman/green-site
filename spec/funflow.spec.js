@@ -82,6 +82,25 @@ describe('FunFlow', function() {
         })();
       });
     });
+
+    describe('error reporting', function() {
+      it('generates a trace with meaningful function names', function(done) {
+        new FunFlow().seq(
+          function first(next) { next() }, 
+          function second(next) { next() },
+          function third(next) { throw new Error('ABORT') },
+          function fourth(next) { next() },
+          function final(e, v) {
+            expect(e.flowTrace.split('\n')).toEqual([
+              'Error: ABORT',
+              'third()',
+              'second()',
+              'first()'
+            ]);
+            done();
+          })();
+      });
+    });
   });
 });
 
