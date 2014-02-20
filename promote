@@ -6,7 +6,8 @@ var acceptanceSpecs = require('./acceptance/specs.js');
 
 function bail(err, text) {
   if (!err) {
-    return console.log(text);
+    console.log(text);
+    process.exit(0);
   }
 
   if (err.stack) {
