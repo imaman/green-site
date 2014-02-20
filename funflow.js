@@ -15,12 +15,15 @@ FunFlow.prototype.seq = function() {
 
 FunFlow.prototype.asFunction = function() {
   var self = this;
+  var trace = [];
   function applyAt(i, e) {
     var incomingArgs = Array.prototype.slice.call(arguments, 2);
     var f = self.targets[i];
     if (i === self.targets.length - 1) {
       return f.apply(null, [e].concat(incomingArgs));
     }
+
+    trace.push(f.name + '()');
 
 
     function next() {
@@ -38,6 +41,8 @@ FunFlow.prototype.asFunction = function() {
       if (e) return next(e);
       f.apply(null, outgoingArgs);
     } catch(e) {
+      trace.push('Error: ' + e.message); 
+      e.flowTrace = trace.slice(0).reverse().join('\n');
       next(e);
     }
   };
