@@ -10,7 +10,6 @@
     "test": "jasmine-node --captureExceptions spec integration"
   },
   "dependencies": {
-    "base64": "*",
     "diff": "*",
     "escape-html": "1.0.1",
     "express": "~3.4.8",
