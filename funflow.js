@@ -1,6 +1,11 @@
-function FunFlow(options) {
+require('util-is');
+var util = require('util');
+
+function FunFlow(a, b) {
+  this.trap = util.isFunction(a) ? a : b;
+  var opts = util.isFunction(a) ? b : a;
   this.targets = [];
-  this.options = options || {};
+  this.options = opts || {};
 }
 
 FunFlow.prototype.seq = function() {
@@ -11,6 +16,8 @@ FunFlow.prototype.seq = function() {
   Array.prototype.slice.call(arguments, 0).forEach(function(current) {
     self.targets.push(current);
   });
+
+  this.trap && this.targets.push(this.trap);
   return this.asFunction();
 };
 

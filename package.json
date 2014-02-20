@@ -30,6 +30,7 @@
     "connect-mongo": "~0.4.0",
     "heroku-client": "~1.1.0",
     "minimist": "0.0.7",
-    "rewire": "~2.0.0"
+    "rewire": "~2.0.0",
+    "util-is": "~0.1.0"
   }
 }

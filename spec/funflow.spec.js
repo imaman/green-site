@@ -83,6 +83,19 @@ describe('FunFlow', function() {
       });
     });
 
+    describe('trap function', function() {
+      it('can be passed to the ctor', function(done) {
+        var captured;
+        new FunFlow(function trap(e, v) { captured = Array.prototype.slice.call(arguments, 0) }).seq(
+            function(next) { next(null, 3) },
+            function(value, next) { next(null, value * value) }
+        )();
+
+        expect(captured).toEqual([null, 9]);
+        done();
+      });
+    });
+
     describe('error reporting', function() {
       it('generates a trace with meaningful function names', function(done) {
         new FunFlow().seq(
