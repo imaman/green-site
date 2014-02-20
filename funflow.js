@@ -1,5 +1,6 @@
-function FunFlow() {
+function FunFlow(options) {
   this.targets = [];
+  this.options = options || {};
 }
 
 FunFlow.prototype.seq = function() {
@@ -23,7 +24,7 @@ FunFlow.prototype.asFunction = function() {
       return f.apply(null, [e].concat(incomingArgs));
     }
 
-    trace.push((f.name || '?') + '()');
+    trace.push('  at ' + (f.name || '?') + '()');
 
 
     function next() {
@@ -41,8 +42,9 @@ FunFlow.prototype.asFunction = function() {
       if (e) return next(e);
       f.apply(null, outgoingArgs);
     } catch(e) {
-      trace.push('Error: ' + e.message); 
-      e.flowTrace = trace.slice(0).reverse().join('\n');
+      trace.push('FunFlow trace: '); 
+      e.stack = e.stack + '\n' + trace.slice(0).reverse().join('\n');
+      self.options.verbose && console.log('\n\ne.flowTrace=' + e.stack + '\n\n');
       next(e);
     }
   };

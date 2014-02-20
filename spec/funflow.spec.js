@@ -91,12 +91,10 @@ describe('FunFlow', function() {
           function third(next) { throw new Error('ABORT') },
           function fourth(next) { next() },
           function final(e, v) {
-            expect(e.flowTrace.split('\n')).toEqual([
-              'Error: ABORT',
-              'third()',
-              'second()',
-              'first()'
-            ]);
+            expect(e.stack).toContain('Error: ABORT');
+            expect(e.stack).toContain('at third()');
+            expect(e.stack).toContain('at second()');
+            expect(e.stack).toContain('at first()');
             done();
           })();
       });
@@ -107,12 +105,10 @@ describe('FunFlow', function() {
           function (next) { throw new Error('ABORT') },
           function (next) { next() },
           function final(e, v) {
-            expect(e.flowTrace.split('\n')).toEqual([
-              'Error: ABORT',
-              '?()',
-              'second()',
-              '?()'
-            ]);
+            expect(e.stack).toContain('Error: ABORT');
+            expect(e.stack).toContain('at ?()');
+            expect(e.stack).toContain('at second()');
+            expect(e.stack).toContain('at ?()');
             done();
           })();
       });

@@ -1,5 +1,6 @@
 var exec = require('child_process').exec;
 var Heroku = require('heroku-client');
+var FunFlow = require('../funflow');
 
 function extractToken(callback) {
   return function(error, stdout, stderr) {
@@ -20,16 +21,20 @@ Deployer.prototype.init = function(done) {
 };
 
 Deployer.prototype.fetchReleases = function(app, done) {
-  this.heroku.apps(app).releases().list(function(err, releases) { 
-    if (err) return done(err);
-    releases.sort(function(lhs, rhs) {
-      var naturalOrder = lhs.version < rhs.version ? -1 
-        : lhs.version > rhs.version ? 1
-        : 0;
-      return -naturalOrder;
-    });
-    done(null, releases);
-  });
+  var appReleases = this.heroku.apps(app).releases();
+  var self = this;
+  new FunFlow().seq(
+    function list(next) { self.heroku.apps(app).releases().list(next); },
+    function sortByVersion(releases, next) {
+      releases.sort(function compareByVersion(lhs, rhs) {
+        var naturalOrder = lhs.version < rhs.version ? -1 
+          : lhs.version > rhs.version ? 1
+          : 0;
+        return -naturalOrder;
+      });
+      next(null, releases);
+    },
+    done)();
 };
 
 Deployer.prototype.mostRecentRelease = function(app, done) {

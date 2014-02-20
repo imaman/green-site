@@ -1,5 +1,7 @@
 var rewire = require('rewire');
 var Deployer = rewire('../acceptance/deployer.js');
+var FunFlow = require('../funflow')
+
 
 var command = null;
 Deployer.__set__('exec', function(cmd, done) {
@@ -50,13 +52,14 @@ describe('Deployer', function() {
   it('lists releases in reverse order of versions', function(done) {
     releases['a1'] = [ { description: 'old', version: 100}, { description: 'recent', version: 200} ];
     var deployer = new Deployer();
-    deployer.init(function(err) {
-      deployer.fetchReleases('a1', function(err, rs) {
-        expect(err).toBe(null);
+    new FunFlow({verbose: true}).seq(
+      deployer.init.bind(deployer), 
+      deployer.fetchReleases.bind(deployer, 'a1'),
+      function(rs, next) {
         expect(rs).toEqual([ {description: 'recent', version: 200 }, {description: 'old', version: 100} ]);
-        done();
-      });
-    });
+        next();
+      }, 
+      done)();
   });
 
   it('provides the most recent release with a slug', function(done) {
