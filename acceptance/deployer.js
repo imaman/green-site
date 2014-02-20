@@ -15,7 +15,7 @@ Deployer.prototype.init = function(done) {
   exec("heroku auth:token", extractToken(function(err, token) {
     if (err) return done(err);
     self.heroku = new Heroku({ token: token });
-    done(null, self);
+    done(null);
   }));
 };
 
