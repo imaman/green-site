@@ -3,6 +3,9 @@ function FunFlow() {
 }
 
 FunFlow.prototype.seq = function() {
+  if (arguments.length === 0) 
+    throw new Error('At least one function must be specified');
+
   var self = this;
   Array.prototype.slice.call(arguments, 0).forEach(function(current) {
     self.targets.push(current);
@@ -15,13 +18,18 @@ FunFlow.prototype.asFunction = function() {
   function applyAt(i, e) {
     var incomingArgs = Array.prototype.slice.call(arguments, 2);
     var f = self.targets[i];
-    if (i == self.targets.length - 1) {
+    if (i === self.targets.length - 1) {
       return f.apply(null, [e].concat(incomingArgs));
     }
 
 
     function next() {
-      return applyAt.apply(null, [i + 1].concat(Array.prototype.slice.call(arguments, 0)));
+      var applyAtArgs = Array.prototype.slice.call(arguments, 0);
+      if (applyAtArgs[0]) {
+        applyAtArgs = [applyAtArgs[0]];
+      }
+      applyAtArgs = [i + 1].concat(applyAtArgs);
+      return applyAt.apply(null, applyAtArgs);
     };
 
 
