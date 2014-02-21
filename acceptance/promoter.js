@@ -1,5 +1,5 @@
 var Deployer = require('./deployer.js');
-var FunFlow = require('../funflow.js');
+var funflow = require('../funflow.js');
 
 function main(stagingApp, prodApp, options, bail) {
   var candidate = null;
@@ -53,7 +53,7 @@ function main(stagingApp, prodApp, options, bail) {
   var deployer = options.deployer || new Deployer();
 
   if (!options.status) {
-    return new FunFlow().seq(
+    return funflow.flow().seq(
       deployer.init.bind(deployer),
       deployer.mostRecentRelease.bind(deployer, stagingApp),
       establishCandidate,
@@ -65,7 +65,7 @@ function main(stagingApp, prodApp, options, bail) {
       bail).run();
   } 
 
-  new FunFlow(bail).
+  funflow.flow(bail).
     seq(deployer.init.bind(deployer)). // NOT TESTED
     conc({
       staged: deployer.mostRecentRelease.bind(deployer, stagingApp), 
