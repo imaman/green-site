@@ -64,10 +64,6 @@ function main(stagingApp, prodApp, options, bail) {
       postDeploy,
       bail)();
   } 
-  function collect(title, v, next) {
-    text.push(title + '=' + JSON.stringify(v, null, '  '));
-    next();
-  }
 
   function generateOutput(err, staging, prod) {
     if (err) return bail(err);
@@ -86,7 +82,7 @@ function main(stagingApp, prodApp, options, bail) {
   }
   return new FunFlow().seq(
     deployer.init.bind(deployer), // NOT TESTED
-    fetchRecents());
+    fetchRecents)();
 }
 
 module.exports = main;
