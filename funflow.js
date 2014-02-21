@@ -8,10 +8,14 @@ function FunFlow(a, b) {
   this.options = opts || {};
 }
 
+FunFlow.prototype.toString = function() {
+  var arr = this.targets.slice(0);
+  return arr.map(function(x, index) { return '<' + index + '> ' + (x.name || '??') + '()'; }).join('\n');
+};
+
 FunFlow.prototype.seq = function() {
-  this.targets = Array.prototype.slice.call(arguments, 0);
-  this.trap && this.targets.push(this.trap);
-  if (this.targets.length === 0) 
+  this.targets = this.targets.concat(Array.prototype.slice.call(arguments, 0));
+  if (!this.trap && this.targets.length === 0) 
     throw new Error('At least one function must be specified');
 
   return this.asFunction();
@@ -19,27 +23,31 @@ FunFlow.prototype.seq = function() {
 
 FunFlow.prototype.conc = function() {
   var functions = Array.prototype.slice.call(arguments, 0);
+  var self = this;
   return this.seq(function(next) { 
     var results = [];
     var count = functions.length;
     functions.forEach(function(f, index) {
       f(function(e) {
+        var data = Array.prototype.slice.call(arguments, 1);
         if (e) return next(e);
-        results[index] = Array.prototype.slice.call(arguments, 1);
+        results[index] = data;
         --count;
-        if (count === 0) next.apply(null, [null].concat(results));
+        if (count === 0) return next.apply(null, [null].concat(results));
       });
     });
   });
 };
 
 FunFlow.prototype.asFunction = function() {
+  var functions = this.targets.slice(0);
+  this.trap && functions.push(this.trap);
   var self = this;
   var trace = [];
   function applyAt(i, e) {
     var incomingArgs = Array.prototype.slice.call(arguments, 2);
-    var f = self.targets[i];
-    if (i === self.targets.length - 1) {
+    var f = functions[i];
+    if (i === functions.length - 1) {
       return f.apply(null, [e].concat(incomingArgs));
     }
 

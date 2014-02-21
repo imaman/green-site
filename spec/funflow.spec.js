@@ -205,6 +205,27 @@ describe('FunFlow', function() {
         function (next) { next(null, 'first', 'second', 'third') }
       )();
     });
+    it('can be used in conjunction with seq()', function(done) {
+      function trap(err, v) {
+        expect(err).toBe(null);
+        expect(v).toEqual([ '/1/', '/2/' ]);
+        expect(arguments.length).toEqual(2);
+        done();
+      }
+      var base = 'BASE';
+      var flow = new FunFlow(trap, {verbose: true});
+      flow.seq(function r(next) { base = '/'; next(); });
+      flow.conc(
+        function r1(next) { next(null, base + '1/'); },
+        function r2(next) { next(null, base + '2/'); 
+        }
+      );
+      flow.seq(function r3(v1, v2, next) {
+        next(null, [v1[0], v2[0]]);
+      });
+
+      flow.asFunction()();
+    });
   });
 });
 
