@@ -24,9 +24,9 @@ FunFlow.prototype.seq = function() {
 FunFlow.prototype.conc = function() {
   var functions = Array.prototype.slice.call(arguments, 0);
   var self = this;
-  if (functions.length === 1 && !util.isFunction(functions[0])) {
-    var funcByName = functions[0];
-    return this.seq(function() { 
+
+  function compose(funcByName) {
+    return function() {
       var incomingArgs = Array.prototype.slice.call(arguments, 0);
       var outerNext = incomingArgs.pop();
       var results = {};
@@ -43,7 +43,11 @@ FunFlow.prototype.conc = function() {
         }
         f.apply(null, incomingArgs.concat([next]));
       });
-    });
+    }
+  }
+
+  if (functions.length === 1 && !util.isFunction(functions[0])) {
+    return this.seq(compose(functions[0]));
   };
   return this.seq(function() { 
     var incomingArgs = Array.prototype.slice.call(arguments, 0);
