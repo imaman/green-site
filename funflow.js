@@ -25,11 +25,11 @@ FunFlow.prototype.conc = function() {
   var functions = Array.prototype.slice.call(arguments, 0);
   var self = this;
 
-  function compose(funcByName) {
+  function compose(funcByName, initialResult) {
     return function() {
       var incomingArgs = Array.prototype.slice.call(arguments, 0);
       var outerNext = incomingArgs.pop();
-      var results = {};
+      var results = initialResult;
       var names = Object.keys(funcByName);
       var count = names.length;
       names.forEach(function(name, index) {      
@@ -47,7 +47,7 @@ FunFlow.prototype.conc = function() {
   }
 
   if (functions.length === 1 && !util.isFunction(functions[0])) {
-    return this.seq(compose(functions[0]));
+    return this.seq(compose(functions[0], {}));
   };
   return this.seq(function() { 
     var incomingArgs = Array.prototype.slice.call(arguments, 0);
