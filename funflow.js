@@ -18,7 +18,7 @@ FunFlow.prototype.seq = function() {
   if (!this.trap && this.targets.length === 0) 
     throw new Error('At least one function must be specified');
 
-  return this.asFunction();
+  return function() { throw new Error('FunFlow.seq() SHOULD NOT BE USED AS FUNC'); }
 };
 
 FunFlow.prototype.conc = function() {
