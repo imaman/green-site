@@ -17,15 +17,37 @@ FunFlow.prototype.seq = function() {
   return this.asFunction();
 };
 
-FunFlow.prototype.conc = function(f) {
+FunFlow.prototype.conc = function(f1, f2) {
+  if (!f2) {
+    return this.seq(function(next) { 
+      f1(function(e) {
+        var args = Array.prototype.slice.call(arguments, 1);
+        if (e) return next(e);
+        next(null, args);
+      });
+    });
+  }
+
   return this.seq(function(next) { 
-    f(function(e) {
+    var results = [null, null];
+    var count = 2;
+    f1(function(e) {
       var args = Array.prototype.slice.call(arguments, 1);
       if (e) return next(e);
-      next(null, args);
+      results[0] =  args;
+      --count;
+      if (count === 0) next(null, results[0], results[1]);
+    });
+    f2(function(e) {
+      var args = Array.prototype.slice.call(arguments, 1);
+      if (e) return next(e);
+      results[1] =  args;
+      --count;
+      if (count === 0) next(null, results[0], results[1]);
     });
   });
-};
+
+  };
 
 FunFlow.prototype.asFunction = function() {
   var self = this;
