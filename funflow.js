@@ -27,20 +27,17 @@ FunFlow.prototype.conc = function(f1, f2) {
     });
   }
 
+  var functions = Array.prototype.slice.call(arguments, 0);
   return this.seq(function(next) { 
-    var results = [null, null];
-    var count = 2;
-    f1(function(e) {
-      if (e) return next(e);
-      results[0] = Array.prototype.slice.call(arguments, 1);
-      --count;
-      if (count === 0) next(null, results[0], results[1]);
-    });
-    f2(function(e) {
-      if (e) return next(e);
-      results[1] = Array.prototype.slice.call(arguments, 1);
-      --count;
-      if (count === 0) next(null, results[0], results[1]);
+    var results = [];
+    var count = functions.length;
+    functions.forEach(function(f1, index) {
+      f1(function(e) {
+        if (e) return next(e);
+        results[index] = Array.prototype.slice.call(arguments, 1);
+        --count;
+        if (count === 0) next.apply(null, [null].concat(results));
+      });
     });
   });
 };
