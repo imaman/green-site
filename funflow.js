@@ -17,16 +17,7 @@ FunFlow.prototype.seq = function() {
   return this.asFunction();
 };
 
-FunFlow.prototype.conc = function(f1, f2) {
-  if (!f2) {
-    return this.seq(function(next) { 
-      f1(function(e) {
-        if (e) return next(e);
-        next(null, Array.prototype.slice.call(arguments, 1));
-      });
-    });
-  }
-
+FunFlow.prototype.conc = function() {
   var functions = Array.prototype.slice.call(arguments, 0);
   return this.seq(function(next) { 
     var results = [];
