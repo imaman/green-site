@@ -27,7 +27,7 @@ describe('FunFlow', function() {
           expect(second).toEqual('second one');
           expect(arguments.length).toEqual(3);
           done();
-        })('first external argument', 'second one');
+        }).run('first external argument', 'second one');
       });
     });
     describe('of two functions', function() {
@@ -57,7 +57,7 @@ describe('FunFlow', function() {
             expect(value).toEqual('<$>');
             expect(arguments.length).toEqual(2);
             done();
-        })('<', '>');
+        }).run('<', '>');
       });
       it('passes the error emitted by the first one to the error argument of the second one', function(done) {
         var failure = new Error('some problem');
@@ -96,8 +96,8 @@ describe('FunFlow', function() {
       });
       it('can be the sole target', function(done) {
         var captured;
-        new FunFlow(function trap(e, v) { captured = Array.prototype.slice.call(arguments, 0) }).seq(
-        )(50);
+        new FunFlow(function trap(e, v) { captured = Array.prototype.slice.call(arguments, 0) }).
+        seq().run(50);
 
         expect(captured).toEqual([null, 50]);
         done();

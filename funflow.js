@@ -20,7 +20,9 @@ FunFlow.prototype.seq = function() {
 
   var result = function() { throw new Error('FunFlow.seq() SHOULD NOT BE USED AS FUNC'); }
   var self = this;
-  result.run = function() { self.run(); };
+  result.run = function() { 
+    self.run.apply(self, Array.prototype.slice.call(arguments, 0));
+  };
   return result;
 };
 
@@ -86,7 +88,7 @@ FunFlow.prototype.asFunction = function() {
 };
 
 FunFlow.prototype.run = function() {
-  this.asFunction()();
+  this.asFunction().apply(null, Array.prototype.slice.call(arguments, 0));
 };
 
 module.exports = FunFlow;

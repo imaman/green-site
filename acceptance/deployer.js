@@ -19,7 +19,7 @@ Deployer.prototype.init = function(done) {
     function assign(token, next) {
       self.heroku = new Heroku({ token: token });
       next();
-    })("heroku auth:token");
+    }).run("heroku auth:token");
 };
 
 Deployer.prototype.fetchReleases = function(app, done) {
