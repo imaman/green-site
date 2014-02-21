@@ -50,22 +50,6 @@ FunFlow.prototype.conc = function() {
     return this.seq(compose(functions[0], {}, function(results) { return [results]; }));
   };
   return this.seq(compose(functions, [], function(results) { return results; }));
-/*  return this.seq(function() { 
-    var incomingArgs = Array.prototype.slice.call(arguments, 0);
-    var outerNext = incomingArgs.pop();
-    var results = [];
-    var count = functions.length;
-    functions.forEach(function(f, index) {      
-      function next(e) {
-        var data = Array.prototype.slice.call(arguments, 1);
-        if (e) return outerNext(e);
-        results[index] = data;
-        --count;
-        if (count === 0) return outerNext.apply(null, [null].concat(results));
-      }
-      f.apply(null, incomingArgs.concat([next]));
-    });
-  });*/
 };
 
 FunFlow.prototype.asFunction = function() {
