@@ -205,6 +205,18 @@ describe('FunFlow', function() {
         function (next) { next(null, 'first', 'second', 'third') }
       ).run();
     });
+    it('passes external arguments to each of the functions', function(done) {
+      function trap(err, arr1, arr2) {
+        if (err) throw err;
+        expect(arr1).toEqual([20, 40]);
+        expect(arr2).toEqual([2, 4]);
+        done();
+      }
+      new FunFlow(trap).conc(
+        function byFive(v1, v2, next) { next(null, v1 / 5, v2 / 5); },
+        function ByFifty(v1, v2, next) { next(null, v1 / 50, v2 / 50) }
+      ).run(100, 200);
+    });
     it('can be used in conjunction with seq()', function(done) {
       function trap(err, v) {
         expect(err).toBe(null);

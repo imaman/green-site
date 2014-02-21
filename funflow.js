@@ -24,17 +24,20 @@ FunFlow.prototype.seq = function() {
 FunFlow.prototype.conc = function() {
   var functions = Array.prototype.slice.call(arguments, 0);
   var self = this;
-  return this.seq(function(next) { 
+  return this.seq(function() { 
+    var incomingArgs = Array.prototype.slice.call(arguments, 0);
+    var outerNext = incomingArgs.pop();
     var results = [];
     var count = functions.length;
-    functions.forEach(function(f, index) {
-      f(function(e) {
+    functions.forEach(function(f, index) {      
+      function next(e) {
         var data = Array.prototype.slice.call(arguments, 1);
-        if (e) return next(e);
+        if (e) return outerNext(e);
         results[index] = data;
         --count;
-        if (count === 0) return next.apply(null, [null].concat(results));
-      });
+        if (count === 0) return outerNext.apply(null, [null].concat(results));
+      }
+      f.apply(null, incomingArgs.concat([next]));
     });
   });
 };
