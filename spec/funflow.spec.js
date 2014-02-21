@@ -146,6 +146,16 @@ describe('FunFlow', function() {
         function (next) { next(null, 'first') }
       )();
     });
+    it('passes a failure from that single function to the trap funtion', function(done) {
+      function trap(err) {
+        expect(err).toEqual('WE HAVE A PROBLEM');
+        expect(arguments.length).toEqual(1);
+        done();
+      }
+      new FunFlow(trap).conc(
+        function (next) { next('WE HAVE A PROBLEM', 'ignored') }
+      )();
+    });
   });
 });
 

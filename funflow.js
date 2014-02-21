@@ -20,6 +20,7 @@ FunFlow.prototype.seq = function() {
 FunFlow.prototype.conc = function(f) {
   return this.seq(function(next) { 
     f(function(e, v) {
+      if (e) return next(e);
       next(null, [v]);
     });
   });
