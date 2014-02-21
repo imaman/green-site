@@ -18,12 +18,7 @@ FunFlow.prototype.seq = function() {
   if (!this.trap && this.targets.length === 0) 
     throw new Error('At least one function must be specified');
 
-  var result = function() { throw new Error('FunFlow.seq() SHOULD NOT BE USED AS FUNC'); }
-  var self = this;
-  result.run = function() { 
-    self.run.apply(self, Array.prototype.slice.call(arguments, 0));
-  };
-  return result;
+  return this;
 };
 
 FunFlow.prototype.conc = function() {
