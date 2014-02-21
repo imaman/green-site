@@ -49,7 +49,8 @@ FunFlow.prototype.conc = function() {
   if (functions.length === 1 && !util.isFunction(functions[0])) {
     return this.seq(compose(functions[0], {}, function(results) { return [results]; }));
   };
-  return this.seq(function() { 
+  return this.seq(compose(functions, [], function(results) { return results; }));
+/*  return this.seq(function() { 
     var incomingArgs = Array.prototype.slice.call(arguments, 0);
     var outerNext = incomingArgs.pop();
     var results = [];
@@ -64,7 +65,7 @@ FunFlow.prototype.conc = function() {
       }
       f.apply(null, incomingArgs.concat([next]));
     });
-  });
+  });*/
 };
 
 FunFlow.prototype.asFunction = function() {
