@@ -11,6 +11,7 @@
   var TwitterStrategy = require('passport-twitter').Strategy;
   var FacebookStrategy = require('passport-facebook').Strategy;
   var GoogleStrategy = require('passport-google').Strategy;
+  var funflow = require('./funflow.js');
 
   function loadConf(name) {
     return require('./conf/' + name);
@@ -209,15 +210,16 @@
     return {
       start: function(done) {
         var self = this;
-        createApp(combinedConf, deps, options, function(err, app) {
-          if (err) return done(err);
-          self.server = app.listen(app.get('port'), function(err) {
-            if (err) return done(err);
+        var app;
+
+        funflow.seq(done, 
+          function(next) { createApp(combinedConf, deps, options, next) },
+          function listen(app_, next) { app = app_; self.server = app.listen(app.get('port'), next) },
+          function(next) {
             console.log(combinedConf.VERTICAL_SPACE + '> Express server [' + combinedConf.NODE_ENV 
               + '] started at http://localhost:' + app.get('port') + combinedConf.VERTICAL_SPACE);
-            done && done(err);
-          });
-        });
+            next();
+          }).run();
       },
 
       stop: function(done) {
