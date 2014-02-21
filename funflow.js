@@ -18,7 +18,10 @@ FunFlow.prototype.seq = function() {
   if (!this.trap && this.targets.length === 0) 
     throw new Error('At least one function must be specified');
 
-  return function() { throw new Error('FunFlow.seq() SHOULD NOT BE USED AS FUNC'); }
+  var result = function() { throw new Error('FunFlow.seq() SHOULD NOT BE USED AS FUNC'); }
+  var self = this;
+  result.run = function() { self.run(); };
+  return result;
 };
 
 FunFlow.prototype.conc = function() {
@@ -80,6 +83,10 @@ FunFlow.prototype.asFunction = function() {
     var list = [0, null].concat(Array.prototype.slice.call(arguments, 0));
     applyAt.apply(null, list);
   };
+};
+
+FunFlow.prototype.run = function() {
+  this.asFunction()();
 };
 
 module.exports = FunFlow;

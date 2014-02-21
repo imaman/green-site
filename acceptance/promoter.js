@@ -62,7 +62,7 @@ function main(stagingApp, prodApp, options, bail) {
       verifyAndDeploy,
       deploy, 
       postDeploy,
-      bail)();
+      bail).run();
   } 
 
   var flow = new FunFlow(bail);
@@ -76,7 +76,8 @@ function main(stagingApp, prodApp, options, bail) {
     text.push('staged=' + JSON.stringify(staging[0], null, '  '));
     text.push('live=' + JSON.stringify(prod[0], null, '  '));
     next(null, text.join('\n'));
-  })();
+  });
+  flow.run();
 }
 
 module.exports = main;
