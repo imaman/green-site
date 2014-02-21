@@ -21,9 +21,8 @@ FunFlow.prototype.conc = function(f1, f2) {
   if (!f2) {
     return this.seq(function(next) { 
       f1(function(e) {
-        var args = Array.prototype.slice.call(arguments, 1);
         if (e) return next(e);
-        next(null, args);
+        next(null, Array.prototype.slice.call(arguments, 1));
       });
     });
   }
@@ -32,22 +31,19 @@ FunFlow.prototype.conc = function(f1, f2) {
     var results = [null, null];
     var count = 2;
     f1(function(e) {
-      var args = Array.prototype.slice.call(arguments, 1);
       if (e) return next(e);
-      results[0] =  args;
+      results[0] = Array.prototype.slice.call(arguments, 1);
       --count;
       if (count === 0) next(null, results[0], results[1]);
     });
     f2(function(e) {
-      var args = Array.prototype.slice.call(arguments, 1);
       if (e) return next(e);
-      results[1] =  args;
+      results[1] = Array.prototype.slice.call(arguments, 1);
       --count;
       if (count === 0) next(null, results[0], results[1]);
     });
   });
-
-  };
+};
 
 FunFlow.prototype.asFunction = function() {
   var self = this;
