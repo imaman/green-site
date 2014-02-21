@@ -100,5 +100,5 @@ FunFlow.prototype.run = function() {
 };
 
 module.exports = FunFlow;
-FunFlow.Flow = FunFlow;
-FunFlow.flow = function(a, b) { return new FunFlow(a,b); }
+module.exports.Flow = FunFlow;
+module.exports.flow = function(a, b) { return new FunFlow(a,b); }
