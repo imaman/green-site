@@ -25,7 +25,7 @@ FunFlow.prototype.conc = function() {
   var functions = Array.prototype.slice.call(arguments, 0);
   var self = this;
 
-  function compose(funcByName, initialResult) {
+  function compose(funcByName, initialResult, resultTransformer) {
     return function() {
       var incomingArgs = Array.prototype.slice.call(arguments, 0);
       var outerNext = incomingArgs.pop();
@@ -39,7 +39,7 @@ FunFlow.prototype.conc = function() {
           if (e) return outerNext(e);
           results[name] = data;
           --count;
-          if (count === 0) return outerNext.apply(null, [null].concat([results]));
+          if (count === 0) return outerNext.apply(null, [null].concat(resultTransformer(results)));
         }
         f.apply(null, incomingArgs.concat([next]));
       });
@@ -47,7 +47,7 @@ FunFlow.prototype.conc = function() {
   }
 
   if (functions.length === 1 && !util.isFunction(functions[0])) {
-    return this.seq(compose(functions[0], {}));
+    return this.seq(compose(functions[0], {}, function(results) { return [results]; }));
   };
   return this.seq(function() { 
     var incomingArgs = Array.prototype.slice.call(arguments, 0);
