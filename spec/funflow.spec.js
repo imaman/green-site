@@ -167,6 +167,17 @@ describe('FunFlow', function() {
         function(next) { next(null, 'FROM SECOND FUNCTION') }
       )();
     });
+    it('emits results using the ordering of the functions that were passed to it', function(done) {
+      function trap(err, arr1, arr2) {
+        expect(arr1).toEqual([ 'FROM FIRST FUNCTION' ]);
+        expect(arr2).toEqual([ 'FROM SECOND FUNCTION' ]);
+        done();
+      }
+      new FunFlow(trap).conc(
+        function(next) { process.nextTick(function() { next(null, 'FROM FIRST FUNCTION') }) },
+        function(next) { next(null, 'FROM SECOND FUNCTION') }
+      )();
+    });
     it('supports multiple function with multiple emitted values', function(done) {
       function trap(err) {
         expect(err).toBe(null);
