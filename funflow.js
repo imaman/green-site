@@ -100,3 +100,9 @@ Flow.prototype.run = function() {
 };
 
 module.exports.flow = function(a, b) { return new Flow(a,b); }
+module.exports.seq = function seq(trap) {
+  var flow = new Flow(trap);
+  flow.seq.apply(flow, Array.prototype.slice.call(arguments, 1));
+  return flow;
+}
+

@@ -1,4 +1,5 @@
-var flow = require('../funflow').flow;
+var funflow = require('../funflow');
+var flow = funflow.flow;
 
 describe('FunFlow', function() {
   describe('seq', function() {
@@ -80,6 +81,21 @@ describe('FunFlow', function() {
           expect(arguments.length).toEqual(1);
           done();
         }).run();
+      });
+    });
+
+    describe('of multiple functions', function() {
+      it('can be shortened via funflow.seq()', function(done) {
+        function trap(err, v) {
+          expect(err).toBe(null);
+          expect(v).toEqual(30);
+          done();
+        }
+        funflow.seq(trap,
+          function (a, b, next) { next(null, a + b); },
+          function (a, next) { next(null, a / 2); },
+          function (a, next) { next(null, a - 10); }
+        ).run(60, 20);
       });
     });
 
