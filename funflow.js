@@ -99,6 +99,6 @@ FunFlow.prototype.run = function() {
   this.asFunction().apply(null, Array.prototype.slice.call(arguments, 0));
 };
 
-module.exports = FunFlow;
+module.exports = {}; //FunFlow;
 module.exports.Flow = FunFlow;
 module.exports.flow = function(a, b) { return new FunFlow(a,b); }
