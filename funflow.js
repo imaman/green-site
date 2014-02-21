@@ -22,8 +22,8 @@ FunFlow.prototype.conc = function() {
   return this.seq(function(next) { 
     var results = [];
     var count = functions.length;
-    functions.forEach(function(f1, index) {
-      f1(function(e) {
+    functions.forEach(function(f, index) {
+      f(function(e) {
         if (e) return next(e);
         results[index] = Array.prototype.slice.call(arguments, 1);
         --count;
