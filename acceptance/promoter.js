@@ -67,15 +67,14 @@ function main(stagingApp, prodApp, options, bail) {
 
   new FunFlow(bail).
     seq(deployer.init.bind(deployer)). // NOT TESTED
-    conc(
-      deployer.mostRecentRelease.bind(deployer, stagingApp), 
-      deployer.mostRecentRelease.bind(deployer, prodApp)
-    ).
-    seq(function generateOutput(staging, prod, next) {
-      var text = [];
-      text.push('staged=' + JSON.stringify(staging[0], null, '  '));
-      text.push('live=' + JSON.stringify(prod[0], null, '  '));
-      next(null, text.join('\n'));
+    conc({
+      staged: deployer.mostRecentRelease.bind(deployer, stagingApp), 
+      live: deployer.mostRecentRelease.bind(deployer, prodApp)
+    }).
+    seq(function generateOutput(results, next) {
+      next(null, Object.keys(results).map(function(key) {
+        return key + '=' + JSON.stringify(results[key][0], null, '  ');
+      }).join('\n'));
     }).run();
 }
 
