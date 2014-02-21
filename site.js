@@ -207,14 +207,13 @@
     }
 
 
-    return {
+    var driver = {
       start: function(done) {
-        var self = this;
         var app;
 
         funflow.seq(done, 
           function(next) { createApp(combinedConf, deps, options, next) },
-          function listen(app_, next) { app = app_; self.server = app.listen(app.get('port'), next) },
+          function listen(app_, next) { app = app_; driver.server = app.listen(app.get('port'), next) },
           function(next) {
             console.log(combinedConf.VERTICAL_SPACE + '> Express server [' + combinedConf.NODE_ENV 
               + '] started at http://localhost:' + app.get('port') + combinedConf.VERTICAL_SPACE);
@@ -223,12 +222,12 @@
       },
 
       stop: function(done) {
-        this.server.close(function(err) {
-          if (err) return done(err);
-          deps.db.close(done);
-        });
+        funflow.seq(done,
+          function closeServer(next) { driver.server.close(next); },
+          function dbClose(next) { deps.db.close(next); }).run();
       }
     };
+    return driver;
   };
 })()
 

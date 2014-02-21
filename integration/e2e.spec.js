@@ -209,6 +209,7 @@ function specs(describe, it, beforeEach, afterEach) {
     process.stdout.write(specOutput.lines.join(''));
     process.exit(specOutput.results.failedCount === 0 ? 0 : 1);
   }
+
   funflow.seq(trap,
     MongoClient.connect,
     function populate(db_, next) {
