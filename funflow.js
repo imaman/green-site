@@ -17,6 +17,12 @@ FunFlow.prototype.seq = function() {
   return this.asFunction();
 };
 
+FunFlow.prototype.conc = function(f) {
+  return this.seq(function(next) { 
+    next(null, ['first']) 
+  });
+};
+
 FunFlow.prototype.asFunction = function() {
   var self = this;
   var trace = [];
