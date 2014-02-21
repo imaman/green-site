@@ -89,7 +89,7 @@ describe('FunFlow', function() {
         new FunFlow(function trap(e, v) { captured = Array.prototype.slice.call(arguments, 0) }).seq(
             function(next) { next(null, 3) },
             function(value, next) { next(null, value * value) }
-        )();
+        ).run();
 
         expect(captured).toEqual([null, 9]);
         done();
@@ -117,7 +117,7 @@ describe('FunFlow', function() {
             expect(e.stack).toContain('at second()');
             expect(e.stack).toContain('at first()');
             done();
-          })();
+          }).run();
       });
       it('handles unnamed function', function(done) {
         new FunFlow().seq(
@@ -131,7 +131,7 @@ describe('FunFlow', function() {
             expect(e.stack).toContain('at second()');
             expect(e.stack).toContain('at ?()');
             done();
-          })();
+          }).run();
       });
     });
   });
@@ -144,7 +144,7 @@ describe('FunFlow', function() {
       }
       new FunFlow(trap).conc(
         function (next) { next(null, 'first') }
-      )();
+      ).run();
     });
     it('passes a failure from that single function to the trap funtion', function(done) {
       function trap(err) {
@@ -154,7 +154,7 @@ describe('FunFlow', function() {
       }
       new FunFlow(trap).conc(
         function (next) { next('WE HAVE A PROBLEM', 'ignored') }
-      )();
+      ).run();
     });
     it('emits two arrays when two functions are specified', function(done) {
       function trap(err, arr1, arr2) {
@@ -165,7 +165,7 @@ describe('FunFlow', function() {
       new FunFlow(trap).conc(
         function(next) { next(null, 'FROM FIRST FUNCTION') },
         function(next) { next(null, 'FROM SECOND FUNCTION') }
-      )();
+      ).run();
     });
     it('emits results using the ordering of the functions that were passed to it', function(done) {
       function trap(err, arr1, arr2) {
@@ -176,7 +176,7 @@ describe('FunFlow', function() {
       new FunFlow(trap).conc(
         function(next) { process.nextTick(function() { next(null, 'FROM FIRST FUNCTION') }) },
         function(next) { next(null, 'FROM SECOND FUNCTION') }
-      )();
+      ).run();
     });
     it('supports multiple function with multiple emitted values', function(done) {
       function trap(err) {
@@ -194,7 +194,7 @@ describe('FunFlow', function() {
         function(next) { next(null, 'v1_0') },
         function(next) { next(null, 'v2_0', 'v2_1', 'v2_2', 'v2_3', 'v2_4') },
         function(next) { next(null, 'v3_0', 'v3_1', 'v3_2') }
-      )();
+      ).run();
     });
     it('wraps all the emitted values of the function in a single array', function(done) {
       function trap(err, arr) {
@@ -203,7 +203,7 @@ describe('FunFlow', function() {
       }
       new FunFlow(trap).conc(
         function (next) { next(null, 'first', 'second', 'third') }
-      )();
+      ).run();
     });
     it('can be used in conjunction with seq()', function(done) {
       function trap(err, v) {
