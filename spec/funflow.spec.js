@@ -156,6 +156,17 @@ describe('FunFlow', function() {
         function (next) { next('WE HAVE A PROBLEM', 'ignored') }
       )();
     });
+    it('emits two arrays when two functions are specified', function(done) {
+      function trap(err, arr1, arr2) {
+        expect(arr1).toEqual([ 'FROM FIRST FUNCTION' ]);
+        expect(arr2).toEqual([ 'FROM SECOND FUNCTION' ]);
+        done();
+      }
+      new FunFlow(trap).conc(
+        function(next) { next(null, 'FROM FIRST FUNCTION') },
+        function(next) { next(null, 'FROM SECOND FUNCTION') }
+      )();
+    });
     it('wraps all the emitted values of the function in a single array', function(done) {
       function trap(err, arr) {
         expect(arr).toEqual([ 'first', 'second', 'third' ]);
