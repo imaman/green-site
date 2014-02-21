@@ -137,7 +137,7 @@ describe('FunFlow', function() {
   });
 
   describe('conc', function() {
-    it('can execute a single function', function(done) {
+    it('can execute a single function that emits a single value', function(done) {
       function trap(err, arr) {
         expect(arr).toEqual([ 'first' ]);
         done();
@@ -154,6 +154,15 @@ describe('FunFlow', function() {
       }
       new FunFlow(trap).conc(
         function (next) { next('WE HAVE A PROBLEM', 'ignored') }
+      )();
+    });
+    it('wraps all the emitted values of the function in a single array', function(done) {
+      function trap(err, arr) {
+        expect(arr).toEqual([ 'first', 'second', 'third' ]);
+        done();
+      }
+      new FunFlow(trap).conc(
+        function (next) { next(null, 'first', 'second', 'third') }
       )();
     });
   });

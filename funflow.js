@@ -19,9 +19,10 @@ FunFlow.prototype.seq = function() {
 
 FunFlow.prototype.conc = function(f) {
   return this.seq(function(next) { 
-    f(function(e, v) {
+    f(function(e) {
+      var args = Array.prototype.slice.call(arguments, 1);
       if (e) return next(e);
-      next(null, [v]);
+      next(null, args);
     });
   });
 };
