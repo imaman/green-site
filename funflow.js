@@ -49,6 +49,10 @@ FunFlow.prototype.conc = function() {
   if (functions.length === 1 && !util.isFunction(functions[0])) {
     return this.seq(compose(functions[0]));
   };
+
+
+  return this.seq(compose(functions));
+  /*
   return this.seq(function() { 
     var incomingArgs = Array.prototype.slice.call(arguments, 0);
     var outerNext = incomingArgs.pop();
@@ -65,6 +69,7 @@ FunFlow.prototype.conc = function() {
       f.apply(null, incomingArgs.concat([next]));
     });
   });
+  */
 };
 
 FunFlow.prototype.asFunction = function() {
