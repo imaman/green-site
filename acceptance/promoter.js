@@ -64,20 +64,29 @@ function main(stagingApp, prodApp, options, bail) {
       postDeploy,
       bail)();
   } 
-  var text = [];
   function collect(title, v, next) {
     text.push(title + '=' + JSON.stringify(v, null, '  '));
     next();
   }
 
+  function generateOutput(err, staging, prod) {
+    if (err) return bail(err);
+    var text = [];
+    text.push('staged=' + JSON.stringify(staging[0], null, '  '));
+    text.push('live=' + JSON.stringify(prod[0], null, '  '));
+    bail(null, text.join('\n'));
+  }
+
+  function fetchRecents(err) {
+    if (err) return bail(err);
+    new FunFlow(generateOutput).conc(
+      deployer.mostRecentRelease.bind(deployer, stagingApp), 
+      deployer.mostRecentRelease.bind(deployer, prodApp)
+    )();
+  }
   return new FunFlow().seq(
     deployer.init.bind(deployer), // NOT TESTED
-    deployer.mostRecentRelease.bind(deployer, stagingApp), 
-    collect.bind(null, 'staged'),
-    deployer.mostRecentRelease.bind(deployer, prodApp), 
-    collect.bind(null, 'live'),
-    function(next) { next(null, text.join('\n')) },
-    bail)();
+    fetchRecents());
 }
 
 module.exports = main;
