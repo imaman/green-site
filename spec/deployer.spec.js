@@ -1,6 +1,6 @@
 var rewire = require('rewire');
 var Deployer = rewire('../acceptance/deployer.js');
-var FunFlow = require('../funflow')
+var flow = require('../funflow').flow;
 
 
 var command = null;
@@ -42,7 +42,7 @@ Deployer.__set__('Heroku', FakeHeroku);
 describe('Deployer', function() {
   it('uses the Heroku CLI for obtaining a token', function(done) {
     var deployer = new Deployer();
-    new FunFlow(done).seq(
+    flow(done).seq(
       deployer.init.bind(deployer),
       function(next) {
         expect(command).toEqual('heroku auth:token');
@@ -54,7 +54,7 @@ describe('Deployer', function() {
   it('lists releases in reverse order of versions', function(done) {
     releases['a1'] = [ { description: 'old', version: 100}, { description: 'recent', version: 200} ];
     var deployer = new Deployer();
-    new FunFlow(done).seq(
+    flow(done).seq(
       deployer.init.bind(deployer), 
       deployer.fetchReleases.bind(deployer, 'a1'),
       function(rs, next) {
@@ -71,7 +71,7 @@ describe('Deployer', function() {
       { description: 'no_slug_id_newer', version: 400, slug: {}} 
     ];
     var deployer = new Deployer();
-    new FunFlow(done).seq(
+    flow(done).seq(
       deployer.init.bind(deployer),
       deployer.mostRecentRelease.bind(deployer, 'a2'),
       function(r, next) {
@@ -86,7 +86,7 @@ describe('Deployer', function() {
       { description: 'no_slug_2', version: 400, slug: {}} 
     ];
     var deployer = new Deployer();
-    new FunFlow(done).seq(
+    flow(done).seq(
       deployer.init.bind(deployer),
       deployer.mostRecentRelease.bind(deployer,'a3'),
       function(r, next) {
@@ -98,7 +98,7 @@ describe('Deployer', function() {
   it('deploys', function(done) {
     createResult = { value: 'CREATE_RESULT' };
     var deployer = new Deployer();
-    new FunFlow(done).seq(
+    flow(done).seq(
       deployer.init.bind(deployer),
       deployer.deploy.bind(deployer, 'a4', 'SLUG_ID', 'DESCRIPTION'),
       function(data, next) {
