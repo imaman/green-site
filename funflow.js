@@ -1,19 +1,19 @@
 require('util-is');
 var util = require('util');
 
-function FunFlow(a, b) {
+function Flow(a, b) {
   this.trap = util.isFunction(a) ? a : b;
   var opts = util.isFunction(a) ? b : a;
   this.targets = [];
   this.options = opts || {};
 }
 
-FunFlow.prototype.toString = function() {
+Flow.prototype.toString = function() {
   var arr = this.targets.slice(0);
   return arr.map(function(x, index) { return '<' + index + '> ' + (x.name || '??') + '()'; }).join('\n');
 };
 
-FunFlow.prototype.seq = function() {
+Flow.prototype.seq = function() {
   this.targets = this.targets.concat(Array.prototype.slice.call(arguments, 0));
   if (!this.trap && this.targets.length === 0) 
     throw new Error('At least one function must be specified');
@@ -21,7 +21,7 @@ FunFlow.prototype.seq = function() {
   return this;
 };
 
-FunFlow.prototype.conc = function() {
+Flow.prototype.conc = function() {
   var functions = Array.prototype.slice.call(arguments, 0);
   var self = this;
 
@@ -52,7 +52,7 @@ FunFlow.prototype.conc = function() {
   return this.seq(compose(functions, [], function(results) { return results; }));
 };
 
-FunFlow.prototype.asFunction = function() {
+Flow.prototype.asFunction = function() {
   var functions = this.targets.slice(0);
   this.trap && functions.push(this.trap);
   var self = this;
@@ -82,7 +82,7 @@ FunFlow.prototype.asFunction = function() {
       if (e) return next(e);
       f.apply(null, outgoingArgs);
     } catch(e) {
-      trace.push('FunFlow trace: '); 
+      trace.push('Flow trace: '); 
       e.stack = e.stack + '\n' + trace.slice(0).reverse().join('\n');
       self.options.verbose && console.log('\n\ne.flowTrace=' + e.stack + '\n\n');
       next(e);
@@ -95,10 +95,8 @@ FunFlow.prototype.asFunction = function() {
   };
 };
 
-FunFlow.prototype.run = function() {
+Flow.prototype.run = function() {
   this.asFunction().apply(null, Array.prototype.slice.call(arguments, 0));
 };
 
-module.exports = {}; //FunFlow;
-module.exports.Flow = FunFlow;
-module.exports.flow = function(a, b) { return new FunFlow(a,b); }
+module.exports.flow = function(a, b) { return new Flow(a,b); }
