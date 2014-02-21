@@ -65,24 +65,18 @@ function main(stagingApp, prodApp, options, bail) {
       bail)();
   } 
 
-  function generateOutput(err, staging, prod) {
-    if (err) return bail(err);
+  var flow = new FunFlow(bail);
+  flow.seq(deployer.init.bind(deployer)); // NOT TESTED
+  flow.conc(
+      deployer.mostRecentRelease.bind(deployer, stagingApp), 
+      deployer.mostRecentRelease.bind(deployer, prodApp)
+    );
+  flow.seq(function generateOutput(staging, prod, next) {
     var text = [];
     text.push('staged=' + JSON.stringify(staging[0], null, '  '));
     text.push('live=' + JSON.stringify(prod[0], null, '  '));
-    bail(null, text.join('\n'));
-  }
-
-  function fetchRecents(err) {
-    if (err) return bail(err);
-    new FunFlow(generateOutput).conc(
-      deployer.mostRecentRelease.bind(deployer, stagingApp), 
-      deployer.mostRecentRelease.bind(deployer, prodApp)
-    )();
-  }
-  return new FunFlow().seq(
-    deployer.init.bind(deployer), // NOT TESTED
-    fetchRecents)();
+    next(null, text.join('\n'));
+  })();
 }
 
 module.exports = main;
