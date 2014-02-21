@@ -25,11 +25,10 @@ Flow.prototype.conc = function() {
   var functions = Array.prototype.slice.call(arguments, 0);
   var self = this;
 
-  function compose(funcByName, initialResult, resultTransformer) {
+  function compose(funcByName, aggregator, resultTransformer) {
     return function() {
       var incomingArgs = Array.prototype.slice.call(arguments, 0);
       var outerNext = incomingArgs.pop();
-      var results = initialResult;
       var names = Object.keys(funcByName);
       var count = names.length;
       names.forEach(function(name, index) {      
@@ -37,9 +36,9 @@ Flow.prototype.conc = function() {
         function next(e) {
           var data = Array.prototype.slice.call(arguments, 1);
           if (e) return outerNext(e);
-          results[name] = data;
+          aggregator[name] = data;
           --count;
-          if (count === 0) return outerNext.apply(null, [null].concat(resultTransformer(results)));
+          if (count === 0) return outerNext.apply(null, [null].concat(resultTransformer(aggregator)));
         }
         f.apply(null, incomingArgs.concat([next]));
       });
