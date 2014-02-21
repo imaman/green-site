@@ -34,7 +34,7 @@ Deployer.prototype.fetchReleases = function(app, done) {
         return -naturalOrder;
       });
       next(null, releases);
-    })();
+    }).run();
 };
 
 Deployer.prototype.mostRecentRelease = function(app, done) {
@@ -45,7 +45,7 @@ Deployer.prototype.mostRecentRelease = function(app, done) {
       var slugged = rs.filter(function(x) { return x.slug && x.slug.id });
       if (slugged.length == 0) return next(null, null);
       next(null, slugged[0]);
-    })();
+    }).run();
 }
 
 Deployer.prototype.deploy = function(app, slugId, description, done) {

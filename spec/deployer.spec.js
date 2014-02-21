@@ -48,7 +48,7 @@ describe('Deployer', function() {
         expect(command).toEqual('heroku auth:token');
         expect(options).toEqual({ token: 'AAA' });
         next();
-      })();
+      }).run();
   });
 
   it('lists releases in reverse order of versions', function(done) {
@@ -60,7 +60,7 @@ describe('Deployer', function() {
       function(rs, next) {
         expect(rs).toEqual([ {description: 'recent', version: 200 }, {description: 'old', version: 100} ]);
         next();
-      })();
+      }).run();
   });
 
   it('provides the most recent release with a slug', function(done) {
@@ -77,7 +77,7 @@ describe('Deployer', function() {
       function(r, next) {
         expect(r).toEqual({description: 'slug_new', version: 200, slug: {id: 2}});
         next();
-      })();
+      }).run();
   });
 
   it('provides null if no slugged release is found', function(done) {
@@ -92,7 +92,7 @@ describe('Deployer', function() {
       function(r, next) {
         expect(r).toBe(null);
         next();
-      })();
+      }).run();
   });
 
   it('deploys', function(done) {
@@ -105,7 +105,7 @@ describe('Deployer', function() {
         expect(createOptions).toEqual({slug: 'SLUG_ID', description: 'DESCRIPTION'});
         expect(data).toEqual({ value: 'CREATE_RESULT' });
         next();
-      })();
+      }).run();
   });
 });
 

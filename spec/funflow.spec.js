@@ -11,14 +11,14 @@ describe('FunFlow', function() {
         new FunFlow().seq(function(err) {
           expect(err).toBeFalsy();  
           done();
-        })();
+        }).run();
       });
       it('passes no arguments if none were specified externally', function(done) {
         new FunFlow().seq(function(err) {
           expect(err).toBeFalsy();  
           expect(arguments.length).toEqual(1);
           done();
-        })();
+        }).run();
       });
       it('passes external arguments to that function', function(done) {
         new FunFlow().seq(function(err, first, second) {
@@ -37,7 +37,7 @@ describe('FunFlow', function() {
           expect(value).toEqual('Lincoln');
           expect(arguments.length).toEqual(2);
           done();
-        })();
+        }).run();
       });
       it('passes multiple values from the first to the second', function(done) {
         new FunFlow().seq(
@@ -47,7 +47,7 @@ describe('FunFlow', function() {
             expect([part1, part2, part3]).toEqual(['Four scores', 'and', 'seven years ago']);
             expect(arguments.length).toEqual(4);
             done();
-        })();
+        }).run();
       });
       it('passes multiple external args to the first function', function(done) {
         new FunFlow().seq(
@@ -64,14 +64,14 @@ describe('FunFlow', function() {
         new FunFlow().seq(function(next) { next('WE HAVE A PROBLEM') }, function(err) {
           expect(err).toEqual('WE HAVE A PROBLEM');
           done();
-        })();
+        }).run();
       });
       it('does not pass a value (even if it is specifed) when a failure is emitted', function(done) {
         var failure = new Error('some problem');
         new FunFlow().seq(function(next) { next(failure, 'some value') }, function(err) {
           expect(arguments.length).toEqual(1);
           done();
-        })();
+        }).run();
       });
       it('transform exceptions thrown by the first function into an error value (passed to the second)', function(done) {
         var failure = new Error('some problem');
@@ -79,7 +79,7 @@ describe('FunFlow', function() {
           expect(err).toBe(failure);
           expect(arguments.length).toEqual(1);
           done();
-        })();
+        }).run();
       });
     });
 
