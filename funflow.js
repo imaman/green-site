@@ -25,7 +25,7 @@ FunFlow.prototype.conc = function() {
     functions.forEach(function(f, index) {
       f(function(e) {
         if (e) return next(e);
-        results.push(Array.prototype.slice.call(arguments, 1));
+        results[index] = Array.prototype.slice.call(arguments, 1);
         --count;
         if (count === 0) next.apply(null, [null].concat(results));
       });
