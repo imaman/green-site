@@ -11,7 +11,7 @@
   var TwitterStrategy = require('passport-twitter').Strategy;
   var FacebookStrategy = require('passport-facebook').Strategy;
   var GoogleStrategy = require('passport-google').Strategy;
-  var funflow = require('./funflow.js');
+  var funflow = require('funflow');
 
   function loadConf(name) {
     return require('./conf/' + name);

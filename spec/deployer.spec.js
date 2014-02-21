@@ -1,6 +1,6 @@
 var rewire = require('rewire');
 var Deployer = rewire('../acceptance/deployer.js');
-var flow = require('../funflow').flow;
+var flow = require('funflow').flow;
 
 
 var command = null;

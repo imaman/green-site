@@ -1,5 +1,5 @@
 var Deployer = require('./deployer.js');
-var funflow = require('../funflow.js');
+var funflow = require('funflow');
 
 function main(stagingApp, prodApp, options, bail) {
   var candidate = null;

@@ -1,6 +1,6 @@
 var exec = require('child_process').exec;
 var Heroku = require('heroku-client');
-var flow = require('../funflow').flow;
+var flow = require('funflow').flow;
 
 function extractToken(callback) {
   return function(error, stdout, stderr) {

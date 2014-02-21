@@ -1,7 +1,7 @@
 var controllerModule = require('../controller');
 var site =  require('../site');
 var Browser = require('zombie');
-var funflow = require('../funflow');
+var funflow = require('funflow');
 var MongoClient = require('mongodb').MongoClient;
 var JasmineNodeApi = require('../acceptance/jasmine-node-api');
 
