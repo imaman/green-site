@@ -32,6 +32,6 @@
     "minimist": "0.0.7",
     "rewire": "~2.0.0",
     "util-is": "~0.1.0",
-    "funflow": "0.0.1"
+    "funflow": "0.0.6"
   }
 }
