@@ -211,20 +211,20 @@
       start: function(done) {
         var app;
 
-        funflow.seq(done, 
+        funflow.newFlow(
           function(next) { createApp(combinedConf, deps, options, next) },
           function listen(app_, next) { app = app_; driver.server = app.listen(app.get('port'), next) },
           function(next) {
-            console.log(combinedConf.VERTICAL_SPACE + '> Express server [' + combinedConf.NODE_ENV 
+            console.log(combinedConf.VERTICAL_SPACE + '> Express server [' + combinedConf.NODE_ENV
               + '] started at http://localhost:' + app.get('port') + combinedConf.VERTICAL_SPACE);
             next();
-          }).run();
+          })(null, done);
       },
 
       stop: function(done) {
-        funflow.seq(done,
+        funflow.newFlow(
           function closeServer(next) { driver.server.close(next); },
-          function dbClose(next) { deps.db.close(next); }).run();
+          function dbClose(next) { deps.db.close(next); })(null, done);
       }
     };
     return driver;
