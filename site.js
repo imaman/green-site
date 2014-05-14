@@ -84,7 +84,7 @@
       deps.db = db;
 
       app.use(express.logger());
-      app.use(express.cookieParser(combinedConf.COOKIE_SECRET)); 
+      app.use(express.cookieParser(combinedConf.COOKIE_SECRET));
       app.use(express.bodyParser());
       app.use(express.cookieSession({ secret: combinedConf.COOKIE_SESSION_SECRET}));
       app.use(express.methodOverride());
@@ -93,7 +93,7 @@
           store: new MongoStore({ db: db })
         }));
       app.use(passport.initialize());
-      app.use(passport.session());    
+      app.use(passport.session());
       app.use(app.router);
       app.use(express.static(__dirname + '/public'));
       app.use(controller.error);
@@ -113,10 +113,10 @@
       });
 
       function authRoutes(provider) {
-        app.get('/auth/' + provider, passport.authenticate(provider), 
+        app.get('/auth/' + provider, passport.authenticate(provider),
           function(req, res) {} // will never be called.
         );
-        app.get('/auth/' + provider + '/callback', 
+        app.get('/auth/' + provider + '/callback',
           passport.authenticate(provider,
           { failureRedirect: '/login', successRedirect: '/' })
         );
@@ -134,7 +134,7 @@
       });
 
       app.get('/env.json', function(req, res) {
-        res.json({ 
+        res.json({
         });
       });
 
@@ -184,16 +184,16 @@
 
   exports.createDriver = function(overridingConf, deps, options) {
     try {
-      env(__dirname + '/conf/.env'); 
+      env(__dirname + '/conf/.env');
     } catch(e) {
       // Intentionally ignore.
     }
     var confName = process.env.NODE_ENV || 'development';
     var combinedConf = extend(
-      loadConf('default'), 
-      process.env, 
-      loadConf(confName), 
-      overridingConf, 
+      loadConf('default'),
+      process.env,
+      loadConf(confName),
+      overridingConf,
       {NODE_ENV: confName}
     );
 

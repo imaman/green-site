@@ -14,7 +14,7 @@ function specs(describe, it, beforeEach, afterEach) {
     var model = {
       headline: 'SOME HEADLINE',
       tagline: 'a clever tag-line',
-      posts: [ 
+      posts: [
         {
           id: 1,
           title: 'Title1',
@@ -32,7 +32,7 @@ function specs(describe, it, beforeEach, afterEach) {
           title: 'Title3',
           publishedAt: ''
         },
-        { 
+        {
           id: 4,
           title: 'Title4',
           body: 'some text `some code` the end',
@@ -131,7 +131,7 @@ function specs(describe, it, beforeEach, afterEach) {
       it('shows an edit page', function(done) {
         visit('posts/1/edit', done, function() {
           expect(browser.success).toBe(true);
-          expect(browser.html('#text-input-container')).toContain('<textarea id="text-input"'); 
+          expect(browser.html('#text-input-container')).toContain('<textarea id="text-input"');
         });
       });
     });
@@ -204,26 +204,29 @@ function specs(describe, it, beforeEach, afterEach) {
 
   function trap(err) {
     process.stdout.write('\n');
-    if (err) return process.exit(1);
+    if (err) {
+      console.error(err.flowTrace);
+      return process.exit(1);
+    }
 
     process.stdout.write(specOutput.lines.join(''));
     process.exit(specOutput.results.failedCount === 0 ? 0 : 1);
   }
 
-  funflow.seq(trap,
+  funflow.Compiler.new_({translateErrors: true}).compile(
     MongoClient.connect,
     function populate(db_, next) {
       db = db_;
-      var coll = db.collection('users');  
+      var coll = db.collection('users');
       coll.insert({id: 50001, name: 'doc1', by: 'me' }, next);
     },
     function test(value, next) {
       new JasmineNodeApi().runSpecs(specs, next);
-    }, 
+    },
     function close(results, next) {
-      specOutput = results; 
+      specOutput = results;
       db.close(next);
-    }).run("mongodb://localhost/collidingobjects-test-100");
+    })(null, "mongodb://localhost/collidingobjects-test-100", trap);
 })();
 
 
