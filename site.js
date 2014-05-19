@@ -229,7 +229,9 @@
       stop: function(shutdownDone) {
         funflow.newFlow(
           function closeServer(next) { driver.server.close(next); },
-          function dbClose(next) { deps.db.close(next); })(null, shutdownDone);
+          function dbClose(next) { deps.db.close(next); },
+          funflow.comp(function(e, next) { shutdownDone(e); next(); })
+        )(null, function() {});
       }
     };
     return driver;
