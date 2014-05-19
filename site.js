@@ -223,15 +223,17 @@
             initDone(e);
             driver.resume = next;
           }),
-          function closeServer(next) { this.server.close(next); },
+          function closeServer(shutdownDone, next) {
+            this.shutdownDone = shutdownDone;
+            this.server.close(next);
+          },
           function dbClose(next) { deps.db.close(next); },
-          funflow.comp(function(e, next) { driver.shutdownDone(e); next(); })
+          funflow.comp(function(e, next) { this.shutdownDone(e); next(); })
         )(null, combinedConf, deps, options, function() {});
       },
 
       stop: function(shutdownDone) {
-        driver.shutdownDone = shutdownDone;
-        driver.resume();
+        driver.resume(null, shutdownDone);
       }
     };
     return driver;
