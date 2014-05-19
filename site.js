@@ -208,7 +208,7 @@
 
 
     var driver = {
-      start: function(done) {
+      start: function(initDone) {
         var app;
 
         funflow.newFlow(
@@ -218,13 +218,13 @@
             console.log(combinedConf.VERTICAL_SPACE + '> Express server [' + combinedConf.NODE_ENV
               + '] started at http://localhost:' + this.app.get('port') + combinedConf.VERTICAL_SPACE);
             next();
-          })(null, combinedConf, deps, options, done);
+          })(null, combinedConf, deps, options, initDone);
       },
 
-      stop: function(done) {
+      stop: function(shutdownDone) {
         funflow.newFlow(
           function closeServer(next) { driver.server.close(next); },
-          function dbClose(next) { deps.db.close(next); })(null, done);
+          function dbClose(next) { deps.db.close(next); })(null, shutdownDone);
       }
     };
     return driver;
