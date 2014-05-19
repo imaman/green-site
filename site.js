@@ -222,7 +222,7 @@
           funflow.comp(function temp(e, next) {
             if (e)
               console.log('e=' + e);
-            next(e);
+            initDone(e);
           })
         )(null, combinedConf, deps, options, function(e) { initDone(e) });
       },
