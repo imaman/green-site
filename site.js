@@ -221,17 +221,17 @@
           },
           funflow.comp(function temp(e, next) {
             initDone(e);
-            next();
-          })
+            driver.resume = next;
+          }),
+          function closeServer(next) { driver.server.close(next); },
+          function dbClose(next) { deps.db.close(next); },
+          funflow.comp(function(e, next) { driver.shutdownDone(e); next(); })
         )(null, combinedConf, deps, options, function() {});
       },
 
       stop: function(shutdownDone) {
-        funflow.newFlow(
-          function closeServer(next) { driver.server.close(next); },
-          function dbClose(next) { deps.db.close(next); },
-          funflow.comp(function(e, next) { shutdownDone(e); next(); })
-        )(null, function() {});
+        driver.shutdownDone = shutdownDone;
+        driver.resume();
       }
     };
     return driver;
