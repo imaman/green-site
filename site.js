@@ -212,13 +212,13 @@
         var app;
 
         funflow.newFlow(
-          function(next) { createApp(combinedConf, deps, options, next) },
-          function listen(app_, next) { app = app_; driver.server = app.listen(app.get('port'), next) },
+          createApp,
+          function listen(app, next) { this.app = app; driver.server = app.listen(app.get('port'), next) },
           function(next) {
             console.log(combinedConf.VERTICAL_SPACE + '> Express server [' + combinedConf.NODE_ENV
-              + '] started at http://localhost:' + app.get('port') + combinedConf.VERTICAL_SPACE);
+              + '] started at http://localhost:' + this.app.get('port') + combinedConf.VERTICAL_SPACE);
             next();
-          })(null, done);
+          })(null, combinedConf, deps, options, done);
       },
 
       stop: function(done) {
