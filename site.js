@@ -218,7 +218,8 @@
             console.log(combinedConf.VERTICAL_SPACE + '> Express server [' + combinedConf.NODE_ENV
               + '] started at http://localhost:' + this.app.get('port') + combinedConf.VERTICAL_SPACE);
             next();
-          })(null, combinedConf, deps, options, initDone);
+          }
+        )(null, combinedConf, deps, options, function(e) { initDone(e) });
       },
 
       stop: function(shutdownDone) {
