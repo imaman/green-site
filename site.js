@@ -218,7 +218,12 @@
             console.log(combinedConf.VERTICAL_SPACE + '> Express server [' + combinedConf.NODE_ENV
               + '] started at http://localhost:' + this.app.get('port') + combinedConf.VERTICAL_SPACE);
             next();
-          }
+          },
+          funflow.comp(function temp(e, next) {
+            if (e)
+              console.log('e=' + e);
+            next(e);
+          })
         )(null, combinedConf, deps, options, function(e) { initDone(e) });
       },
 
