@@ -214,7 +214,7 @@
         funflow.newFlow(
           createApp,
           function listen(app, next) { this.app = app; driver.server = app.listen(app.get('port'), next) },
-          function(next) {
+          function serverIsUp(next) {
             console.log(combinedConf.VERTICAL_SPACE + '> Express server [' + combinedConf.NODE_ENV
               + '] started at http://localhost:' + this.app.get('port') + combinedConf.VERTICAL_SPACE);
             next();
