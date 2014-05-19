@@ -220,11 +220,9 @@
             next();
           },
           funflow.comp(function temp(e, next) {
-            if (e)
-              console.log('e=' + e);
             initDone(e);
           })
-        )(null, combinedConf, deps, options, function(e) { initDone(e) });
+        )(null, combinedConf, deps, options, function() {});
       },
 
       stop: function(shutdownDone) {
