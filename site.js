@@ -221,6 +221,7 @@
           },
           funflow.comp(function temp(e, next) {
             initDone(e);
+            next();
           })
         )(null, combinedConf, deps, options, function() {});
       },
