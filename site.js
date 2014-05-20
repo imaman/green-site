@@ -207,33 +207,39 @@
     }
 
 
+    var flow = funflow.newFlow(
+      function create(initDone, combinedConf, deps, options, next) {
+        this.initDone = initDone;
+        createApp(combinedConf, deps, options, next);
+      },
+      function listen(app, next) { this.app = app; this.server = app.listen(app.get('port'), next) },
+      function serverIsUp(next) {
+        console.log(combinedConf.VERTICAL_SPACE + '> Express server [' + combinedConf.NODE_ENV
+          + '] started at http://localhost:' + this.app.get('port') + combinedConf.VERTICAL_SPACE);
+        next();
+      },
+      funflow.comp(function yield(e, next) {
+        this.initDone(e);
+        this.resume = next;
+      }),
+      function closeServer(shutdownDone, next) {
+        this.shutdownDone = shutdownDone;
+        this.server.close(next);
+      },
+      function dbClose(next) { deps.db.close(next); },
+      funflow.comp(function(e, next) { this.shutdownDone(e); next(); })
+    );
     var driver = {
       start: function(initDone) {
-        var app;
+        var exec = flow(null, initDone, combinedConf, deps, options, function(err) {
+          if(err)
+            console.error(err.flowTrace);
+        });
 
-        funflow.newFlow(
-          createApp,
-          function listen(app, next) { this.app = app; this.server = app.listen(app.get('port'), next) },
-          function serverIsUp(next) {
-            console.log(combinedConf.VERTICAL_SPACE + '> Express server [' + combinedConf.NODE_ENV
-              + '] started at http://localhost:' + this.app.get('port') + combinedConf.VERTICAL_SPACE);
-            next();
-          },
-          funflow.comp(function temp(e, next) {
-            initDone(e);
-            driver.resume = next;
-          }),
-          function closeServer(shutdownDone, next) {
-            this.shutdownDone = shutdownDone;
-            this.server.close(next);
-          },
-          function dbClose(next) { deps.db.close(next); },
-          funflow.comp(function(e, next) { this.shutdownDone(e); next(); })
-        )(null, combinedConf, deps, options, function() {});
-      },
-
-      stop: function(shutdownDone) {
-        driver.resume(null, shutdownDone);
+        driver.stop = function(shutdownDone) {
+          exec.context.shutdownDone = shutdownDone;
+          exec.context.resume(null, shutdownDone);
+        }
       }
     };
     return driver;
