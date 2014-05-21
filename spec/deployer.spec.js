@@ -6,7 +6,7 @@ var flow = require('funflow').flow;
 var command = null;
 Deployer.__set__('exec', function(cmd, done) {
   command = cmd;
-  done(null, 'AAA', '');
+  done(null, 'AAA   ', '');
 });
 
 
@@ -18,10 +18,10 @@ var createResult = null;
 
 function FakeHeroku(opts) {
   options = opts;
-  this.apps = function(s) { 
-    app = s; 
-    return { 
-      releases: function() { 
+  this.apps = function(s) {
+    app = s;
+    return {
+      releases: function() {
         return {
           list: function(done) {
             done(null, releases[s]);
@@ -32,8 +32,8 @@ function FakeHeroku(opts) {
             done(null, createResult);
           }
         };
-      } 
-    } 
+      }
+    }
   };
 };
 
@@ -55,7 +55,7 @@ describe('Deployer', function() {
     releases['a1'] = [ { description: 'old', version: 100}, { description: 'recent', version: 200} ];
     var deployer = new Deployer();
     flow(done).seq(
-      deployer.init.bind(deployer), 
+      deployer.init.bind(deployer),
       deployer.fetchReleases.bind(deployer, 'a1'),
       function(rs, next) {
         expect(rs).toEqual([ {description: 'recent', version: 200 }, {description: 'old', version: 100} ]);
@@ -64,11 +64,11 @@ describe('Deployer', function() {
   });
 
   it('provides the most recent release with a slug', function(done) {
-    releases['a2'] = [ 
-      { description: 'slug_old', version: 100, slug: {id: 1}}, 
+    releases['a2'] = [
+      { description: 'slug_old', version: 100, slug: {id: 1}},
       { description: 'slug_new', version: 200, slug: {id: 2}},
       { description: 'no_slug_newer', version: 300},
-      { description: 'no_slug_id_newer', version: 400, slug: {}} 
+      { description: 'no_slug_id_newer', version: 400, slug: {}}
     ];
     var deployer = new Deployer();
     flow(done).seq(
@@ -81,9 +81,9 @@ describe('Deployer', function() {
   });
 
   it('provides null if no slugged release is found', function(done) {
-    releases['a3'] = [ 
+    releases['a3'] = [
       { description: 'no_slug_1', version: 300},
-      { description: 'no_slug_2', version: 400, slug: {}} 
+      { description: 'no_slug_2', version: 400, slug: {}}
     ];
     var deployer = new Deployer();
     flow(done).seq(

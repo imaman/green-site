@@ -1,6 +1,7 @@
 var exec = require('child_process').exec;
 var Heroku = require('heroku-client');
-var flow = require('funflow').flow;
+var funflow = require('funflow');
+var flow = funflow.flow;
 
 function extractToken(callback) {
   return function(error, stdout, stderr) {
@@ -11,7 +12,7 @@ function Deployer() {}
 
 Deployer.prototype.init = function(done) {
   var self = this;
-  flow(done).seq(
+  funflow.newFlow(
     exec,
     function extractToken(stdout, stderr, next) {
       next(stderr, stdout.trim());
@@ -19,7 +20,8 @@ Deployer.prototype.init = function(done) {
     function assign(token, next) {
       self.heroku = new Heroku({ token: token });
       next();
-    }).run("heroku auth:token");
+    }
+    )(null, "heroku auth:token", done);
 };
 
 Deployer.prototype.fetchReleases = function(app, done) {
