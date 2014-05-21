@@ -55,8 +55,8 @@ function main(stagingApp, prodApp, options, bail) {
 
   if (!options.status) {
     return funflow.flow().seq(
-      deployer.init.bind(deployer),
-      deployer.mostRecentRelease.bind(deployer, stagingApp),
+      function init(next) { deployer.init(next) },
+      function fetchRelease(next) { deployer.mostRecentRelease(stagingApp, next) },
       establishCandidate,
       checkNeedAndTest,
       testsCompleted,
