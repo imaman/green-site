@@ -26,7 +26,7 @@ Deployer.prototype.init = function(done) {
 
 Deployer.prototype.fetchReleases = function(app, done) {
   var self = this;
-  flow(done).seq(
+  funflow.newFlow(
     function list(next) { self.heroku.apps(app).releases().list(next); },
     function sortByVersion(releases, next) {
       releases.sort(function (lhs, rhs) {
@@ -36,7 +36,7 @@ Deployer.prototype.fetchReleases = function(app, done) {
         return -naturalOrder;
       });
       next(null, releases);
-    }).run();
+    })(null, done);
 };
 
 Deployer.prototype.mostRecentRelease = function(app, done) {
