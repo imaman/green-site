@@ -66,7 +66,7 @@ function main(stagingApp, prodApp, options, bail) {
   }
 
   funflow.flow(bail).
-    seq(deployer.init.bind(deployer)). // NOT TESTED
+    seq(deployer.init.bind(deployer)).
     conc({
       staged: deployer.mostRecentRelease.bind(deployer, stagingApp),
       live: deployer.mostRecentRelease.bind(deployer, prodApp)
