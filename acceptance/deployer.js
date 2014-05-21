@@ -15,7 +15,7 @@ Deployer.prototype.init = function(done) {
     exec,
     function extractToken(stdout, stderr, next) {
       next(stderr, stdout.trim());
-    }, 
+    },
     function assign(token, next) {
       self.heroku = new Heroku({ token: token });
       next();
@@ -28,7 +28,7 @@ Deployer.prototype.fetchReleases = function(app, done) {
     function list(next) { self.heroku.apps(app).releases().list(next); },
     function sortByVersion(releases, next) {
       releases.sort(function (lhs, rhs) {
-        var naturalOrder = lhs.version < rhs.version ? -1 
+        var naturalOrder = lhs.version < rhs.version ? -1
           : lhs.version > rhs.version ? 1
           : 0;
         return -naturalOrder;
@@ -49,10 +49,10 @@ Deployer.prototype.mostRecentRelease = function(app, done) {
 }
 
 Deployer.prototype.deploy = function(app, slugId, description, done) {
-  this.heroku.apps(app).releases().create({ 
+  this.heroku.apps(app).releases().create({
       slug: slugId,
       description: description
-    }, 
+    },
     done);
 };
 
