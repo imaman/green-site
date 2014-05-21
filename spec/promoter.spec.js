@@ -28,7 +28,7 @@ describe('promoter', function() {
     var deployer = new DeployerStub();
     deployer.init = function(done) { done('SOME PROBLEM'); };
     promoter('a', 'b', { deployer: deployer , runSpecs: runSpecs }, function(err, data) {
-      expect(err).toEqual('SOME PROBLEM');
+      expect(err.cause).toEqual('SOME PROBLEM');
       expect(data).toBe(undefined);
       done();
     });
@@ -38,7 +38,7 @@ describe('promoter', function() {
     var deployer = new DeployerStub();
     deployer.mostRecentRelease = function(app, done) { done(problem); };
     promoter('a', 'b', { deployer: deployer, runSpecs: runSpecs }, function(err, data) {
-      expect(err).toBe(problem);
+      expect(err.cause).toBe(problem);
       expect(data).toBe(undefined);
       done();
     });
@@ -47,7 +47,7 @@ describe('promoter', function() {
     var deployer = new DeployerStub();
     deployer.fetchReleases = function(app, done) { done('FAILURE IN deployer.fetchReleases()'); };
     promoter('a', 'b', { deployer: deployer, runSpecs: runSpecs }, function(err, data) {
-      expect(err).toEqual('FAILURE IN deployer.fetchReleases()');
+      expect(err.cause).toEqual('FAILURE IN deployer.fetchReleases()');
       expect(data).toBe(undefined);
       done();
     });
@@ -56,7 +56,7 @@ describe('promoter', function() {
     var deployer = new DeployerStub();
     deployer.deploy = function(app, slug, description, done) { done('FAILURE IN deployer.deploy()'); };
     promoter('a', 'b', { deployer: deployer, runSpecs: runSpecs }, function(err, data) {
-      expect(err).toEqual('FAILURE IN deployer.deploy()');
+      expect(err.cause).toEqual('FAILURE IN deployer.deploy()');
       expect(data).toBe(undefined);
       done();
     });
@@ -91,7 +91,7 @@ describe('promoter', function() {
     var deployer = new DeployerStub();
     deployer.deploy = function() { throw new Error('SHOULD NOT BE CALLED'); };
     promoter('a', 'b', { deployer: deployer, runSpecs: function(done) { done('TESTS FAILED') } }, function(err, data) {
-      expect(err).toEqual('TESTS FAILED');
+      expect(err.cause).toEqual('TESTS FAILED');
       expect(data).toBe(undefined);
       done();
     });
@@ -107,7 +107,7 @@ describe('promoter', function() {
             lines: ['TEST_1_FAILED ', 'TEST_2_FAILED']
       })}},
       function(err, data) {
-        expect(err).toEqual('TEST_1_FAILED TEST_2_FAILED');
+        expect(err.cause).toEqual('TEST_1_FAILED TEST_2_FAILED');
         expect(data).toBe(undefined);
         done();
       });

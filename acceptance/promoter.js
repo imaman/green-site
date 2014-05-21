@@ -54,7 +54,7 @@ function main(stagingApp, prodApp, options, bail) {
   var deployer = options.deployer || new Deployer();
 
   if (!options.status) {
-    return funflow.flow().seq(
+    return funflow.newFlow(
       function init(next) { deployer.init(next) },
       function fetchRelease(next) { deployer.mostRecentRelease(stagingApp, next) },
       establishCandidate,
@@ -62,8 +62,7 @@ function main(stagingApp, prodApp, options, bail) {
       testsCompleted,
       verifyAndDeploy,
       deploy,
-      postDeploy,
-      bail).run();
+      postDeploy)(null, bail);
   }
 
   funflow.flow(bail).
