@@ -2,19 +2,20 @@ var Deployer = require('./deployer.js');
 var funflow = require('funflow');
 
 function main(stagingApp, prodApp, options, bail) {
+  var out = options.out || console;
   var candidate = null;
 
   function postDeploy(data, next) {
-    console.log('>>>>>>>>>> ALL\'S WELL');
-    console.log(JSON.stringify(data, null, '  '));
+    out.log('>>>>>>>>>> ALL\'S WELL');
+    out.log(JSON.stringify(data, null, '  '));
     next(null, data);
   }
 
   function deploy(next) {
-    console.log('Promoting slug ' + candidate.slug.id + ' to prod.');
-    deployer.deploy(prodApp, 
-      candidate.slug.id, 
-      'Promotion of: ' + candidate.description, 
+    out.log('Promoting slug ' + candidate.slug.id + ' to prod.');
+    deployer.deploy(prodApp,
+      candidate.slug.id,
+      'Promotion of: ' + candidate.description,
       next);
   }
 
@@ -60,15 +61,15 @@ function main(stagingApp, prodApp, options, bail) {
       checkNeedAndTest,
       testsCompleted,
       verifyAndDeploy,
-      deploy, 
+      deploy,
       postDeploy,
       bail).run();
-  } 
+  }
 
   funflow.flow(bail).
     seq(deployer.init.bind(deployer)). // NOT TESTED
     conc({
-      staged: deployer.mostRecentRelease.bind(deployer, stagingApp), 
+      staged: deployer.mostRecentRelease.bind(deployer, stagingApp),
       live: deployer.mostRecentRelease.bind(deployer, prodApp)
     }).
     seq(function generateOutput(results, next) {
