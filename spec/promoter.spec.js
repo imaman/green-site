@@ -127,7 +127,7 @@ describe('promoter', function() {
     var deployer = new DeployerStub();
     deployer.init = function(done) { done('PROBLEM in deployer.init()'); };
     promoter('a', 'b', { status: true, deployer: deployer }, function(err, data) {
-      expect(err).toBe('PROBLEM in deployer.init()');
+      expect(err.cause).toBe('PROBLEM in deployer.init()');
       expect(data).toBe(undefined);
       done();
     });
@@ -136,7 +136,7 @@ describe('promoter', function() {
     var deployer = new DeployerStub();
     deployer.mostRecentRelease = function(app, done) { done('mostRecentRelease() failed') };
     promoter('a', 'b', { status: true, deployer: deployer }, function(err, data) {
-      expect(err).toEqual('mostRecentRelease() failed') && expect(data).toBe(undefined);
+      expect(err.cause).toEqual('mostRecentRelease() failed') && expect(data).toBe(undefined);
       done();
     });
   });

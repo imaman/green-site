@@ -65,17 +65,17 @@ function main(stagingApp, prodApp, options, bail) {
       postDeploy)(null, bail);
   }
 
-  funflow.flow(bail).
-    seq(deployer.init.bind(deployer)).
-    conc({
-      staged: deployer.mostRecentRelease.bind(deployer, stagingApp),
-      live: deployer.mostRecentRelease.bind(deployer, prodApp)
-    }).
-    seq(function generateOutput(results, next) {
+  var exec = funflow.newFlow(
+    function init(next) { deployer.init(next) },
+    {
+      staged: function staged(next) { deployer.mostRecentRelease(stagingApp, next) },
+      live: function live(next) { deployer.mostRecentRelease(prodApp, next) }
+    },
+    function generateOutput(results, next) {
       next(null, Object.keys(results).map(function(key) {
-        return key + '=' + JSON.stringify(results[key][0], null, '  ');
+        return key + '=' + JSON.stringify(results[key], null, '  ');
       }).join('\n'));
-    }).run();
+    })(null, bail);
 }
 
 module.exports = main;
