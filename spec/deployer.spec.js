@@ -45,7 +45,7 @@ describe('Deployer', function() {
     var deployer = new Deployer();
     funflow.newFlow(
       function init(next) { deployer.init(next) },
-      function(next) {
+      function check(next) {
         expect(command).toEqual('heroku auth:token');
         expect(options).toEqual({ token: 'AAA' });
         next();
@@ -55,13 +55,13 @@ describe('Deployer', function() {
   it('lists releases in reverse order of versions', function(done) {
     releases['a1'] = [ { description: 'old', version: 100}, { description: 'recent', version: 200} ];
     var deployer = new Deployer();
-    flow(done).seq(
+    funflow.newFlow(
       function init(next) { deployer.init(next) },
-      deployer.fetchReleases.bind(deployer, 'a1'),
-      function(rs, next) {
+      function fetch(next) { deployer.fetchReleases('a1', next) },
+      function check(rs, next) {
         expect(rs).toEqual([ {description: 'recent', version: 200 }, {description: 'old', version: 100} ]);
         next();
-      }).run();
+      })(null, done);
   });
 
   it('provides the most recent release with a slug', function(done) {
@@ -72,13 +72,13 @@ describe('Deployer', function() {
       { description: 'no_slug_id_newer', version: 400, slug: {}}
     ];
     var deployer = new Deployer();
-    flow(done).seq(
+    funflow.newFlow(
       function init(next) { deployer.init(next) },
-      deployer.mostRecentRelease.bind(deployer, 'a2'),
-      function(r, next) {
+      function fetch(next) { deployer.mostRecentRelease('a2', next) },
+      function check(r, next) {
         expect(r).toEqual({description: 'slug_new', version: 200, slug: {id: 2}});
         next();
-      }).run();
+      })(null, done);
   });
 
   it('provides null if no slugged release is found', function(done) {
@@ -87,13 +87,13 @@ describe('Deployer', function() {
       { description: 'no_slug_2', version: 400, slug: {}}
     ];
     var deployer = new Deployer();
-    flow(done).seq(
+    funflow.newFlow(
       function init(next) { deployer.init(next) },
-      deployer.mostRecentRelease.bind(deployer,'a3'),
-      function(r, next) {
+      function fetch(next) { deployer.mostRecentRelease('a3', next) },
+      function check(r, next) {
         expect(r).toBe(null);
         next();
-      }).run();
+      })(null, done);
   });
 
   it('deploys', function(done) {
