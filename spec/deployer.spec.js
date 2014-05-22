@@ -1,7 +1,6 @@
 var rewire = require('rewire');
 var Deployer = rewire('../acceptance/deployer.js');
 var funflow = require('funflow');
-var flow = funflow.flow;
 
 
 var command = null;
@@ -99,14 +98,14 @@ describe('Deployer', function() {
   it('deploys', function(done) {
     createResult = { value: 'CREATE_RESULT' };
     var deployer = new Deployer();
-    flow(done).seq(
+    funflow.newFlow(
       function init(next) { deployer.init(next) },
-      deployer.deploy.bind(deployer, 'a4', 'SLUG_ID', 'DESCRIPTION'),
-      function(data, next) {
+      function deploy(next) { deployer.deploy('a4', 'SLUG_ID', 'DESCRIPTION', next) },
+      function check(data, next) {
         expect(createOptions).toEqual({slug: 'SLUG_ID', description: 'DESCRIPTION'});
         expect(data).toEqual({ value: 'CREATE_RESULT' });
         next();
-      }).run();
+      })(null, done);
   });
 });
 
