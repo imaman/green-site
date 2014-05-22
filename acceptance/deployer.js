@@ -1,7 +1,6 @@
 var exec = require('child_process').exec;
 var Heroku = require('heroku-client');
 var funflow = require('funflow');
-var flow = funflow.flow;
 
 function extractToken(callback) {
   return function(error, stdout, stderr) {
@@ -41,13 +40,13 @@ Deployer.prototype.fetchReleases = function(app, done) {
 
 Deployer.prototype.mostRecentRelease = function(app, done) {
   var self = this;
-  flow(done).seq(
-    self.fetchReleases.bind(self, app),
-    function(rs, next) {
+  funflow.newFlow(
+    function fetch(next) { self.fetchReleases(app, next) },
+    function pick(rs, next) {
       var slugged = rs.filter(function(x) { return x.slug && x.slug.id });
       if (slugged.length == 0) return next(null, null);
       next(null, slugged[0]);
-    }).run();
+    })(null, done);
 }
 
 Deployer.prototype.deploy = function(app, slugId, description, done) {
