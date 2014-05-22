@@ -1,6 +1,7 @@
 var rewire = require('rewire');
 var Deployer = rewire('../acceptance/deployer.js');
-var flow = require('funflow').flow;
+var funflow = require('funflow');
+var flow = funflow.flow;
 
 
 var command = null;
@@ -42,20 +43,20 @@ Deployer.__set__('Heroku', FakeHeroku);
 describe('Deployer', function() {
   it('uses the Heroku CLI for obtaining a token', function(done) {
     var deployer = new Deployer();
-    flow(done).seq(
-      deployer.init.bind(deployer),
+    funflow.newFlow(
+      function init(next) { deployer.init(next) },
       function(next) {
         expect(command).toEqual('heroku auth:token');
         expect(options).toEqual({ token: 'AAA' });
         next();
-      }).run();
+      })(null, done);
   });
 
   it('lists releases in reverse order of versions', function(done) {
     releases['a1'] = [ { description: 'old', version: 100}, { description: 'recent', version: 200} ];
     var deployer = new Deployer();
     flow(done).seq(
-      deployer.init.bind(deployer),
+      function init(next) { deployer.init(next) },
       deployer.fetchReleases.bind(deployer, 'a1'),
       function(rs, next) {
         expect(rs).toEqual([ {description: 'recent', version: 200 }, {description: 'old', version: 100} ]);
@@ -72,7 +73,7 @@ describe('Deployer', function() {
     ];
     var deployer = new Deployer();
     flow(done).seq(
-      deployer.init.bind(deployer),
+      function init(next) { deployer.init(next) },
       deployer.mostRecentRelease.bind(deployer, 'a2'),
       function(r, next) {
         expect(r).toEqual({description: 'slug_new', version: 200, slug: {id: 2}});
@@ -87,7 +88,7 @@ describe('Deployer', function() {
     ];
     var deployer = new Deployer();
     flow(done).seq(
-      deployer.init.bind(deployer),
+      function init(next) { deployer.init(next) },
       deployer.mostRecentRelease.bind(deployer,'a3'),
       function(r, next) {
         expect(r).toBe(null);
@@ -99,7 +100,7 @@ describe('Deployer', function() {
     createResult = { value: 'CREATE_RESULT' };
     var deployer = new Deployer();
     flow(done).seq(
-      deployer.init.bind(deployer),
+      function init(next) { deployer.init(next) },
       deployer.deploy.bind(deployer, 'a4', 'SLUG_ID', 'DESCRIPTION'),
       function(data, next) {
         expect(createOptions).toEqual({slug: 'SLUG_ID', description: 'DESCRIPTION'});
