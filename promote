@@ -10,8 +10,8 @@ function bail(err, text) {
     process.exit(0);
   }
 
-  if (err.stack) {
-    console.log(err.stack);
+  if (err.cause.stack) {
+    console.log(err.flowTrace);
     process.exit(1);
   }
 
@@ -19,14 +19,14 @@ function bail(err, text) {
   console.log('*                                                *');
   console.log('* PROMOTION HALTED                               *');
   console.log('*                                                *');
-  console.log('* Reason: ' + err);
+  console.log('* Reason: ' + err.cause);
   console.log('*                                                *');
   console.log('**************************************************');
   process.exit(1);
 }
 
-var options = { 
-  status: argv.status, 
+var options = {
+  status: argv.status,
   runSpecs: function(done) { new JasmineNodeApi().runSpecs(acceptanceSpecs, done) }
 };
 
