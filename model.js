@@ -4,7 +4,7 @@
   exports.production = {
     headline: 'Colliding Objects',
     tagline: 'Coding, design, and broken feedback loops',
-    posts: [ 
+    posts: [
       {
         id: "intro",
         title: 'Does Design Exist?',
@@ -33,12 +33,18 @@
         title: 'Game of Stubs',
         publishedAt: '2014-02-17T15:18:00+02:00'
       },
+      {
+        id: 'quality_metrics',
+        title: 'This quality metric will self destruct in five seconds',
+        marks: [ 'wip' ],
+        publishedAt: '2014-05-24T15:18:00+03:00'
+      },
     ],
 
     fetchBody: function(id, done) {
       fs.readFile(__dirname + '/posts/' + id, {encoding: 'utf8'}, function (err, data) {
         done(err, data);
-      }); 
+      });
     }
   };
 })();
