@@ -38,7 +38,7 @@ function main(stagingApp, prodApp, options, bail) {
 
   function checkNeedAndTest(live, next) {
     if (live && (live.slug.id === candidate.slug.id)) {
-      throw new Error('Slug at staging is already live in prod.');
+      return next('Slug at staging is already live in prod.');
     }
 
     options.runSpecs(next);

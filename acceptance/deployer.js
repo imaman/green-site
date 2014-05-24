@@ -12,7 +12,9 @@ function Deployer() {}
 Deployer.prototype.init = function(done) {
   var self = this;
   funflow.newFlow(
-    exec,
+    function execCaller(v, next) {
+      exec(v, next);
+    },
     function extractToken(stdout, stderr, next) {
       next(stderr, stdout.trim());
     },
