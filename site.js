@@ -4,7 +4,8 @@
   var jade = require('jade');
   var moment = require('moment');
   var mongo = require('mongodb');
-  var MongoStore = require('connect-mongo')(express);
+  var session = require('express-session');
+  var MongoStore = require('connect-mongo')(session);
   var extend = require('node.extend');
   var path = require('path');
   var passport = require('passport');
