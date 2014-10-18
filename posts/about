@@ -1,6 +1,6 @@
 
 ###Who?
-[Itay Maman](http://stackoverflow.com/users/27198/itay-maman). Programmer, researcher, teacher. 
+[Itay Maman](http://stackoverflow.com/users/27198/itay-maman). Programmer, researcher, teacher.
 
 Timeline: Coding at Google (search backends, dev. infrastructure) for the past three years. Prior to that: IBM research; Ph.D. ([formal patterns in java programs](https://www.cs.technion.ac.il/users/wwwb/cgi-bin/tr-get.cgi/2012/PHD/PHD-2012-05.pdf)) at the [Computer Science](https://www.cs.technion.ac.il/) department of [Israel Institute of Technology](http://www.technion.ac.il) (aka, Technion); a couple of startups. In between I also interned, at IBM's Watson Research Center.
 
@@ -15,7 +15,7 @@ While I could theoretically use an existing blogging platform (actually I tried 
 - Full control over look/feel/layout.
 - Some server side logic for supporting "advanced" features which go beyond statically-served files (in particular: programming quizzes and challenges).
 
-So several weeks ago, while on vacation (seems like all best programs are written on vacations, isn't it?) I sat down and hacked this web-site. 
+So several weeks ago, while on vacation (seems like all best programs are written on vacations, isn't it?) I sat down and hacked this web-site.
 
 ###How?
 This page is [node.js](http://nodejs.org) served. Currently, there is a mongodb instance but it is only used for storing sessions.
@@ -23,6 +23,6 @@ All content is fetched from files, which are part of the [git repo](https://gith
 For testing I use [jasmine-node](https://github.com/mhevery/jasmine-node) and [zombie](http://zombie.labnotes.org/).
 Whenever I push to [Github](https://github.com) I also push to to an [Heroku](www.heroku.com)-hosted [staging app](https://collidingobjects-staging.herokuapp.com).
 If I want to update prod. I run a script program that (a) invokes acceptance tests against the staged version; and (b) re-deploys that version to prod.
-[Pingdom](https://www.pingdom.com/) is hitting the main page once a minute to make sure all users can see something.
+Finally, [Pingdom](https://www.pingdom.com/) is hitting the main page once a minute to make sure all users can see something.
 
 
