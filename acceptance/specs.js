@@ -4,6 +4,9 @@ module.exports = function(describe, it, beforeEach, afterEach) {
     var browser = new Browser();
 
     function visit(path, done, callback) {
+      if (path[0] == '/') {
+        path = path.substr(1);
+      }
       browser.visit('http://collidingobjects-staging.herokuapp.com/' + path, function() {
         callback();
         done();
