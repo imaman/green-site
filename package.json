@@ -32,6 +32,8 @@
     "minimist": "~1.1.0",
     "rewire": "~2.1.0",
     "util-is": "~0.1.0",
-    "funflow": "0.0.8"
+    "funflow": "0.0.8",
+    "cookie-session": "~1.0.2",
+    "express-session": "~1.9.0"
   }
 }
