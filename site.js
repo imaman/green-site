@@ -92,7 +92,7 @@
 
       app.use(logger);
       app.use(cookieParser(combinedConf.COOKIE_SECRET));
-      app.use(bodyParser.urlencoded());
+      app.use(bodyParser.json());
       app.use(cookieSession({ secret: combinedConf.COOKIE_SESSION_SECRET}));
       app.use(methodOverride());
 //      app.use(express.session({
