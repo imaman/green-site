@@ -11,7 +11,7 @@
   var methodOverride = require('method-override');
   var morgan = require('morgan');
   var logger = morgan('combined');
-  var MongoStore = require('connect-mongo')(express);
+  var MongoStore = require('connect-mongo')(session);
   var extend = require('node.extend');
   var path = require('path');
   var passport = require('passport');
@@ -95,10 +95,12 @@
       app.use(bodyParser.json());
       app.use(cookieSession({ secret: combinedConf.COOKIE_SESSION_SECRET}));
       app.use(methodOverride());
-//      app.use(express.session({
-//          secret: combinedConf.SESSION_SECRET,
-//          store: new MongoStore({ db: db })
-//       }));
+      app.use(session({
+        secret: combinedConf.SESSION_SECRET,
+        store: new MongoStore({ db : db }),
+        resave: true,
+        saveUninitialized: true
+      }));
       app.use(passport.initialize());
       app.use(passport.session());
 
@@ -172,13 +174,13 @@
           if (post) {
             controller.singlePost(post, req, res);
           } else {
-            res.send(404);
+            res.status(404).end();
           }
         });
       });
 
       app.get('/posts/:id/edit', function(req, res) {
-        res.sendfile(__dirname + '/public/edit.html');
+        res.sendFile(__dirname + '/public/edit.html');
       });
 
       app.use(express.static(__dirname + '/public'));
