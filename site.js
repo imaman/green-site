@@ -85,7 +85,7 @@
     app.set('views', path.join(__dirname, 'views'));
     app.set('view engine', 'jade');
 
-    mongo.MongoClient.connect(combinedConf.MONGOHQ_URL, function(err, db) {
+    mongo.Db.connect(combinedConf.MONGOHQ_URL, function(err, db) {
       if (err) return done(err);
 
       deps.db = db;
