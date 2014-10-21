@@ -11,7 +11,7 @@
   var methodOverride = require('method-override');
   var morgan = require('morgan');
   var logger = morgan('combined');
-  var MongoStore = require('connect-mongo')(session);
+  var MongoStore = require('connect-mongo')(express);
   var extend = require('node.extend');
   var path = require('path');
   var passport = require('passport');
