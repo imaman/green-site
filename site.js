@@ -4,7 +4,14 @@
   var jade = require('jade');
   var moment = require('moment');
   var mongo = require('mongodb');
-  var MongoStore = require('connect-mongo')(express);
+  var session = require('express-session');
+  var cookieParser = require('cookie-parser');
+  var bodyParser = require('body-parser');
+  var cookieSession = require('cookie-session');
+  var methodOverride = require('method-override');
+  var morgan = require('morgan');
+  var logger = morgan('combined');
+  var MongoStore = require('connect-mongo')(session);
   var extend = require('node.extend');
   var path = require('path');
   var passport = require('passport');
@@ -83,21 +90,17 @@
 
       deps.db = db;
 
-      app.use(express.logger());
-      app.use(express.cookieParser(combinedConf.COOKIE_SECRET));
-      app.use(express.bodyParser());
-      app.use(express.cookieSession({ secret: combinedConf.COOKIE_SESSION_SECRET}));
-      app.use(express.methodOverride());
-      app.use(express.session({
-          secret: combinedConf.SESSION_SECRET,
-          store: new MongoStore({ db: db })
-        }));
+      app.use(logger);
+      app.use(cookieParser(combinedConf.COOKIE_SECRET));
+      app.use(bodyParser.urlencoded());
+      app.use(cookieSession({ secret: combinedConf.COOKIE_SESSION_SECRET}));
+      app.use(methodOverride());
+//      app.use(express.session({
+//          secret: combinedConf.SESSION_SECRET,
+//          store: new MongoStore({ db: db })
+//       }));
       app.use(passport.initialize());
       app.use(passport.session());
-      app.use(app.router);
-      app.use(express.static(__dirname + '/public'));
-      app.use(controller.error);
-      app.use(controller.pageNotFound);
 
       app.get('/rss.xml', function(req, res) {
         controller.rss(res);
@@ -178,6 +181,9 @@
         res.sendfile(__dirname + '/public/edit.html');
       });
 
+      app.use(express.static(__dirname + '/public'));
+      app.use(controller.error);
+      app.use(controller.pageNotFound);
       done(null, app);
     });
   }
