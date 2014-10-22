@@ -23,6 +23,6 @@ All content is fetched from files, which are part of the [git repo](https://gith
 For testing I use [jasmine-node](https://github.com/mhevery/jasmine-node) and [zombie](http://zombie.labnotes.org/).
 Whenever I push to [Github](https://github.com) I also push to to an [Heroku](www.heroku.com)-hosted [staging app](https://collidingobjects-staging.herokuapp.com).
 If I want to update prod. I run a script program that (a) invokes acceptance tests against the staged version; and (b) re-deploys that version to prod.
-Finally, [Pingdom](https://www.pingdom.com/) is hitting the main page once a minute to make sure users can see something.
+Finally, [Pingdom](https://www.pingdom.com/) is hitting the main page once a minute to make sure users are served.
 
 
