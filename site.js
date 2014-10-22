@@ -5,13 +5,13 @@
   var moment = require('moment');
   var mongo = require('mongodb');
   var session = require('express-session');
+  var MongoStore = require('connect-mongo')(session);
   var cookieParser = require('cookie-parser');
   var bodyParser = require('body-parser');
   var cookieSession = require('cookie-session');
   var methodOverride = require('method-override');
   var morgan = require('morgan');
   var logger = morgan('combined');
-  var MongoStore = require('connect-mongo')(session);
   var extend = require('node.extend');
   var path = require('path');
   var passport = require('passport');
@@ -97,9 +97,11 @@
       app.use(methodOverride());
       app.use(session({
         secret: combinedConf.SESSION_SECRET,
-        store: new MongoStore({ db : db }),
-        resave: true,
-        saveUninitialized: true
+        store: new MongoStore({
+          db : db
+        })
+//        resave: true,
+//        saveUninitialized: true
       }));
       app.use(passport.initialize());
       app.use(passport.session());
