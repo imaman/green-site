@@ -153,10 +153,12 @@
 
         if (!post) {
           callback(null);
+          return;
         }
 
         if (post.body) {
           callback(post);
+          return;
         }
         model.fetchBody(id, function(err, body) {
           callback(extend({body: body}, post));

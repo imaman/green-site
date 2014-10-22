@@ -17,7 +17,7 @@ exports.create = function() {
   }
 
   controller.error = function(err, req, res, next) {
-    res.status(500);
+    res.status(500); //.end();
     res.render('500', { error: err });
   };
   controller.pageNotFound = function(req, res, next) {
@@ -37,7 +37,7 @@ exports.create = function() {
 
     // default to plain-text. send()
     res.type('txt').send('Not found');
-  };      
+  };
 
   controller.posts = function(req, res) {
     var sorted = model.posts.filter(function(x) {
@@ -77,7 +77,7 @@ exports.create = function() {
         language: 'en',
         pubDate: new Date(latest).toString(),
         ttl: '10'
-    });      
+    });
 
     var left = model.posts.length;
     function publish(post, body) {
