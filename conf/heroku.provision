@@ -1,4 +1,3 @@
 #!/bin/bash
 
 heroku addons:add mongohq
-heroku addons:add --app collidingobjects-staging mongolab
