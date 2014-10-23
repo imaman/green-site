@@ -7,7 +7,7 @@
   "private": true,
   "scripts": {
     "start": "node site.js",
-    "test": "node_modules/jasmine-node/bin/jasmine-node --captureExceptions spec && node integration/e2e.spec.js"
+    "test": "jasmine-node --captureExceptions spec && node integration/e2e.spec.js"
   },
   "dependencies": {
     "diff": "*",
@@ -15,7 +15,7 @@
     "express": "~4.9.8",
     "github": "~0.2.2",
     "jade": "~1.7.0",
-    "jasmine-node": "^2.0.0",
+    "jasmine-node": "~1.13.1",
     "markdown": "0.5.0",
     "moment": "~2.8.3",
     "node.extend": "~1.1.2",
