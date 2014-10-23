@@ -26,7 +26,7 @@
     "passport-facebook": "~1.0.2",
     "passport-google": "~0.3.0",
     "rss": "~1.0.0",
-    "mongodb": "~2.0.3",
+    "mongodb": "^2.0.4",
     "heroku-client": "^1.9.0",
     "minimist": "~1.1.0",
     "rewire": "~2.1.0",

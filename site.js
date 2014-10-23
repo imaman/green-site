@@ -85,11 +85,7 @@
     app.set('views', path.join(__dirname, 'views'));
     app.set('view engine', 'jade');
 
-    var mongoUri = combinedConf.MONGOLAB_URI;
-    var replicaSetName = undefined;
-    if (combinedConf.USE_REPLICA_SET)
-      replicaSetName = 'rs-' + mongoUri.split('@')[1].split('.')[0];
-    mongo.MongoClient.connect(mongoUri, {replSet: {replicaSet: replicaSetName} }, function(err, db) {
+    mongo.MongoClient.connect(combinedConf.MONGOLAB_URI, function(err, db) {
       if (err) return done(err);
 
       deps.db = db;
