@@ -1,4 +1,4 @@
-var jasmine = require('jasmine-node'); 
+var jasmine = require('jasmine-node');
 var util;
 try {
   util = require('util')
@@ -6,7 +6,8 @@ try {
   util = require('sys')
 }
 
-var jasmineEnv = jasmine.getEnv();
+var jasmineEnv = new Jasmine.Env();
+console.log(Object.keys(jasmineEnv).join(', '));
 
 var it = function(desc, func, timeout) {
   return jasmine.getEnv().it(desc, func, timeout);
@@ -37,10 +38,10 @@ JasmineNodeApi.prototype.runSpecs = function(specs, done) {
     return text;
   }
 
-  jasmineEnv.addReporter(new jasmine.TerminalVerboseReporter({ 
+  jasmineEnv.addReporter(new jasmine.TerminalVerboseReporter({
       print: print,
       color: true,
-      onComplete: function(e) { 
+      onComplete: function(e) {
         var actual = done || self.completion;
         actual(null, { results: e.results(), lines: lines});
       },
