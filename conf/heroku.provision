@@ -1,3 +1,5 @@
 #!/bin/bash
 
-heroku addons:add mongolab
+for x in 'collidingobjects-staging' 'collidingobjects'; do
+  heroku addons:add --app "$x" mongolab
+done
