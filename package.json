@@ -10,7 +10,7 @@
     "test": "jasmine-node --captureExceptions spec && node integration/e2e.spec.js"
   },
   "devDependencies": {
-    "jasmine-node": "~1.13.1"
+    "jasmine-node": "^1.13.1"
   },
   "dependencies": {
     "diff": "*",
